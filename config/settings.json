@@ -1,0 +1,34 @@
+# config/settings.json
+{
+  "game": {
+    "width": 1280,
+    "height": 720,
+    "fps": 60,
+    "num_decks": 1,
+    "animation_delay": 0.5
+  },
+  "cards": {
+    "width": 100,
+    "height": 145,
+    "spacing": 20
+  },
+  "colors": {
+    "bg": [0, 100, 0],
+    "bg_dark": [20, 60, 20],
+    "menu_bg": [15, 15, 40],
+    "text": [255, 255, 255],
+    "text_gold": [255, 215, 0],
+    "win": [100, 255, 100],
+    "lose": [255, 100, 100],
+    "push": [255, 255, 100]
+  },
+  "timing": {
+    "initial_deal_duration": 1.0,
+    "dealer_reveal_duration": 1.0,
+    "result_screen_duration": 3.0,
+    "action_delay": 0.5
+  },
+  "difficulty": {
+    "dealer_strategy": "standard"
+  }
+}

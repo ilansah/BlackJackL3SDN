@@ -1,12 +1,10 @@
-# core/player.py
-
 import json
 import os
 from pathlib import Path
 
 
 class Player:
-    """Gère les statistiques et le profil du joueur."""
+    """gere les statistiques et le profil du joueur"""
     
     def __init__(self, name: str = "Player"):
         self.name = name
@@ -19,7 +17,7 @@ class Player:
         self.total_money_lost = 0
     
     def win_hand(self, amount: int = 100) -> None:
-        """Enregistre une main gagnée."""
+        """enregistre une main gagnee."""
         self.wins += 1
         self.total_hands += 1
         self.total_money_won += amount

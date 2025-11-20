@@ -50,7 +50,7 @@ class Game:
         self.frame_counter = 0
         self.animation_delay = 0.5  # Délai entre les actions (secondes)
         self.player_action = None  # Action en attente du joueur
-        self.player_bet = 100  # Mise du joueur
+        self.player_bet = 0  # Mise du joueur
         self.split_hand = None  # Main secondaire si split
         self.current_hand_index = 0  # 0 = main principale, 1 = split
         self.last_action_time = 0  # Timestamp de la dernière action

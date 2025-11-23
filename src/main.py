@@ -67,39 +67,99 @@ def handle_events():
     return []
 
 
-def handle_game_input(game: Game, chips):
-    """Gère les inputs du joueur pendant son tour clavier et ajout souris"""
+def handle_game_input(
+    game: Game,
+    chips,
+    seats,
+    play_button_rect,
+    settings_button_rect,
+    stats_button_rect,
+    bet_start_button_rect,
+) -> bool:
+    """
+    Gère tous les inputs.
+    Retourne True si on doit lancer une nouvelle manche.
+    """
+    start_round = False
+
     for event in pygame.event.get():
+
+        # quitter jeu
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                pygame.quit()
-                sys.exit()
-            elif event.key == pygame.K_h and game.can_hit():  # H = Hit
-                game.player_hit()
-            elif event.key == pygame.K_s and game.can_stand():  # S = Stand
-                game.player_stand()
-            elif event.key == pygame.K_d and game.can_double():  # D = Double
-                game.player_double()
-            elif event.key == pygame.K_p and game.can_split():  # P = sPlIt
-                game.player_split()
-            elif event.key == pygame.K_SPACE and game.state == GameState.RESULT_SCREEN:
-                # SPACE pour commencer une nouvelle partie
-                game.reset()
-                game.deal_initial_cards()
 
-        # Gestion des clics souris sur les jetons
-        elif event.type == pygame.MOUSEBUTTONDOWN and event.button in (1, 3):
-            # ca autorise le changement de mise seulement entre deux manches
-            if game.state == GameState.RESULT_SCREEN:
+        # souris
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos = event.pos
+
+            # menu
+            if game.state == GameState.MENU:
+                if play_button_rect.collidepoint(pos):
+                    game.state = GameState.BETTING
+                elif settings_button_rect.collidepoint(pos):
+                    game.state = GameState.SETTINGS
+                elif stats_button_rect.collidepoint(pos):
+                    game.state = GameState.STATS
+
+            #ecran mise
+            elif game.state == GameState.BETTING:
+
+                #clic place
+                if event.button == 1:
+                    for seat in seats:
+                        if seat["rect"].collidepoint(pos):
+                            game.seat_index = seat["index"]
+
+                    #clicl commencer
+                    if bet_start_button_rect.collidepoint(pos) and game.player_bet > 0:
+                        start_round = True
+
+                #clic jetons 
                 for chip in chips:
-                    if chip["rect"].collidepoint(event.pos):
+                    if chip["rect"].collidepoint(pos):
+                        if event.button == 1:          # ajouter mise
+                            game.player_bet += chip["value"]
+                        elif event.button == 3:        # enlever mise
+                            game.player_bet = max(0, game.player_bet - chip["value"])
+
+            # ecran resultat
+            elif game.state == GameState.RESULT_SCREEN:
+
+                #auroriser jetons 
+                for chip in chips:
+                    if chip["rect"].collidepoint(pos):
                         if event.button == 1:
                             game.player_bet += chip["value"]
                         elif event.button == 3:
                             game.player_bet = max(0, game.player_bet - chip["value"])
+
+        #clavier
+        if event.type == pygame.KEYDOWN:
+
+            #retour menu principal
+            if event.key == pygame.K_ESCAPE:
+                game.state = GameState.MENU
+
+            #tour joueur
+            if game.state == GameState.PLAYER_TURN:
+                if event.key == pygame.K_h and game.can_hit():
+                    game.player_hit()
+                elif event.key == pygame.K_s and game.can_stand():
+                    game.player_stand()
+                elif event.key == pygame.K_d and game.can_double():
+                    game.player_double()
+                elif event.key == pygame.K_p and game.can_split():
+                    game.player_split()
+
+            #fin manche
+            elif game.state == GameState.RESULT_SCREEN:
+                if event.key == pygame.K_SPACE:
+                    game.reset()
+                    game.player_bet = 0
+                    game.state = GameState.BETTING
+
+    return start_round
 
 
 
@@ -196,48 +256,49 @@ def render_table_bg(screen: pygame.Surface):
     pygame.draw.line(screen, COLOR_BG_DARK, (0, HEIGHT // 2), (WIDTH, HEIGHT // 2), 3)
 
 
-def draw_menu(screen: pygame.Surface, player: Player):
-    """Affiche le menu principal."""
+def draw_main_menu(screen: pygame.Surface, player: Player,
+                   play_rect, settings_rect, stats_rect):
     screen.fill(COLOR_MENU_BG)
-    
+
     pygame.font.init()
     font_title = pygame.font.SysFont("arial", 80, bold=True)
-    font_large = pygame.font.SysFont("arial", 40)
-    font_medium = pygame.font.SysFont("arial", 28)
+    font_button = pygame.font.SysFont("arial", 36)
     font_small = pygame.font.SysFont("arial", 20)
-    
-    # Titre
+
+    # titre
     title = font_title.render("BLACKJACK", True, COLOR_TEXT_GOLD)
-    screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 50))
-    
-    # Stats du joueur
+    screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 60))
+
+    # stats rapides
     if player.total_hands > 0:
-        stats_y = 200
-        stats = [
-            f"Joueur: {player.name}",
-            f"Mains jouées: {player.total_hands}",
-            f"Victoires: {player.wins} | Défaites: {player.losses} | Égalités: {player.pushes}",
-            f"Taux de victoire: {player.get_win_rate():.1f}%",
-            f"Blackjacks: {player.blackjacks}",
-            f"Bénéfice net: ${player.get_net_profit()}",
-        ]
-        for i, stat in enumerate(stats):
-            text = font_small.render(stat, True, COLOR_TEXT)
-            screen.blit(text, (WIDTH // 2 - text.get_width() // 2, stats_y + i * 30))
-    
-    # Instructions
-    instr_y = 400
-    instructions = [
-        "Appuyez sur SPACE pour commencer une partie",
-        "Appuyez sur P pour voir votre profil",
-        "Appuyez sur ESC pour quitter",
-    ]
-    for i, instr in enumerate(instructions):
-        text = font_medium.render(instr, True, COLOR_TEXT)
-        screen.blit(text, (WIDTH // 2 - text.get_width() // 2, instr_y + i * 50))
+        stats_text = (
+            f"Mains: {player.total_hands} | "
+            f"Victoires: {player.wins} | "
+            f"Taux: {player.get_win_rate():.1f}% | "
+            f"Bénéfice: ${player.get_net_profit()}"
+        )
+        surf = font_small.render(stats_text, True, COLOR_TEXT)
+        screen.blit(surf, (WIDTH // 2 - surf.get_width() // 2, 150))
+
+    # fonction utilitaire pour dessiner un bouton
+    def draw_button(rect, text):
+        pygame.draw.rect(screen, COLOR_BG_DARK, rect, border_radius=10)
+        pygame.draw.rect(screen, COLOR_TEXT_GOLD, rect, 2, border_radius=10)
+        txt = font_button.render(text, True, COLOR_TEXT)
+        screen.blit(
+            txt,
+            (rect.centerx - txt.get_width() // 2,
+             rect.centery - txt.get_height() // 2)
+        )
+
+    draw_button(play_rect, "Jouer")
+    draw_button(settings_rect, "Settings")
+    draw_button(stats_rect, "Stats")
 
 
-def draw_game_screen(screen: pygame.Surface, game: Game, player: Player, dealer_revealed: bool, chips):
+
+def draw_game_screen(screen: pygame.Surface, game: Game, player: Player, dealer_revealed: bool, chips, seats):
+
     """Affiche l'écran de jeu."""
     render_table_bg(screen)
     
@@ -354,10 +415,70 @@ def draw_game_screen(screen: pygame.Surface, game: Game, player: Player, dealer_
     screen.blit(surf, (WIDTH - surf.get_width() - 20, HEIGHT - 30))
 
     # jetons
+    # on n'affiche pas les jetons sur ecran de jeu
+    pass
+
+
+
+def draw_bet_screen(screen: pygame.Surface, game: Game, player: Player,
+                    chips, seats, start_button_rect):
+    screen.fill(COLOR_MENU_BG)
+
+    pygame.font.init()
+    font_title = pygame.font.SysFont("arial", 60, bold=True)
+    font_large = pygame.font.SysFont("arial", 32)
+    font_medium = pygame.font.SysFont("arial", 24)
+    font_small = pygame.font.SysFont("arial", 18)
+
+    #titre
+    title = font_title.render("Placez votre mise", True, COLOR_TEXT_GOLD)
+    screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 40))
+
+    #siege
+    label = font_medium.render("Choisissez votre place :", True, COLOR_TEXT)
+    screen.blit(label, (20, 120))
+
+    for seat in seats:
+        idx = seat["index"]
+        cx, cy = seat["center"]
+
+        if idx == game.seat_index:
+            color = COLOR_TEXT_GOLD
+            thickness = 0
+        else:
+            color = COLOR_TEXT
+            thickness = 2
+
+        pygame.draw.circle(screen, color, (cx, cy), 35, thickness)
+
+        txt = font_small.render(f"Place {idx + 1}", True, COLOR_TEXT)
+        screen.blit(txt, (cx - txt.get_width() // 2, cy + 40))
+
+    #jetons
     for chip in chips:
         screen.blit(chip["image"], chip["rect"].topleft)
 
+    bet_text = font_large.render(f"Mise actuelle : ${game.player_bet}", True, COLOR_TEXT)
+    screen.blit(bet_text, (20, HEIGHT - 150))
 
+
+    # Bouton démarrer
+    if game.player_bet > 0:
+        btn_color = (0, 150, 0)
+        btn_text = "Commencer la partie"
+    else:
+        btn_color = (80, 80, 80)
+        btn_text = "Choisissez d'abord une mise"
+
+    pygame.draw.rect(screen, btn_color, start_button_rect, border_radius=10)
+    txt = font_medium.render(btn_text, True, COLOR_TEXT)
+    screen.blit(
+        txt,
+        (
+            start_button_rect.centerx - txt.get_width() // 2,
+            start_button_rect.centery - txt.get_height() // 2,
+        ),
+    )
 
 
 
@@ -369,16 +490,51 @@ def main():
     
     # Démarrer directement une partie
     game = Game(num_decks=1)
-    game.deal_initial_cards()
+    game.state = GameState.MENU
+    game.player_bet = 0
     dealer_revealed = False
     state_changed_time = 0
 
-    #creation des jetons
+
+    # bouton menu
+    menu_button_width = 300
+    menu_button_height = 60
+    menu_button_x = WIDTH // 2 - menu_button_width // 2
+    menu_start_y = 220
+    menu_button_margin = 20
+
+    play_button_rect = pygame.Rect(
+        menu_button_x, menu_start_y, menu_button_width, menu_button_height
+    )
+    settings_button_rect = pygame.Rect(
+        menu_button_x, menu_start_y + (menu_button_height + menu_button_margin),
+        menu_button_width, menu_button_height
+    )
+    stats_button_rect = pygame.Rect(
+        menu_button_x, menu_start_y + 2 * (menu_button_height + menu_button_margin),
+        menu_button_width, menu_button_height
+    )
+
+    # sieges
+    NUM_SEATS = 5
+    seats = []
+    seat_y = HEIGHT // 2 + 120
+    seat_radius = 35
+    seat_spacing = WIDTH // (NUM_SEATS + 1)
+
+    for i in range(NUM_SEATS):
+        center_x = (i + 1) * seat_spacing
+        rect = pygame.Rect(center_x - seat_radius, seat_y - seat_radius,
+                           seat_radius * 2, seat_radius * 2)
+        seats.append({"index": i, "center": (center_x, seat_y), "rect": rect})
+
+    game.seat_index = NUM_SEATS // 2  
+
+    # jetons
     chips = []
     chip_margin = 20
     chip_y = HEIGHT - 110
 
-    #ca suppose que tous les jetons ont la mm taille que le 1er
     sample_img = load_chip_image(CHIP_FILES[0][1])
     chip_w, chip_h = sample_img.get_size()
     total_width = len(CHIP_FILES) * chip_w + (len(CHIP_FILES) - 1) * chip_margin
@@ -390,54 +546,126 @@ def main():
         rect.topleft = (start_x + i * (chip_w + chip_margin), chip_y)
         chips.append({"value": value, "image": img, "rect": rect})
 
-    
-    while True:
-        dt = clock.tick(FPS) / 1000.0
-        
-        # Écran du jeu
-        game.update(dt)
-        handle_game_input(game, chips)
+    #bouton commencer
+    bet_start_button_rect = pygame.Rect(
+        WIDTH // 2 - 150,
+        HEIGHT - 200,
+        300,
+        50
+    )
 
-        
-        # Gestion des transitions d'état avec délais
+
+    while True:
+
+        dt = clock.tick(FPS) / 1000.0
+        game.update(dt)
+
+        # gere inputs
+        start_round = handle_game_input(
+            game,
+            chips,
+            seats,
+            play_button_rect,
+            settings_button_rect,
+            stats_button_rect,
+            bet_start_button_rect,
+        )
+
+        # lance nouvelle manche
+        if start_round:
+            game.reset()                   
+            dealer_revealed = False
+            state_changed_time = 0
+            game.state = GameState.INITIAL_DEAL
+            game.deal_initial_cards()      
+
+        # gestion des transi auto
         current_time = game.frame_counter
-        
-        # Transition INITIAL_DEAL vers PLAYER_TURN après 1 seconde
+
+        #transition INITIAL_DEAL vers PLAYER_TURN
         if game.state == GameState.INITIAL_DEAL and current_time > 1.0:
             game.state = GameState.PLAYER_TURN
-        
-        # Transition DEALER_REVEAL vers DEALER_TURN après 1 seconde
+
+        #transition DEALER_REVEAL vers DEALER_TURN
         if game.state == GameState.DEALER_REVEAL and current_time - game.last_action_time > 1.0:
             dealer_revealed = True
             game.state = GameState.DEALER_TURN
-            # Le croupier joue immédiatement
             game.dealer_play()
-        
-        # Transition DEALER_TURN vers RESULT_SCREEN après 1 seconde
+
+        #transition DEALER_TURN vers RESULT_SCREEN
         if game.state == GameState.DEALER_TURN and current_time - game.last_action_time > 1.0:
             game.state = GameState.RESULT_SCREEN
-        
-        # Enregistrer le résultat quand la partie est finie
+
+        # qd  partie finie enregistrer stats une fois
         if game.state == GameState.RESULT_SCREEN and state_changed_time == 0:
             state_changed_time = current_time
-            # Mettre à jour les stats du joueur
+
             if game.result == GameResult.PLAYER_WIN:
                 player.win_hand(game.player_bet)
                 if game.player_hand.is_blackjack():
                     player.record_blackjack()
+
             elif game.result == GameResult.DEALER_WIN:
                 player.lose_hand(game.player_bet)
+
             else:
                 player.push_hand()
-            
-            # Sauvegarder les stats
-            player.save()
-        
-        
-        draw_game_screen(screen, game, player, dealer_revealed, chips)
 
-        
+            player.save()
+
+        #affiche selon etat
+        if game.state == GameState.MENU:
+            draw_main_menu(
+                screen,
+                player,
+                play_button_rect,
+                settings_button_rect,
+                stats_button_rect
+            )
+
+        elif game.state == GameState.BETTING:
+            draw_bet_screen(
+                screen,
+                game,
+                player,
+                chips,
+                seats,
+                bet_start_button_rect
+            )
+
+        elif game.state == GameState.SETTINGS:
+            screen.fill(COLOR_MENU_BG)
+            font = pygame.font.SysFont("arial", 40)
+            text = font.render("Settings (à implémenter)", True, COLOR_TEXT)
+            screen.blit(
+                text,
+                (WIDTH // 2 - text.get_width() // 2,
+                 HEIGHT // 2 - text.get_height() // 2)
+            )
+
+        elif game.state == GameState.STATS:
+            screen.fill(COLOR_MENU_BG)
+            font = pygame.font.SysFont("arial", 40)
+            text = font.render("Stats détaillées (à implémenter)", True, COLOR_TEXT)
+            screen.blit(
+                text,
+                (WIDTH // 2 - text.get_width() // 2,
+                 HEIGHT // 2 - text.get_height() // 2)
+            )
+
+        else:
+            # ecran jeu nrml
+            draw_game_screen(
+                screen,
+                game,
+                player,
+                dealer_revealed,
+                chips,
+                seats
+            )
+
         pygame.display.flip()
+
 
 
 if __name__ == "__main__":

@@ -1,10 +1,10 @@
 {
   "name": "Player",
   "wins": 4,
-  "losses": 3,
-  "pushes": 0,
+  "losses": 7,
+  "pushes": 2,
   "blackjacks": 2,
-  "total_hands": 7,
+  "total_hands": 13,
   "total_money_won": 200,
-  "total_money_lost": 100
+  "total_money_lost": 800
 }

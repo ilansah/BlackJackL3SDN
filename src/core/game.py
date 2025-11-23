@@ -7,14 +7,18 @@ from .hand import Hand
 
 class GameState(Enum):
     """États possibles d'une partie."""
-    MENU = "menu"                      # Menu principal
+    MENU = "menu"                      # Menu principal (Jouer / Settings / Stats)
+    BETTING = "betting"                # Écran de mise (place + jetons)
+    SETTINGS = "settings"              # Écran des paramètres
+    STATS = "stats"                    # Écran des stats détaillées
     INITIAL_DEAL = "initial_deal"      # Distribution initiale (2 cartes chacun)
     PLAYER_TURN = "player_turn"        # Tour du joueur (choisir action)
     DEALER_REVEAL = "dealer_reveal"    # Révéler la carte cachée du croupier
-    DEALER_TURN = "dealer_turn"        # Tour du croupier (règle fixe: hit <=16, stand >=17)
+    DEALER_TURN = "dealer_turn"        # Tour du croupier
     RESULT_SCREEN = "result_screen"    # Afficher le résultat
-    GAME_OVER = "game_over"            # Partie terminée
-    WAITING_TO_CONTINUE = "waiting"    # Attente avant la prochaine partie
+    GAME_OVER = "game_over"
+    WAITING_TO_CONTINUE = "waiting"
+
 
 
 class GameResult(Enum):
@@ -50,7 +54,9 @@ class Game:
         self.frame_counter = 0
         self.animation_delay = 0.5  # Délai entre les actions (secondes)
         self.player_action = None  # Action en attente du joueur
-        self.player_bet = 0  # Mise du joueur
+        self.state = GameState.MENU  # on démarre au menu principal
+        self.player_bet = 0  # aucune mise au lancement
+        self.seat_index = 0    # place choisie (0..4) par défaut
         self.split_hand = None  # Main secondaire si split
         self.current_hand_index = 0  # 0 = main principale, 1 = split
         self.last_action_time = 0  # Timestamp de la dernière action
@@ -59,7 +65,6 @@ class Game:
         """Réinitialise pour une nouvelle partie."""
         self.player_hand.clear()
         self.dealer_hand.clear()
-        self.state = GameState.INITIAL_DEAL
         self.result = None
         self.frame_counter = 0
         self.player_action = None

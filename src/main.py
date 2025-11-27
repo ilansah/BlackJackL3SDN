@@ -481,6 +481,276 @@ def draw_bet_screen(screen: pygame.Surface, game: Game, player: Player,
     )
 
 
+def draw_settings_screen(screen: pygame.Surface, game: Game):
+    """Affiche l'écran des paramètres."""
+    screen.fill(COLOR_MENU_BG)
+
+    pygame.font.init()
+    font_title = pygame.font.SysFont("arial", 60, bold=True)
+    font_large = pygame.font.SysFont("arial", 32)
+    font_medium = pygame.font.SysFont("arial", 24)
+    font_small = pygame.font.SysFont("arial", 18)
+
+    # Titre
+    title = font_title.render("PARAMÈTRES", True, COLOR_TEXT_GOLD)
+    screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 40))
+
+    # Charger les settings
+    try:
+        with open("config/settings.json", "r") as f:
+            settings = json.load(f)
+    except:
+        settings = {}
+
+    # Colonnes
+    col1_x = 40
+    col2_x = WIDTH // 2 + 20
+    y_start = 130
+    line_height = 40
+
+    # ===== COLONNE 1 =====
+    
+    # Section Jeu
+    game_title = font_large.render("Paramètres du Jeu", True, COLOR_TEXT_GOLD)
+    screen.blit(game_title, (col1_x, y_start))
+
+    game_settings = settings.get("game", {})
+    y_pos = y_start + 50
+    game_items = [
+        ("Résolution", f"{game_settings.get('width', 1280)}x{game_settings.get('height', 720)}"),
+        ("FPS", str(game_settings.get('fps', 60))),
+        ("Nombre de decks", str(game_settings.get('num_decks', 1))),
+    ]
+
+    for label, value in game_items:
+        text = font_medium.render(f"{label}: {value}", True, COLOR_TEXT)
+        screen.blit(text, (col1_x + 20, y_pos))
+        y_pos += line_height
+
+    # Section Cartes
+    y_pos += 20
+    cards_title = font_large.render("Affichage Cartes", True, COLOR_TEXT_GOLD)
+    screen.blit(cards_title, (col1_x, y_pos))
+
+    cards_settings = settings.get("cards", {})
+    y_pos += 50
+    card_items = [
+        ("Largeur", str(cards_settings.get('width', 100))),
+        ("Hauteur", str(cards_settings.get('height', 145))),
+        ("Espacement", str(cards_settings.get('spacing', 20))),
+    ]
+
+    for label, value in card_items:
+        text = font_medium.render(f"{label}: {value}", True, COLOR_TEXT)
+        screen.blit(text, (col1_x + 20, y_pos))
+        y_pos += line_height
+
+    # ===== COLONNE 2 =====
+
+    # Section Timing
+    y_pos_col2 = y_start
+    timing_title = font_large.render("Timing (secondes)", True, COLOR_TEXT_GOLD)
+    screen.blit(timing_title, (col2_x, y_pos_col2))
+
+    timing_settings = settings.get("timing", {})
+    y_pos_col2 += 50
+    timing_items = [
+        ("Distribution", timing_settings.get('initial_deal_duration', 1.0)),
+        ("Révélation", timing_settings.get('dealer_reveal_duration', 1.0)),
+        ("Résultats", timing_settings.get('result_screen_duration', 3.0)),
+    ]
+
+    for label, value in timing_items:
+        text = font_medium.render(f"{label}: {value}s", True, COLOR_TEXT)
+        screen.blit(text, (col2_x + 20, y_pos_col2))
+        y_pos_col2 += line_height
+
+    # Section Joueur
+    y_pos_col2 += 20
+    player_title = font_large.render("Paramètres Joueur", True, COLOR_TEXT_GOLD)
+    screen.blit(player_title, (col2_x, y_pos_col2))
+
+    player_settings = settings.get("player", {})
+    y_pos_col2 += 50
+    player_items = [
+        ("Solde initial", f"${player_settings.get('starting_balance', 1000)}"),
+        ("Mise min", f"${player_settings.get('min_bet', 5)}"),
+        ("Mise max", f"${player_settings.get('max_bet', 1000)}"),
+    ]
+
+    for label, value in player_items:
+        text = font_medium.render(f"{label}: {value}", True, COLOR_TEXT)
+        screen.blit(text, (col2_x + 20, y_pos_col2))
+        y_pos_col2 += line_height
+
+    # Section Fonctionnalités
+    y_pos_col2 += 20
+    features_title = font_large.render("Fonctionnalités", True, COLOR_TEXT_GOLD)
+    screen.blit(features_title, (col2_x, y_pos_col2))
+
+    features_settings = settings.get("features", {})
+    y_pos_col2 += 50
+    features_items = [
+        ("Son", "Activé" if features_settings.get('sound_enabled', False) else "Désactivé"),
+        ("Animations", "Activées" if features_settings.get('animations_enabled', True) else "Désactivées"),
+        ("Conseils", "Activés" if features_settings.get('show_hints', True) else "Désactivés"),
+    ]
+
+    for label, value in features_items:
+        color = COLOR_WIN if "Activé" in value else COLOR_LOSE
+        text = font_medium.render(f"{label}: {value}", True, color)
+        screen.blit(text, (col2_x + 20, y_pos_col2))
+        y_pos_col2 += line_height
+
+    # Indication
+    esc_text = font_small.render("ESC pour retour au menu", True, COLOR_TEXT_GOLD)
+    screen.blit(esc_text, (WIDTH // 2 - esc_text.get_width() // 2, HEIGHT - 40))
+
+
+def draw_stats_screen(screen: pygame.Surface, player: Player):
+    """Affiche l'écran des statistiques détaillées."""
+    screen.fill(COLOR_MENU_BG)
+
+    pygame.font.init()
+    font_title = pygame.font.SysFont("arial", 60, bold=True)
+    font_large = pygame.font.SysFont("arial", 32)
+    font_medium = pygame.font.SysFont("arial", 24)
+    font_small = pygame.font.SysFont("arial", 18)
+
+    # Titre
+    title = font_title.render("STATISTIQUES DÉTAILLÉES", True, COLOR_TEXT_GOLD)
+    screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 30))
+
+    # Nom du joueur
+    player_name = font_large.render(f"Joueur: {player.name}", True, COLOR_TEXT_GOLD)
+    screen.blit(player_name, (40, 110))
+
+    # Colonnes
+    col1_x = 40
+    col2_x = WIDTH // 2 + 20
+    y_start = 180
+    line_height = 45
+
+    # ===== COLONNE 1 : RÉSULTATS =====
+    
+    results_title = font_large.render("RÉSULTATS", True, COLOR_TEXT_GOLD)
+    screen.blit(results_title, (col1_x, y_start))
+
+    y_pos = y_start + 60
+    
+    # Total de mains
+    text = font_medium.render(f"Total mains: {player.total_hands}", True, COLOR_TEXT)
+    screen.blit(text, (col1_x + 20, y_pos))
+    y_pos += line_height
+
+    # Victoires
+    text = font_medium.render(f"Victoires: {player.wins}", True, COLOR_WIN)
+    screen.blit(text, (col1_x + 20, y_pos))
+    y_pos += line_height
+
+    # Défaites
+    text = font_medium.render(f"Défaites: {player.losses}", True, COLOR_LOSE)
+    screen.blit(text, (col1_x + 20, y_pos))
+    y_pos += line_height
+
+    # Égalités
+    text = font_medium.render(f"Égalités: {player.pushes}", True, COLOR_PUSH)
+    screen.blit(text, (col1_x + 20, y_pos))
+    y_pos += line_height
+
+    # Blackjacks
+    text = font_medium.render(f"Blackjacks: {player.blackjacks}", True, COLOR_TEXT_GOLD)
+    screen.blit(text, (col1_x + 20, y_pos))
+
+    # ===== COLONNE 2 : PERFORMANCES =====
+    
+    perf_title = font_large.render("PERFORMANCES", True, COLOR_TEXT_GOLD)
+    screen.blit(perf_title, (col2_x, y_start))
+
+    y_pos_col2 = y_start + 60
+    
+    # Taux de victoire
+    win_rate = player.get_win_rate()
+    if player.total_hands > 0:
+        win_rate_color = COLOR_WIN if win_rate >= 50 else COLOR_TEXT
+    else:
+        win_rate_color = COLOR_TEXT
+    text = font_medium.render(f"Taux victoire: {win_rate:.1f}%", True, win_rate_color)
+    screen.blit(text, (col2_x + 20, y_pos_col2))
+    y_pos_col2 += line_height
+
+    # Moyenne par main
+    avg_per_hand = 0 if player.total_hands == 0 else player.get_net_profit() // player.total_hands
+    text = font_medium.render(f"Moy/main: ${avg_per_hand:+d}", True, COLOR_TEXT)
+    screen.blit(text, (col2_x + 20, y_pos_col2))
+    y_pos_col2 += line_height
+
+    # Bénéfice net
+    net_profit = player.get_net_profit()
+    profit_color = COLOR_WIN if net_profit >= 0 else COLOR_LOSE
+    text = font_medium.render(f"Bénéfice net: ${net_profit:+d}", True, profit_color)
+    screen.blit(text, (col2_x + 20, y_pos_col2))
+    y_pos_col2 += line_height
+
+    # Ratio W/L
+    if player.losses > 0:
+        ratio = player.wins / player.losses
+        ratio_color = COLOR_WIN if ratio > 1 else COLOR_LOSE
+    else:
+        ratio = 0
+        ratio_color = COLOR_TEXT
+    text = font_medium.render(f"Ratio W/L: {ratio:.2f}", True, ratio_color)
+    screen.blit(text, (col2_x + 20, y_pos_col2))
+
+    # ===== COLONNE GAUCHE : MONNAIE =====
+    
+    y_pos += line_height + 30
+    money_title = font_large.render("MONNAIE", True, COLOR_TEXT_GOLD)
+    screen.blit(money_title, (col1_x, y_pos))
+
+    y_pos += 60
+    
+    # Argent gagné
+    text = font_medium.render(f"Argent gagné: ${player.total_money_won}", True, COLOR_WIN)
+    screen.blit(text, (col1_x + 20, y_pos))
+    y_pos += line_height
+
+    # Argent perdu
+    text = font_medium.render(f"Argent perdu: ${player.total_money_lost}", True, COLOR_LOSE)
+    screen.blit(text, (col1_x + 20, y_pos))
+
+    # ===== COLONNE DROITE : POURCENTAGES =====
+    
+    y_pos_col2_stats = y_pos - line_height + 30
+    stats_title = font_large.render("POURCENTAGES", True, COLOR_TEXT_GOLD)
+    screen.blit(stats_title, (col2_x, y_pos_col2_stats))
+
+    y_pos_col2_stats += 60
+    
+    # % victoires
+    if player.total_hands > 0:
+        pct_wins = (player.wins / player.total_hands) * 100
+        pct_losses = (player.losses / player.total_hands) * 100
+        pct_pushes = (player.pushes / player.total_hands) * 100
+    else:
+        pct_wins = pct_losses = pct_pushes = 0
+
+    text = font_medium.render(f"Victoires: {pct_wins:.1f}%", True, COLOR_WIN)
+    screen.blit(text, (col2_x + 20, y_pos_col2_stats))
+    y_pos_col2_stats += line_height
+
+    text = font_medium.render(f"Défaites: {pct_losses:.1f}%", True, COLOR_LOSE)
+    screen.blit(text, (col2_x + 20, y_pos_col2_stats))
+    y_pos_col2_stats += line_height
+
+    text = font_medium.render(f"Égalités: {pct_pushes:.1f}%", True, COLOR_PUSH)
+    screen.blit(text, (col2_x + 20, y_pos_col2_stats))
+
+    # Indication et conseil
+    esc_text = font_small.render("ESC pour retour au menu", True, COLOR_TEXT_GOLD)
+    screen.blit(esc_text, (WIDTH // 2 - esc_text.get_width() // 2, HEIGHT - 40))
+
+
 
 def main():
     screen, clock = init_pygame()
@@ -634,24 +904,10 @@ def main():
             )
 
         elif game.state == GameState.SETTINGS:
-            screen.fill(COLOR_MENU_BG)
-            font = pygame.font.SysFont("arial", 40)
-            text = font.render("Settings (à implémenter)", True, COLOR_TEXT)
-            screen.blit(
-                text,
-                (WIDTH // 2 - text.get_width() // 2,
-                 HEIGHT // 2 - text.get_height() // 2)
-            )
+            draw_settings_screen(screen, game)
 
         elif game.state == GameState.STATS:
-            screen.fill(COLOR_MENU_BG)
-            font = pygame.font.SysFont("arial", 40)
-            text = font.render("Stats détaillées (à implémenter)", True, COLOR_TEXT)
-            screen.blit(
-                text,
-                (WIDTH // 2 - text.get_width() // 2,
-                 HEIGHT // 2 - text.get_height() // 2)
-            )
+            draw_stats_screen(screen, player)
 
         else:
             # ecran jeu nrml

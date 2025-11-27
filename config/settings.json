@@ -30,5 +30,15 @@
   },
   "difficulty": {
     "dealer_strategy": "standard"
+  },
+  "player": {
+    "starting_balance": 1000,
+    "min_bet": 5,
+    "max_bet": 1000
+  },
+  "features": {
+    "sound_enabled": false,
+    "animations_enabled": true,
+    "show_hints": true
   }
 }

@@ -15,6 +15,12 @@ class Player:
         self.total_hands = 0
         self.total_money_won = 0
         self.total_money_lost = 0
+        
+        # Nouvelles statistiques
+        self.surrenders = 0
+        self.insurances_taken = 0
+        self.insurances_won = 0
+        self.splits_made = 0
     
     def win_hand(self, amount: int = 100) -> None:
         """enregistre une main gagnee."""
@@ -58,6 +64,10 @@ class Player:
             "total_hands": self.total_hands,
             "total_money_won": self.total_money_won,
             "total_money_lost": self.total_money_lost,
+            "surrenders": self.surrenders,
+            "insurances_taken": self.insurances_taken,
+            "insurances_won": self.insurances_won,
+            "splits_made": self.splits_made,
         }
     
     @staticmethod
@@ -71,6 +81,10 @@ class Player:
         player.total_hands = data.get("total_hands", 0)
         player.total_money_won = data.get("total_money_won", 0)
         player.total_money_lost = data.get("total_money_lost", 0)
+        player.surrenders = data.get("surrenders", 0)
+        player.insurances_taken = data.get("insurances_taken", 0)
+        player.insurances_won = data.get("insurances_won", 0)
+        player.splits_made = data.get("splits_made", 0)
         return player
     
     def save(self, filepath: str = "player_stats.json") -> None:

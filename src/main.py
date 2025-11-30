@@ -151,6 +151,9 @@ def handle_game_input(
                     game.player_double()
                 elif event.key == pygame.K_p and game.can_split():
                     game.player_split()
+                elif event.key == pygame.K_r and game.can_surrender():
+                    game.player_surrender()
+
 
             #fin manche
             elif game.state == GameState.RESULT_SCREEN:
@@ -316,9 +319,8 @@ def draw_game_screen(screen: pygame.Surface, game: Game, player: Player, dealer_
     PLAYER_TEXT_Y = PLAYER_CARDS_Y - 60
 
     # pos cartes
-    player_start_x = WIDTH // 2 - CARD_W - 20
-    dealer_start_x = WIDTH // 2 - CARD_W - 20
     spacing = CARD_W + 20
+    dealer_start_x = WIDTH // 2 - CARD_W - 20
 
     # carte croupier
     if not dealer_revealed and game.state in [GameState.INITIAL_DEAL, GameState.PLAYER_TURN]:
@@ -340,24 +342,84 @@ def draw_game_screen(screen: pygame.Surface, game: Game, player: Player, dealer_
     surf = font_large.render(dealer_text, True, COLOR_TEXT_GOLD)
     screen.blit(surf, (20, DEALER_TEXT_Y))
 
-    # carte joueur
-    for i, card in enumerate(game.player_hand.cards):
-        draw_card(screen, card, player_start_x + i * spacing, PLAYER_CARDS_Y)
+    # Affichage des mains du joueur (support du split)
+    num_hands = len(game.hands)
+    
+    if num_hands == 1:
+        # Une seule main (pas de split)
+        player_hand = game.hands[0]
+        player_start_x = WIDTH // 2 - CARD_W - 20
+        
+        for i, card in enumerate(player_hand.cards):
+            draw_card(screen, card, player_start_x + i * spacing, PLAYER_CARDS_Y)
+        
+        # Texte joueur
+        player_value = player_hand.get_value()
+        player_text = f"Votre main: {player_value}"
+        if player_hand.is_bust():
+            player_text += " (BUST!)"
+            player_color = COLOR_LOSE
+        elif player_hand.is_blackjack():
+            player_text += " (BLACKJACK!)"
+            player_color = COLOR_WIN
+        else:
+            player_color = COLOR_WIN
 
-    # Texte joueur
-    player_value = game.player_hand.get_value()
-    player_text = f"Votre main: {player_value}"
-    if game.player_hand.is_bust():
-        player_text += " (BUST!)"
-        player_color = COLOR_LOSE
-    elif game.player_hand.is_blackjack():
-        player_text += " (BLACKJACK!)"
-        player_color = COLOR_WIN
+        surf = font_large.render(player_text, True, player_color)
+        screen.blit(surf, (20, PLAYER_TEXT_Y))
+    
     else:
-        player_color = COLOR_WIN
-
-    surf = font_large.render(player_text, True, player_color)
-    screen.blit(surf, (20, PLAYER_TEXT_Y))
+        # Plusieurs mains (split)
+        # Calculer l'espacement pour afficher les mains côte à côte
+        hand_width = CARD_W * 3 + spacing * 2  # Largeur approximative d'une main
+        total_width = hand_width * num_hands + 100 * (num_hands - 1)
+        start_x = (WIDTH - total_width) // 2
+        
+        for hand_idx, hand in enumerate(game.hands):
+            hand_x = start_x + hand_idx * (hand_width + 100)
+            
+            # Indicateur de main active
+            is_active = (hand_idx == game.current_hand_index and game.state == GameState.PLAYER_TURN)
+            
+            # Dessiner un cadre autour de la main active
+            if is_active:
+                rect = pygame.Rect(hand_x - 10, PLAYER_CARDS_Y - 10, hand_width + 20, CARD_H + 80)
+                pygame.draw.rect(screen, COLOR_TEXT_GOLD, rect, 3)
+            
+            # Afficher les cartes de cette main
+            for i, card in enumerate(hand.cards):
+                draw_card(screen, card, hand_x + i * spacing, PLAYER_CARDS_Y)
+            
+            # Texte de la main
+            hand_value = hand.get_value()
+            hand_text = f"Main {hand_idx + 1}: {hand_value}"
+            
+            # Ajouter le résultat si disponible
+            if game.hand_results[hand_idx] is not None:
+                if game.hand_results[hand_idx] == GameResult.PLAYER_WIN:
+                    hand_text += " ✓"
+                    hand_color = COLOR_WIN
+                elif game.hand_results[hand_idx] == GameResult.DEALER_WIN:
+                    hand_text += " ✗"
+                    hand_color = COLOR_LOSE
+                else:
+                    hand_text += " ="
+                    hand_color = COLOR_PUSH
+            elif hand.is_bust():
+                hand_text += " (BUST!)"
+                hand_color = COLOR_LOSE
+            elif is_active:
+                hand_color = COLOR_TEXT_GOLD
+            else:
+                hand_color = COLOR_TEXT
+            
+            surf = font_medium.render(hand_text, True, hand_color)
+            screen.blit(surf, (hand_x, PLAYER_TEXT_Y))
+            
+            # Afficher la mise pour cette main
+            bet_text = f"${game.hand_bets[hand_idx]}"
+            surf = font_small.render(bet_text, True, COLOR_TEXT)
+            screen.blit(surf, (hand_x, PLAYER_CARDS_Y + CARD_H + 10))
 
     # mess principal
     status_text = game.get_status_message()
@@ -384,6 +446,8 @@ def draw_game_screen(screen: pygame.Surface, game: Game, player: Player, dealer_
             options.append("D - Double")
         if game.can_split():
             options.append("P - Split")
+        if game.can_surrender():
+            options.append("R - Surrender")
         
         opt_text = " | ".join(options)
         surf = font_medium.render(opt_text, True, COLOR_TEXT_GOLD)
@@ -870,16 +934,55 @@ def main():
         if game.state == GameState.RESULT_SCREEN and state_changed_time == 0:
             state_changed_time = current_time
 
-            if game.result == GameResult.PLAYER_WIN:
-                player.win_hand(game.player_bet)
-                if game.player_hand.is_blackjack():
-                    player.record_blackjack()
-
-            elif game.result == GameResult.DEALER_WIN:
-                player.lose_hand(game.player_bet)
-
+            # Gérer le surrender
+            if game.has_surrendered:
+                # Le joueur récupère 50% de sa mise (perd 50%)
+                player.lose_hand(game.player_bet // 2)
+            
+            # Gérer les mains multiples (split)
+            elif len(game.hands) > 1:
+                # Calculer les gains/pertes pour chaque main
+                for i, hand in enumerate(game.hands):
+                    bet = game.hand_bets[i]
+                    result = game.hand_results[i]
+                    
+                    if result == GameResult.PLAYER_WIN:
+                        if hand.is_blackjack():
+                            # Blackjack paie 3:2
+                            player.win_hand(int(bet * 1.5))
+                            player.record_blackjack()
+                        else:
+                            player.win_hand(bet)
+                    elif result == GameResult.DEALER_WIN:
+                        player.lose_hand(bet)
+                    else:
+                        player.push_hand()
+            
+            # Une seule main
             else:
-                player.push_hand()
+                if game.result == GameResult.PLAYER_WIN:
+                    bet_amount = game.hand_bets[0]
+                    if game.hands[0].is_blackjack():
+                        # Blackjack paie 3:2
+                        player.win_hand(int(bet_amount * 1.5))
+                        player.record_blackjack()
+                    else:
+                        player.win_hand(bet_amount)
+
+                elif game.result == GameResult.DEALER_WIN:
+                    player.lose_hand(game.hand_bets[0])
+
+                else:
+                    player.push_hand()
+            
+            # Gérer l'assurance
+            if game.has_insurance:
+                if game.dealer_hand.is_blackjack():
+                    # L'assurance paie 2:1
+                    player.win_hand(game.insurance_bet * 2)
+                else:
+                    # L'assurance est perdue
+                    player.lose_hand(game.insurance_bet)
 
             player.save()
 

@@ -1,10 +1,14 @@
 {
   "name": "Player",
-  "wins": 4,
-  "losses": 7,
-  "pushes": 2,
+  "wins": 6,
+  "losses": 14,
+  "pushes": 3,
   "blackjacks": 2,
-  "total_hands": 13,
-  "total_money_won": 200,
-  "total_money_lost": 800
+  "total_hands": 23,
+  "total_money_won": 260,
+  "total_money_lost": 1135,
+  "surrenders": 0,
+  "insurances_taken": 0,
+  "insurances_won": 0,
+  "splits_made": 0
 }

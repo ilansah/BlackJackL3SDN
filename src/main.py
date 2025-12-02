@@ -2,37 +2,35 @@ import sys
 import os
 import pygame
 import json
+import math
 
 from core.deck import Deck
 from core.card import Card
 from core.game import Game, GameState, GameResult
 from core.player import Player
 
-# reglages de base de la fenetre
+#  config graphique 
 WIDTH, HEIGHT = 1280, 720
 FPS = 60
-
-# taille affichage des cartes
 CARD_W, CARD_H = 100, 145
 
-# Couleurs
-COLOR_BG = (0, 100, 0)
-COLOR_BG_DARK = (20, 60, 20)
-COLOR_MENU_BG = (15, 15, 40)
-COLOR_TEXT = (255, 255, 255)
-COLOR_TEXT_GOLD = (255, 215, 0)
-COLOR_WIN = (100, 255, 100)
-COLOR_LOSE = (255, 100, 100)
-COLOR_PUSH = (255, 255, 100)
-COLOR_TEXT_DARK = (50, 50, 50)
+#  palette de couleurs vip 
+COLOR_ROOM_BG = (20, 20, 25)
+COLOR_FELT = (0, 100, 110)
+COLOR_FELT_DARK = (0, 70, 80)
+COLOR_WOOD_RAIL = (60, 30, 10)
+COLOR_GOLD = (212, 175, 55)
+COLOR_GOLD_LIGHT = (255, 223, 100)
+COLOR_TEXT_WHITE = (240, 240, 240)
+COLOR_TEXT_GREY = (150, 150, 160)
+COLOR_WIN = (50, 205, 50)
+COLOR_LOSE = (220, 60, 60)
+COLOR_PUSH = (255, 165, 0)
 
-# dossier ou sont stockees les cartes
+# assets 
 ASSETS_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "cards")
-
-# dossier ou sont stockees les images de jetons
 CHIPS_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "chips")
 
-# valeur et fichier image des jetons
 CHIP_FILES = [
     (5, "chip_5_w85h85.png"),
     (10, "chip_10_w85h85.png"),
@@ -40,174 +38,95 @@ CHIP_FILES = [
     (100, "chip_100_w85h85.png"),
 ]
 
-
-# cache pour eviter de recharger les memes images
 _image_cache: dict[str, pygame.Surface] = {}
 
+# positions des sieges 
+SEAT_POSITIONS = []
+center_x = WIDTH // 2
+center_y = HEIGHT // 2 - 60 
+radius = 500 
+angles = [160, 130, 90, 50, 20] 
+
+for angle in angles:
+    rad = math.radians(angle)
+    sx = center_x + radius * math.cos(rad)
+    sy = center_y + radius * math.sin(rad) * 0.3 + 50
+    
+    rect = pygame.Rect(0, 0, 70, 70)
+    rect.center = (int(sx), int(sy))
+    SEAT_POSITIONS.append({"center": (int(sx), int(sy)), "rect": rect})
+
+
+# fonctions utilitaires
 
 def init_pygame():
-    # demarre pygame cree la fenetre et l'horloge
     pygame.init()
-    pygame.display.set_caption("Blackjack")
+    pygame.display.set_caption("Blackjack VIP Lounge")
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
     return screen, clock
 
+def get_font(name="sans", size=20, bold=False):
+    font_name = "arial"
+    if name == "serif": font_name = "georgia"
+    elif name == "sans": font_name = "verdana"
+    elif name == "title": font_name = "impact"
+    try: return pygame.font.SysFont(font_name, size, bold=bold)
+    except: return pygame.font.SysFont("arial", size, bold=bold)
 
-def handle_events():
-    # gere clavier souris et fermeture
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                pygame.quit()
-                sys.exit()
-    return []
+def draw_shadow_text(screen, text, font, color, x, y, center=False, topleft=False):
+    shadow = font.render(text, True, (0, 0, 0))
+    surf = font.render(text, True, color)
+    pos_x, pos_y = x, y
+    if center:
+        pos_x = x - surf.get_width() // 2
+        pos_y = y - surf.get_height() // 2
+    elif topleft:
+        pass
+        
+    screen.blit(shadow, (pos_x + 2, pos_y + 2))
+    screen.blit(surf, (pos_x, pos_y))
+    return surf.get_rect(topleft=(pos_x, pos_y))
 
+def draw_vip_button(screen, rect, text, is_hover=False, is_active=True):
+    color_bg = (30, 30, 30) if is_active else (15, 15, 15)
+    color_border = COLOR_GOLD_LIGHT if (is_hover and is_active) else (COLOR_GOLD if is_active else (60, 60, 60))
+    text_color = (COLOR_GOLD_LIGHT if is_hover else COLOR_TEXT_WHITE) if is_active else (80, 80, 80)
+    
+    shadow_rect = rect.copy()
+    shadow_rect.y += 4
+    pygame.draw.rect(screen, (5, 5, 5), shadow_rect, border_radius=15)
+    pygame.draw.rect(screen, color_bg, rect, border_radius=15)
+    pygame.draw.rect(screen, color_border, rect, 2, border_radius=15)
+    
+    font = get_font("sans", 22, bold=True)
+    draw_shadow_text(screen, text, font, text_color, rect.centerx, rect.centery, center=True)
 
-def handle_game_input(
-    game: Game,
-    chips,
-    seats,
-    play_button_rect,
-    settings_button_rect,
-    stats_button_rect,
-    bet_start_button_rect,
-) -> bool:
-    """
-    Gère tous les inputs.
-    Retourne True si on doit lancer une nouvelle manche.
-    """
-    start_round = False
+# loading assets
 
-    for event in pygame.event.get():
-
-        # quitter jeu
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-        # souris
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            pos = event.pos
-
-            # menu
-            if game.state == GameState.MENU:
-                if play_button_rect.collidepoint(pos):
-                    game.state = GameState.BETTING
-                elif settings_button_rect.collidepoint(pos):
-                    game.state = GameState.SETTINGS
-                elif stats_button_rect.collidepoint(pos):
-                    game.state = GameState.STATS
-
-            #ecran mise
-            elif game.state == GameState.BETTING:
-
-                #clic place
-                if event.button == 1:
-                    for seat in seats:
-                        if seat["rect"].collidepoint(pos):
-                            game.seat_index = seat["index"]
-
-                    #clicl commencer
-                    if bet_start_button_rect.collidepoint(pos) and game.player_bet > 0:
-                        start_round = True
-
-                #clic jetons 
-                for chip in chips:
-                    if chip["rect"].collidepoint(pos):
-                        if event.button == 1:          # ajouter mise
-                            game.player_bet += chip["value"]
-                        elif event.button == 3:        # enlever mise
-                            game.player_bet = max(0, game.player_bet - chip["value"])
-
-            # ecran resultat
-            elif game.state == GameState.RESULT_SCREEN:
-
-                #auroriser jetons 
-                for chip in chips:
-                    if chip["rect"].collidepoint(pos):
-                        if event.button == 1:
-                            game.player_bet += chip["value"]
-                        elif event.button == 3:
-                            game.player_bet = max(0, game.player_bet - chip["value"])
-
-        #clavier
-        if event.type == pygame.KEYDOWN:
-
-            #retour menu principal
-            if event.key == pygame.K_ESCAPE:
-                game.state = GameState.MENU
-
-            #tour joueur
-            if game.state == GameState.PLAYER_TURN:
-                if event.key == pygame.K_h and game.can_hit():
-                    game.player_hit()
-                elif event.key == pygame.K_s and game.can_stand():
-                    game.player_stand()
-                elif event.key == pygame.K_d and game.can_double():
-                    game.player_double()
-                elif event.key == pygame.K_p and game.can_split():
-                    game.player_split()
-                elif event.key == pygame.K_r and game.can_surrender():
-                    game.player_surrender()
-
-
-            #fin manche
-            elif game.state == GameState.RESULT_SCREEN:
-                if event.key == pygame.K_SPACE:
-                    game.reset()
-                    game.player_bet = 0
-                    game.state = GameState.BETTING
-
-    return start_round
-
-
-
-# conversion des symboles en noms utilises par tes fichiers
 def suit_to_word(suit: str) -> str:
     return {"♠": "spades", "♥": "hearts", "♦": "diamonds", "♣": "clubs"}[suit]
 
-
-# conversion des rangs en mots si besoin
 def rank_to_word(rank: str) -> str:
     table = {"A": "ace", "J": "jack", "Q": "queen", "K": "king"}
     return table.get(rank, rank)
 
-
-# construit le nom de fichier selon ton pack
 def card_filename(card: Card) -> str:
     base = f"{rank_to_word(card.rank)}_of_{suit_to_word(card.suit)}"
     return f"{base}.png"
 
-
-# charge une image en utilisant le cache et la met a l echelle
 def load_card_image(filename: str) -> pygame.Surface:
     global _image_cache
     key = filename.lower()
-    if key in _image_cache:
-        return _image_cache[key]
+    if key in _image_cache: return _image_cache[key]
 
-    #ca tente plusieurs extensions au cas ou
-    candidates = [
-        filename,
-        filename.lower(),
-        filename.replace(".png", ".jpg"),
-        filename.replace(".png", ".jpeg"),
-        filename.replace(".png", ".webp"),
-    ]
-
+    candidates = [filename, filename.lower(), filename.replace(".png", ".jpg")]
     img = None
     for name in candidates:
         path = os.path.join(ASSETS_DIR, name)
         if os.path.exists(path):
-            try:
-                img = pygame.image.load(path).convert_alpha()
-                break
-            except Exception:
-                pass
+            try: img = pygame.image.load(path).convert_alpha(); break
+            except: pass
 
     if img is None:
         surf = pygame.Surface((CARD_W, CARD_H), pygame.SRCALPHA)
@@ -223,28 +142,25 @@ def load_card_image(filename: str) -> pygame.Surface:
 def load_chip_image(filename: str) -> pygame.Surface:
     global _image_cache
     key = f"chip_{filename.lower()}"
-    if key in _image_cache:
-        return _image_cache[key]
-
+    if key in _image_cache: return _image_cache[key]
     path = os.path.join(CHIPS_DIR, filename)
     if not os.path.exists(path):
-        # petit placeholder si l'image manque
-        surf = pygame.Surface((70, 70), pygame.SRCALPHA)
-        pygame.draw.circle(surf, (220, 220, 220), (35, 35), 34, 2)
+        surf = pygame.Surface((80, 80), pygame.SRCALPHA)
+        pygame.draw.circle(surf, COLOR_GOLD, (40, 40), 38)
         _image_cache[key] = surf
         return surf
-
     img = pygame.image.load(path).convert_alpha()
+    img = pygame.transform.smoothscale(img, (85, 85))
     _image_cache[key] = img
     return img
 
-# dessine une carte a l ecran
 def draw_card(screen: pygame.Surface, card: Card, x: int, y: int):
     img = load_card_image(card_filename(card))
+    shadow = pygame.Surface((CARD_W, CARD_H), pygame.SRCALPHA)
+    pygame.draw.rect(shadow, (0, 0, 0, 80), shadow.get_rect(), border_radius=5)
+    screen.blit(shadow, (x + 4, y + 4))
     screen.blit(img, (x, y))
 
-
-# dessine le dos d une carte
 def draw_back(screen: pygame.Surface, x: int, y: int):
     for name in ["back-side.png", "back.png", "BACK.png"]:
         img = load_card_image(name)
@@ -252,780 +168,366 @@ def draw_back(screen: pygame.Surface, x: int, y: int):
             screen.blit(img, (x, y))
             return
 
+# rendu decor
 
-# fond de table vert
 def render_table_bg(screen: pygame.Surface):
-    screen.fill(COLOR_BG)
-    pygame.draw.line(screen, COLOR_BG_DARK, (0, HEIGHT // 2), (WIDTH, HEIGHT // 2), 3)
+    screen.fill(COLOR_ROOM_BG)
+    # table ellipse large et aplatie
+    table_rect = pygame.Rect(-200, HEIGHT // 2 - 120, WIDTH + 400, HEIGHT + 200)
+    pygame.draw.ellipse(screen, COLOR_WOOD_RAIL, table_rect)
+    felt_rect = table_rect.inflate(-60, -60)
+    pygame.draw.ellipse(screen, COLOR_FELT, felt_rect)
+    pygame.draw.arc(screen, (0, 120, 130), felt_rect.inflate(-100, -100), 0, 3.14, 2)
+    
+    font_logo = get_font("serif", 40, bold=True)
+    logo_rect = draw_shadow_text(screen, "PRIVÉ LOUNGE", font_logo, (0, 90, 100), WIDTH//2, HEIGHT//2 - 40, center=True)
+    font_sub = get_font("sans", 16, bold=True)
+    draw_shadow_text(screen, "BLACKJACK PAYS 3 TO 2", font_sub, (0, 140, 150), WIDTH//2, logo_rect.bottom + 5, center=True)
 
+#  ecrans
 
-def draw_main_menu(screen: pygame.Surface, player: Player,
-                   play_rect, settings_rect, stats_rect):
-    screen.fill(COLOR_MENU_BG)
+def draw_main_menu(screen: pygame.Surface, player: Player, play_rect, settings_rect, stats_rect):
+    screen.fill(COLOR_ROOM_BG)
+    glow = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+    pygame.draw.circle(glow, (30, 30, 60), (WIDTH//2, HEIGHT//2), 450)
+    screen.blit(glow, (0,0))
 
-    pygame.font.init()
-    font_title = pygame.font.SysFont("arial", 80, bold=True)
-    font_button = pygame.font.SysFont("arial", 36)
-    font_small = pygame.font.SysFont("arial", 20)
+    font_title = get_font("serif", 110, bold=True)
+    title = font_title.render("BLACKJACK", True, COLOR_GOLD)
+    shad = font_title.render("BLACKJACK", True, (0,0,0))
+    screen.blit(shad, (WIDTH//2 - shad.get_width()//2 + 6, 96))
+    screen.blit(title, (WIDTH//2 - title.get_width()//2, 90))
 
-    # titre
-    title = font_title.render("BLACKJACK", True, COLOR_TEXT_GOLD)
-    screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 60))
-
-    # stats rapides
     if player.total_hands > 0:
-        stats_text = (
-            f"Mains: {player.total_hands} | "
-            f"Victoires: {player.wins} | "
-            f"Taux: {player.get_win_rate():.1f}% | "
-            f"Bénéfice: ${player.get_net_profit()}"
-        )
-        surf = font_small.render(stats_text, True, COLOR_TEXT)
-        screen.blit(surf, (WIDTH // 2 - surf.get_width() // 2, 150))
+        bar_rect = pygame.Rect(WIDTH//2 - 300, 250, 600, 40)
+        pygame.draw.rect(screen, (40, 40, 50), bar_rect, border_radius=20)
+        pygame.draw.rect(screen, COLOR_GOLD, bar_rect, 1, border_radius=20)
+        profit = player.get_net_profit()
+        sign = "+" if profit >= 0 else ""
+        info = f"Solde: ${player.balance}   |   Net: {sign}${profit}"
+        draw_shadow_text(screen, info, get_font("sans", 18), COLOR_TEXT_GREY, WIDTH//2, 270, center=True)
 
-    # fonction utilitaire pour dessiner un bouton
-    def draw_button(rect, text):
-        pygame.draw.rect(screen, COLOR_BG_DARK, rect, border_radius=10)
-        pygame.draw.rect(screen, COLOR_TEXT_GOLD, rect, 2, border_radius=10)
-        txt = font_button.render(text, True, COLOR_TEXT)
-        screen.blit(
-            txt,
-            (rect.centerx - txt.get_width() // 2,
-             rect.centery - txt.get_height() // 2)
-        )
-
-    draw_button(play_rect, "Jouer")
-    draw_button(settings_rect, "Settings")
-    draw_button(stats_rect, "Stats")
-
+    mouse_pos = pygame.mouse.get_pos()
+    draw_vip_button(screen, play_rect, "JOUER", play_rect.collidepoint(mouse_pos))
+    draw_vip_button(screen, settings_rect, "PARAMÈTRES", settings_rect.collidepoint(mouse_pos))
+    draw_vip_button(screen, stats_rect, "STATISTIQUES", stats_rect.collidepoint(mouse_pos))
 
 
 def draw_game_screen(screen: pygame.Surface, game: Game, player: Player, dealer_revealed: bool, chips, seats):
-
-    """Affiche l'écran de jeu."""
     render_table_bg(screen)
     
-    pygame.font.init()
-    font_small = pygame.font.SysFont("arial", 20)
-    font_medium = pygame.font.SysFont("arial", 28)
-    font_large = pygame.font.SysFont("arial", 40)
+    #  Croupier
+    DEALER_Y = 60
+    spacing = 40
+    dealer_hand = game.dealer_hand
+    total_w_dealer = len(dealer_hand.cards) * CARD_W - (len(dealer_hand.cards)-1) * (CARD_W - spacing)
+    start_dx = WIDTH // 2 - total_w_dealer // 2 + 30 
+    
+    # Texte Croupier
+    d_val = dealer_hand.get_value()
+    d_txt = f"CROUPIER : {d_val}"
+    if not dealer_revealed and game.state in [GameState.INITIAL_DEAL, GameState.PLAYER_TURN]: d_txt = "CROUPIER"
+    elif dealer_hand.is_bust(): d_txt += " (BUST)"
+    
+    draw_shadow_text(screen, d_txt, get_font("serif", 22), COLOR_TEXT_WHITE, WIDTH//2, DEALER_Y - 30, center=True)
 
-    # placement
-    TABLE_LINE_Y = HEIGHT // 2              # ligne de séparation
-    DEALER_CARDS_Y = 150                    # cartes du croupier
-    PLAYER_CARDS_Y = TABLE_LINE_Y + 70      # cartes du joueur
-    STATUS_Y = TABLE_LINE_Y - 40            # message central
-    DEALER_TEXT_Y = DEALER_CARDS_Y - 60
-    PLAYER_TEXT_Y = PLAYER_CARDS_Y - 60
+    # Cartes Croupier
+    current_dx = start_dx
+    for i, card in enumerate(dealer_hand.cards):
+        if i == 1 and not dealer_revealed and game.state in [GameState.INITIAL_DEAL, GameState.PLAYER_TURN]:
+            draw_back(screen, current_dx, DEALER_Y)
+        else:
+            draw_card(screen, card, current_dx, DEALER_Y)
+        current_dx += spacing
 
-    # pos cartes
-    spacing = CARD_W + 20
-    dealer_start_x = WIDTH // 2 - CARD_W - 20
-
-    # carte croupier
-    if not dealer_revealed and game.state in [GameState.INITIAL_DEAL, GameState.PLAYER_TURN]:
-        draw_back(screen, dealer_start_x, DEALER_CARDS_Y)
-        if len(game.dealer_hand.cards) > 1:
-            draw_card(screen, game.dealer_hand.cards[1], dealer_start_x + spacing, DEALER_CARDS_Y)
-    else:
-        for i, card in enumerate(game.dealer_hand.cards):
-            draw_card(screen, card, dealer_start_x + i * spacing, DEALER_CARDS_Y)
-
-    # mess croupier
-    dealer_value = game.dealer_hand.get_value()
-    dealer_text = f"Croupier: {dealer_value}"
-    if game.state not in (GameState.INITIAL_DEAL, GameState.PLAYER_TURN):
-        if game.dealer_hand.is_bust():
-            dealer_text += " (BUST!)"
-        elif game.dealer_hand.is_blackjack():
-            dealer_text += " (BLACKJACK)"
-    surf = font_large.render(dealer_text, True, COLOR_TEXT_GOLD)
-    screen.blit(surf, (20, DEALER_TEXT_Y))
-
-    # Affichage des mains du joueur (support du split)
+    # Joueur
+    seat_coords = SEAT_POSITIONS[game.seat_index]["center"]
+    seat_x, seat_y = seat_coords
+    
+    base_hand_y = seat_y - CARD_H // 2 - 20
+    
     num_hands = len(game.hands)
+    HAND_OFFSET = 120 
     
-    if num_hands == 1:
-        # Une seule main (pas de split)
-        player_hand = game.hands[0]
-        player_start_x = WIDTH // 2 - CARD_W - 20
-        
-        for i, card in enumerate(player_hand.cards):
-            draw_card(screen, card, player_start_x + i * spacing, PLAYER_CARDS_Y)
-        
-        # Texte joueur
-        player_value = player_hand.get_value()
-        player_text = f"Votre main: {player_value}"
-        if player_hand.is_bust():
-            player_text += " (BUST!)"
-            player_color = COLOR_LOSE
-        elif player_hand.is_blackjack():
-            player_text += " (BLACKJACK!)"
-            player_color = COLOR_WIN
-        else:
-            player_color = COLOR_WIN
+    # centrage du groupe de mains autour du siege
+    total_group_width = (num_hands - 1) * HAND_OFFSET
+    start_hx = seat_x - total_group_width // 2 - CARD_W // 2
 
-        surf = font_large.render(player_text, True, player_color)
-        screen.blit(surf, (20, PLAYER_TEXT_Y))
-    
-    else:
-        # Plusieurs mains (split)
-        # Calculer l'espacement pour afficher les mains côte à côte
-        hand_width = CARD_W * 3 + spacing * 2  # Largeur approximative d'une main
-        total_width = hand_width * num_hands + 100 * (num_hands - 1)
-        start_x = (WIDTH - total_width) // 2
+    for i, hand in enumerate(game.hands):
+        hand_x = start_hx + i * HAND_OFFSET
+        card_spacing = 30
         
-        for hand_idx, hand in enumerate(game.hands):
-            hand_x = start_x + hand_idx * (hand_width + 100)
-            
-            # Indicateur de main active
-            is_active = (hand_idx == game.current_hand_index and game.state == GameState.PLAYER_TURN)
-            
-            # Dessiner un cadre autour de la main active
-            if is_active:
-                rect = pygame.Rect(hand_x - 10, PLAYER_CARDS_Y - 10, hand_width + 20, CARD_H + 80)
-                pygame.draw.rect(screen, COLOR_TEXT_GOLD, rect, 3)
-            
-            # Afficher les cartes de cette main
-            for i, card in enumerate(hand.cards):
-                draw_card(screen, card, hand_x + i * spacing, PLAYER_CARDS_Y)
-            
-            # Texte de la main
-            hand_value = hand.get_value()
-            hand_text = f"Main {hand_idx + 1}: {hand_value}"
-            
-            # Ajouter le résultat si disponible
-            if game.hand_results[hand_idx] is not None:
-                if game.hand_results[hand_idx] == GameResult.PLAYER_WIN:
-                    hand_text += " ✓"
-                    hand_color = COLOR_WIN
-                elif game.hand_results[hand_idx] == GameResult.DEALER_WIN:
-                    hand_text += " ✗"
-                    hand_color = COLOR_LOSE
-                else:
-                    hand_text += " ="
-                    hand_color = COLOR_PUSH
-            elif hand.is_bust():
-                hand_text += " (BUST!)"
-                hand_color = COLOR_LOSE
-            elif is_active:
-                hand_color = COLOR_TEXT_GOLD
-            else:
-                hand_color = COLOR_TEXT
-            
-            surf = font_medium.render(hand_text, True, hand_color)
-            screen.blit(surf, (hand_x, PLAYER_TEXT_Y))
-            
-            # Afficher la mise pour cette main
-            bet_text = f"${game.hand_bets[hand_idx]}"
-            surf = font_small.render(bet_text, True, COLOR_TEXT)
-            screen.blit(surf, (hand_x, PLAYER_CARDS_Y + CARD_H + 10))
+        # cadre actif
+        is_active = (i == game.current_hand_index and game.state == GameState.PLAYER_TURN)
+        if is_active:
+            hand_w_px = len(hand.cards) * card_spacing + CARD_W
+            glow_rect = pygame.Rect(hand_x - 10, base_hand_y - 10, hand_w_px + 20, CARD_H + 20)
+            pygame.draw.rect(screen, (255, 215, 0, 60), glow_rect, border_radius=12)
+            pygame.draw.rect(screen, COLOR_GOLD, glow_rect, 2, border_radius=12)
 
-    # mess principal
-    status_text = game.get_status_message()
-    status_color = COLOR_TEXT
+        # cartes
+        for c_idx, card in enumerate(hand.cards):
+            draw_card(screen, card, hand_x + c_idx * card_spacing, base_hand_y)
+        
+        # resultats
+        val = hand.get_value()
+        res_txt = f"{val}"
+        color_res = COLOR_TEXT_WHITE
+        
+        res = game.hand_results[i]
+        if res == GameResult.PLAYER_WIN: color_res = COLOR_WIN; res_txt = f"GAGNÉ {val}"
+        elif res == GameResult.DEALER_WIN: color_res = COLOR_LOSE; res_txt = f"PERDU {val}"
+        elif res == GameResult.PUSH: color_res = COLOR_PUSH; res_txt = f"ÉGALITÉ"
+        elif hand.is_bust(): color_res = COLOR_LOSE; res_txt = f"BUST {val}"
+        
+        # etiquette sous la carte
+        lbl_y = base_hand_y + CARD_H + 15
+        bg_lbl = pygame.Rect(hand_x, lbl_y, 100, 28)
+        pygame.draw.rect(screen, (0,0,0,180), bg_lbl, border_radius=10)
+        draw_shadow_text(screen, res_txt, get_font("sans", 16, True), color_res, bg_lbl.centerx, bg_lbl.centery, center=True)
+        
+        bet = game.hand_bets[i]
+        draw_shadow_text(screen, f"${bet}", get_font("sans", 14), COLOR_GOLD, bg_lbl.centerx, bg_lbl.bottom + 10, center=True)
+
+
+    #  Message Central
     if game.state == GameState.RESULT_SCREEN:
-        if game.result == GameResult.PLAYER_WIN:
-            status_color = COLOR_WIN
-        elif game.result == GameResult.DEALER_WIN:
-            status_color = COLOR_LOSE
-        else:
-            status_color = COLOR_PUSH
+        msg = game.get_status_message()
+        font_big = get_font("serif", 48, bold=True)
+        s = font_big.render(msg, True, COLOR_GOLD)
+        r = s.get_rect(center=(WIDTH//2, HEIGHT//2))
+        bg = r.inflate(40, 20)
+        pygame.draw.rect(screen, (0,0,0, 220), bg, border_radius=20)
+        pygame.draw.rect(screen, COLOR_GOLD, bg, 2, border_radius=20)
+        screen.blit(s, r)
+        draw_shadow_text(screen, "ESPACE POUR REJOUER", get_font("sans", 20, True), COLOR_GOLD_LIGHT, WIDTH//2, r.bottom + 30, center=True)
 
-    status = font_large.render(status_text, True, status_color)
-    screen.blit(status, (WIDTH // 2 - status.get_width() // 2, STATUS_Y))
-
-    # options clavier
+    # Barre d'actions 
     if game.state == GameState.PLAYER_TURN:
-        options = []
-        if game.can_hit():
-            options.append("H - Hit")
-        if game.can_stand():
-            options.append("S - Stand")
-        if game.can_double():
-            options.append("D - Double")
-        if game.can_split():
-            options.append("P - Split")
-        if game.can_surrender():
-            options.append("R - Surrender")
+        panel_rect = pygame.Rect(20, 20, 180, 160)
+        pygame.draw.rect(screen, (0, 0, 0, 180), panel_rect, border_radius=10)
+        pygame.draw.rect(screen, COLOR_WOOD_RAIL, panel_rect, 2, border_radius=10)
         
-        opt_text = " | ".join(options)
-        surf = font_medium.render(opt_text, True, COLOR_TEXT_GOLD)
-        screen.blit(surf, (WIDTH // 2 - surf.get_width() // 2, HEIGHT - 150))
+        draw_shadow_text(screen, "ACTIONS", get_font("sans", 16, True), COLOR_GOLD, panel_rect.centerx, panel_rect.y + 15, center=True)
+        
+        # liste des actions dispos
+        opts = []
+        if game.can_hit(): opts.append("[H] TIRER")
+        if game.can_stand(): opts.append("[S] RESTER")
+        if game.can_double(): opts.append("[D] DOUBLER")
+        if game.can_split(): opts.append("[P] SPLIT")
+        if game.can_surrender(): opts.append("[R] ABANDON")
+        
+        start_y = panel_rect.y + 40
+        for opt in opts:
+            draw_shadow_text(screen, opt, get_font("sans", 14, True), COLOR_TEXT_WHITE, 35, start_y, topleft=True)
+            start_y += 22
 
-    if game.state == GameState.RESULT_SCREEN:
-        space_text = font_medium.render("SPACE pour nouvelle partie", True, COLOR_TEXT_GOLD)
-        screen.blit(space_text, (WIDTH // 2 - space_text.get_width() // 2, HEIGHT - 150))
-
-    # barre des stats
-    stats_bar_text = (
-        f"Joueur: {player.name} | Mains: {player.total_hands} | "
-        f"Victoires: {player.wins} | Défaites: {player.losses} | "
-        f"Taux: {player.get_win_rate():.1f}% | Bénéfice: ${player.get_net_profit()}"
-    )
-    surf = font_small.render(stats_bar_text, True, COLOR_TEXT_GOLD)
-    rect = surf.get_rect()
-    rect.topleft = (10, 5)
-    pygame.draw.rect(screen, COLOR_BG_DARK, rect.inflate(20, 10))
-    screen.blit(surf, (20, 10))
-
-    # mise et conseils
-    bet_text = f"Mise: ${game.player_bet}"
-    surf = font_small.render(bet_text, True, COLOR_TEXT)
-    screen.blit(surf, (20, HEIGHT - 30))
-
-    help_text = "SPACE - Nouvelle partie | ESC - Quitter"
-    surf = font_small.render(help_text, True, COLOR_TEXT)
-    screen.blit(surf, (WIDTH - surf.get_width() - 20, HEIGHT - 30))
-
-    # jetons
-    # on n'affiche pas les jetons sur ecran de jeu
-    pass
+    #  Solde 
+    panel = pygame.Rect(20, HEIGHT - 50, 200, 40)
+    pygame.draw.rect(screen, (20, 25, 30), panel, border_radius=10)
+    pygame.draw.rect(screen, COLOR_WOOD_RAIL, panel, 2, border_radius=10)
+    draw_shadow_text(screen, f"SOLDE: ${player.balance}", get_font("sans", 18, True), COLOR_GOLD, panel.centerx, panel.centery, center=True)
 
 
+def draw_bet_screen(screen: pygame.Surface, game: Game, player: Player, chips, seats, start_button_rect):
+    render_table_bg(screen)
+    draw_shadow_text(screen, "CHOISISSEZ VOTRE PLACE & MISE", get_font("serif", 40, True), COLOR_GOLD, WIDTH//2, 50, center=True)
 
-def draw_bet_screen(screen: pygame.Surface, game: Game, player: Player,
-                    chips, seats, start_button_rect):
-    screen.fill(COLOR_MENU_BG)
+    mouse_pos = pygame.mouse.get_pos()
 
-    pygame.font.init()
-    font_title = pygame.font.SysFont("arial", 60, bold=True)
-    font_large = pygame.font.SysFont("arial", 32)
-    font_medium = pygame.font.SysFont("arial", 24)
-    font_small = pygame.font.SysFont("arial", 18)
-
-    #titre
-    title = font_title.render("Placez votre mise", True, COLOR_TEXT_GOLD)
-    screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 40))
-
-    #siege
-    label = font_medium.render("Choisissez votre place :", True, COLOR_TEXT)
-    screen.blit(label, (20, 120))
-
-    for seat in seats:
-        idx = seat["index"]
+    # Sieges 
+    for i, seat in enumerate(SEAT_POSITIONS):
         cx, cy = seat["center"]
-
-        if idx == game.seat_index:
-            color = COLOR_TEXT_GOLD
-            thickness = 0
+        rect = seat["rect"]
+        
+        is_sel = (i == game.seat_index)
+        is_hov = rect.collidepoint(mouse_pos)
+        
+        rad = 38
+        if is_sel:
+            pygame.draw.circle(screen, COLOR_GOLD, (cx, cy), rad, 4)
+            pygame.draw.circle(screen, (255, 215, 0, 50), (cx, cy), rad)
+            col_txt = COLOR_GOLD
+        elif is_hov:
+            pygame.draw.circle(screen, COLOR_TEXT_WHITE, (cx, cy), rad, 2)
+            col_txt = COLOR_TEXT_WHITE
         else:
-            color = COLOR_TEXT
-            thickness = 2
+            pygame.draw.circle(screen, (80, 80, 80), (cx, cy), rad, 2)
+            col_txt = (100, 100, 100)
+            
+        draw_shadow_text(screen, f"P{i+1}", get_font("sans", 20, True), col_txt, cx, cy, center=True)
 
-        pygame.draw.circle(screen, color, (cx, cy), 35, thickness)
-
-        txt = font_small.render(f"Place {idx + 1}", True, COLOR_TEXT)
-        screen.blit(txt, (cx - txt.get_width() // 2, cy + 40))
-
-    #jetons
+    # Zone de contrôle bas
+    
+    # mise un peu plus bas
+    draw_shadow_text(screen, f"MISE: ${game.player_bet}", get_font("sans", 28, True), COLOR_TEXT_WHITE, WIDTH//2, HEIGHT - 180, center=True)
+    
+    # bouton distribuer
+    is_valid = game.player_bet > 0
+    draw_vip_button(screen, start_button_rect, "DISTRIBUER", start_button_rect.collidepoint(mouse_pos), is_active=is_valid)
+    
+    # jetons 
     for chip in chips:
-        screen.blit(chip["image"], chip["rect"].topleft)
+        if chip["rect"].collidepoint(mouse_pos):
+            glow = pygame.Surface((95, 95), pygame.SRCALPHA)
+            pygame.draw.circle(glow, (255, 255, 255, 40), (47, 47), 47)
+            screen.blit(glow, (chip["rect"].centerx - 47, chip["rect"].centery - 47))
+        screen.blit(chip["image"], chip["rect"])
 
-    bet_text = font_large.render(f"Mise actuelle : ${game.player_bet}", True, COLOR_TEXT)
-    screen.blit(bet_text, (20, HEIGHT - 150))
-
-
-    # Bouton démarrer
-    if game.player_bet > 0:
-        btn_color = (0, 150, 0)
-        btn_text = "Commencer la partie"
-    else:
-        btn_color = (80, 80, 80)
-        btn_text = "Choisissez d'abord une mise"
-
-    pygame.draw.rect(screen, btn_color, start_button_rect, border_radius=10)
-    txt = font_medium.render(btn_text, True, COLOR_TEXT)
-    screen.blit(
-        txt,
-        (
-            start_button_rect.centerx - txt.get_width() // 2,
-            start_button_rect.centery - txt.get_height() // 2,
-        ),
-    )
+    draw_shadow_text(screen, f"SOLDE: ${player.balance}", get_font("sans", 18, True), COLOR_GOLD, 60, HEIGHT - 30)
 
 
 def draw_settings_screen(screen: pygame.Surface, game: Game):
-    """Affiche l'écran des paramètres."""
-    screen.fill(COLOR_MENU_BG)
-
-    pygame.font.init()
-    font_title = pygame.font.SysFont("arial", 60, bold=True)
-    font_large = pygame.font.SysFont("arial", 32)
-    font_medium = pygame.font.SysFont("arial", 24)
-    font_small = pygame.font.SysFont("arial", 18)
-
-    # Titre
-    title = font_title.render("PARAMÈTRES", True, COLOR_TEXT_GOLD)
-    screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 40))
-
-    # Charger les settings
-    try:
-        with open("config/settings.json", "r") as f:
-            settings = json.load(f)
-    except:
-        settings = {}
-
-    # Colonnes
-    col1_x = 40
-    col2_x = WIDTH // 2 + 20
-    y_start = 130
-    line_height = 40
-
-    # ===== COLONNE 1 =====
+    screen.fill(COLOR_ROOM_BG)
+    box = pygame.Rect(WIDTH//2 - 300, 100, 600, 500)
+    pygame.draw.rect(screen, (30, 30, 35), box, border_radius=20)
+    pygame.draw.rect(screen, COLOR_GOLD, box, 2, border_radius=20)
     
-    # Section Jeu
-    game_title = font_large.render("Paramètres du Jeu", True, COLOR_TEXT_GOLD)
-    screen.blit(game_title, (col1_x, y_start))
-
-    game_settings = settings.get("game", {})
-    y_pos = y_start + 50
-    game_items = [
-        ("Résolution", f"{game_settings.get('width', 1280)}x{game_settings.get('height', 720)}"),
-        ("FPS", str(game_settings.get('fps', 60))),
-        ("Nombre de decks", str(game_settings.get('num_decks', 1))),
-    ]
-
-    for label, value in game_items:
-        text = font_medium.render(f"{label}: {value}", True, COLOR_TEXT)
-        screen.blit(text, (col1_x + 20, y_pos))
-        y_pos += line_height
-
-    # Section Cartes
-    y_pos += 20
-    cards_title = font_large.render("Affichage Cartes", True, COLOR_TEXT_GOLD)
-    screen.blit(cards_title, (col1_x, y_pos))
-
-    cards_settings = settings.get("cards", {})
-    y_pos += 50
-    card_items = [
-        ("Largeur", str(cards_settings.get('width', 100))),
-        ("Hauteur", str(cards_settings.get('height', 145))),
-        ("Espacement", str(cards_settings.get('spacing', 20))),
-    ]
-
-    for label, value in card_items:
-        text = font_medium.render(f"{label}: {value}", True, COLOR_TEXT)
-        screen.blit(text, (col1_x + 20, y_pos))
-        y_pos += line_height
-
-    # ===== COLONNE 2 =====
-
-    # Section Timing
-    y_pos_col2 = y_start
-    timing_title = font_large.render("Timing (secondes)", True, COLOR_TEXT_GOLD)
-    screen.blit(timing_title, (col2_x, y_pos_col2))
-
-    timing_settings = settings.get("timing", {})
-    y_pos_col2 += 50
-    timing_items = [
-        ("Distribution", timing_settings.get('initial_deal_duration', 1.0)),
-        ("Révélation", timing_settings.get('dealer_reveal_duration', 1.0)),
-        ("Résultats", timing_settings.get('result_screen_duration', 3.0)),
-    ]
-
-    for label, value in timing_items:
-        text = font_medium.render(f"{label}: {value}s", True, COLOR_TEXT)
-        screen.blit(text, (col2_x + 20, y_pos_col2))
-        y_pos_col2 += line_height
-
-    # Section Joueur
-    y_pos_col2 += 20
-    player_title = font_large.render("Paramètres Joueur", True, COLOR_TEXT_GOLD)
-    screen.blit(player_title, (col2_x, y_pos_col2))
-
-    player_settings = settings.get("player", {})
-    y_pos_col2 += 50
-    player_items = [
-        ("Solde initial", f"${player_settings.get('starting_balance', 1000)}"),
-        ("Mise min", f"${player_settings.get('min_bet', 5)}"),
-        ("Mise max", f"${player_settings.get('max_bet', 1000)}"),
-    ]
-
-    for label, value in player_items:
-        text = font_medium.render(f"{label}: {value}", True, COLOR_TEXT)
-        screen.blit(text, (col2_x + 20, y_pos_col2))
-        y_pos_col2 += line_height
-
-    # Section Fonctionnalités
-    y_pos_col2 += 20
-    features_title = font_large.render("Fonctionnalités", True, COLOR_TEXT_GOLD)
-    screen.blit(features_title, (col2_x, y_pos_col2))
-
-    features_settings = settings.get("features", {})
-    y_pos_col2 += 50
-    features_items = [
-        ("Son", "Activé" if features_settings.get('sound_enabled', False) else "Désactivé"),
-        ("Animations", "Activées" if features_settings.get('animations_enabled', True) else "Désactivées"),
-        ("Conseils", "Activés" if features_settings.get('show_hints', True) else "Désactivés"),
-    ]
-
-    for label, value in features_items:
-        color = COLOR_WIN if "Activé" in value else COLOR_LOSE
-        text = font_medium.render(f"{label}: {value}", True, color)
-        screen.blit(text, (col2_x + 20, y_pos_col2))
-        y_pos_col2 += line_height
-
-    # Indication
-    esc_text = font_small.render("ESC pour retour au menu", True, COLOR_TEXT_GOLD)
-    screen.blit(esc_text, (WIDTH // 2 - esc_text.get_width() // 2, HEIGHT - 40))
-
+    draw_shadow_text(screen, "PARAMÈTRES", get_font("serif", 40, True), COLOR_GOLD, WIDTH//2, 150, center=True)
+    
+    lines = ["Son: ON", "Musique: OFF", "Difficulté: Normale", "Vitesse: x1"]
+    for i, line in enumerate(lines):
+        draw_shadow_text(screen, line, get_font("sans", 24), COLOR_TEXT_WHITE, WIDTH//2, 250 + i*50, center=True)
+        
+    draw_shadow_text(screen, "ESC pour retour", get_font("sans", 18), COLOR_TEXT_GREY, WIDTH//2, 550, center=True)
 
 def draw_stats_screen(screen: pygame.Surface, player: Player):
-    """Affiche l'écran des statistiques détaillées."""
-    screen.fill(COLOR_MENU_BG)
-
-    pygame.font.init()
-    font_title = pygame.font.SysFont("arial", 60, bold=True)
-    font_large = pygame.font.SysFont("arial", 32)
-    font_medium = pygame.font.SysFont("arial", 24)
-    font_small = pygame.font.SysFont("arial", 18)
-
-    # Titre
-    title = font_title.render("STATISTIQUES DÉTAILLÉES", True, COLOR_TEXT_GOLD)
-    screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 30))
-
-    # Nom du joueur
-    player_name = font_large.render(f"Joueur: {player.name}", True, COLOR_TEXT_GOLD)
-    screen.blit(player_name, (40, 110))
-
-    # Colonnes
-    col1_x = 40
-    col2_x = WIDTH // 2 + 20
-    y_start = 180
-    line_height = 45
-
-    # ===== COLONNE 1 : RÉSULTATS =====
+    screen.fill(COLOR_ROOM_BG)
+    draw_shadow_text(screen, "STATISTIQUES", get_font("serif", 40, True), COLOR_GOLD, WIDTH//2, 80, center=True)
     
-    results_title = font_large.render("RÉSULTATS", True, COLOR_TEXT_GOLD)
-    screen.blit(results_title, (col1_x, y_start))
-
-    y_pos = y_start + 60
+    grid_x = WIDTH // 2
+    grid_y = HEIGHT // 2 + 20
+    spacing_x = 300
+    spacing_y = 150
     
-    # Total de mains
-    text = font_medium.render(f"Total mains: {player.total_hands}", True, COLOR_TEXT)
-    screen.blit(text, (col1_x + 20, y_pos))
-    y_pos += line_height
+    def draw_stat(lbl, val, x, y, col):
+        draw_shadow_text(screen, lbl, get_font("sans", 20), (180, 180, 180), x, y - 20, center=True)
+        draw_shadow_text(screen, str(val), get_font("serif", 36, True), col, x, y + 20, center=True)
 
-    # Victoires
-    text = font_medium.render(f"Victoires: {player.wins}", True, COLOR_WIN)
-    screen.blit(text, (col1_x + 20, y_pos))
-    y_pos += line_height
+    draw_stat("Mains Jouées", player.total_hands, grid_x - spacing_x//2, grid_y - spacing_y//2, COLOR_TEXT_WHITE)
+    draw_stat("Victoires", player.wins, grid_x + spacing_x//2, grid_y - spacing_y//2, COLOR_WIN)
+    draw_stat("Bénéfice Net", f"${player.get_net_profit()}", grid_x - spacing_x//2, grid_y + spacing_y//2, COLOR_GOLD)
+    draw_stat("Blackjacks", player.blackjacks, grid_x + spacing_x//2, grid_y + spacing_y//2, COLOR_GOLD_LIGHT)
 
-    # Défaites
-    text = font_medium.render(f"Défaites: {player.losses}", True, COLOR_LOSE)
-    screen.blit(text, (col1_x + 20, y_pos))
-    y_pos += line_height
-
-    # Égalités
-    text = font_medium.render(f"Égalités: {player.pushes}", True, COLOR_PUSH)
-    screen.blit(text, (col1_x + 20, y_pos))
-    y_pos += line_height
-
-    # Blackjacks
-    text = font_medium.render(f"Blackjacks: {player.blackjacks}", True, COLOR_TEXT_GOLD)
-    screen.blit(text, (col1_x + 20, y_pos))
-
-    # ===== COLONNE 2 : PERFORMANCES =====
-    
-    perf_title = font_large.render("PERFORMANCES", True, COLOR_TEXT_GOLD)
-    screen.blit(perf_title, (col2_x, y_start))
-
-    y_pos_col2 = y_start + 60
-    
-    # Taux de victoire
-    win_rate = player.get_win_rate()
-    if player.total_hands > 0:
-        win_rate_color = COLOR_WIN if win_rate >= 50 else COLOR_TEXT
-    else:
-        win_rate_color = COLOR_TEXT
-    text = font_medium.render(f"Taux victoire: {win_rate:.1f}%", True, win_rate_color)
-    screen.blit(text, (col2_x + 20, y_pos_col2))
-    y_pos_col2 += line_height
-
-    # Moyenne par main
-    avg_per_hand = 0 if player.total_hands == 0 else player.get_net_profit() // player.total_hands
-    text = font_medium.render(f"Moy/main: ${avg_per_hand:+d}", True, COLOR_TEXT)
-    screen.blit(text, (col2_x + 20, y_pos_col2))
-    y_pos_col2 += line_height
-
-    # Bénéfice net
-    net_profit = player.get_net_profit()
-    profit_color = COLOR_WIN if net_profit >= 0 else COLOR_LOSE
-    text = font_medium.render(f"Bénéfice net: ${net_profit:+d}", True, profit_color)
-    screen.blit(text, (col2_x + 20, y_pos_col2))
-    y_pos_col2 += line_height
-
-    # Ratio W/L
-    if player.losses > 0:
-        ratio = player.wins / player.losses
-        ratio_color = COLOR_WIN if ratio > 1 else COLOR_LOSE
-    else:
-        ratio = 0
-        ratio_color = COLOR_TEXT
-    text = font_medium.render(f"Ratio W/L: {ratio:.2f}", True, ratio_color)
-    screen.blit(text, (col2_x + 20, y_pos_col2))
-
-    # ===== COLONNE GAUCHE : MONNAIE =====
-    
-    y_pos += line_height + 30
-    money_title = font_large.render("MONNAIE", True, COLOR_TEXT_GOLD)
-    screen.blit(money_title, (col1_x, y_pos))
-
-    y_pos += 60
-    
-    # Argent gagné
-    text = font_medium.render(f"Argent gagné: ${player.total_money_won}", True, COLOR_WIN)
-    screen.blit(text, (col1_x + 20, y_pos))
-    y_pos += line_height
-
-    # Argent perdu
-    text = font_medium.render(f"Argent perdu: ${player.total_money_lost}", True, COLOR_LOSE)
-    screen.blit(text, (col1_x + 20, y_pos))
-
-    # ===== COLONNE DROITE : POURCENTAGES =====
-    
-    y_pos_col2_stats = y_pos - line_height + 30
-    stats_title = font_large.render("POURCENTAGES", True, COLOR_TEXT_GOLD)
-    screen.blit(stats_title, (col2_x, y_pos_col2_stats))
-
-    y_pos_col2_stats += 60
-    
-    # % victoires
-    if player.total_hands > 0:
-        pct_wins = (player.wins / player.total_hands) * 100
-        pct_losses = (player.losses / player.total_hands) * 100
-        pct_pushes = (player.pushes / player.total_hands) * 100
-    else:
-        pct_wins = pct_losses = pct_pushes = 0
-
-    text = font_medium.render(f"Victoires: {pct_wins:.1f}%", True, COLOR_WIN)
-    screen.blit(text, (col2_x + 20, y_pos_col2_stats))
-    y_pos_col2_stats += line_height
-
-    text = font_medium.render(f"Défaites: {pct_losses:.1f}%", True, COLOR_LOSE)
-    screen.blit(text, (col2_x + 20, y_pos_col2_stats))
-    y_pos_col2_stats += line_height
-
-    text = font_medium.render(f"Égalités: {pct_pushes:.1f}%", True, COLOR_PUSH)
-    screen.blit(text, (col2_x + 20, y_pos_col2_stats))
-
-    # Indication et conseil
-    esc_text = font_small.render("ESC pour retour au menu", True, COLOR_TEXT_GOLD)
-    screen.blit(esc_text, (WIDTH // 2 - esc_text.get_width() // 2, HEIGHT - 40))
+    draw_shadow_text(screen, "ESC pour retour", get_font("sans", 18), COLOR_TEXT_GREY, WIDTH//2, HEIGHT - 50, center=True)
 
 
+#  main loop
+
+def handle_input(game: Game, chips, play_rect, sett_rect, stat_rect, start_rect) -> bool:
+    start_round = False
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: pygame.quit(); sys.exit()
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos = event.pos
+            if game.state == GameState.MENU:
+                if play_rect.collidepoint(pos): game.state = GameState.BETTING
+                elif sett_rect.collidepoint(pos): game.state = GameState.SETTINGS
+                elif stat_rect.collidepoint(pos): game.state = GameState.STATS
+            
+            elif game.state == GameState.BETTING:
+                for i, seat in enumerate(SEAT_POSITIONS):
+                    if seat["rect"].collidepoint(pos):
+                        game.seat_index = i
+                
+                if start_rect.collidepoint(pos) and game.player_bet > 0:
+                    start_round = True
+                
+                for chip in chips:
+                    if chip["rect"].collidepoint(pos):
+                        if event.button == 1: game.player_bet += chip["value"]
+                        elif event.button == 3: game.player_bet = max(0, game.player_bet - chip["value"])
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                if game.state == GameState.MENU: pygame.quit(); sys.exit()
+                else: game.state = GameState.MENU
+            
+            if game.state == GameState.PLAYER_TURN:
+                if event.key == pygame.K_h and game.can_hit(): game.player_hit()
+                elif event.key == pygame.K_s and game.can_stand(): game.player_stand()
+                elif event.key == pygame.K_d and game.can_double(): game.player_double()
+                elif event.key == pygame.K_p and game.can_split(): game.player_split()
+                elif event.key == pygame.K_r and game.can_surrender(): game.player_surrender()
+                
+            if game.state == GameState.RESULT_SCREEN:
+                if event.key == pygame.K_SPACE:
+                    game.reset()
+                    game.player_bet = 0
+                    game.state = GameState.BETTING
+    return start_round
 
 def main():
     screen, clock = init_pygame()
-    
-    # Charger ou créer le profil du joueur
     player = Player.load()
-    
-    # Démarrer directement une partie
     game = Game(num_decks=1)
-    game.state = GameState.MENU
-    game.player_bet = 0
-    dealer_revealed = False
-    state_changed_time = 0
-
-
-    # bouton menu
-    menu_button_width = 300
-    menu_button_height = 60
-    menu_button_x = WIDTH // 2 - menu_button_width // 2
-    menu_start_y = 220
-    menu_button_margin = 20
-
-    play_button_rect = pygame.Rect(
-        menu_button_x, menu_start_y, menu_button_width, menu_button_height
-    )
-    settings_button_rect = pygame.Rect(
-        menu_button_x, menu_start_y + (menu_button_height + menu_button_margin),
-        menu_button_width, menu_button_height
-    )
-    stats_button_rect = pygame.Rect(
-        menu_button_x, menu_start_y + 2 * (menu_button_height + menu_button_margin),
-        menu_button_width, menu_button_height
-    )
-
-    # sieges
-    NUM_SEATS = 5
-    seats = []
-    seat_y = HEIGHT // 2 + 120
-    seat_radius = 35
-    seat_spacing = WIDTH // (NUM_SEATS + 1)
-
-    for i in range(NUM_SEATS):
-        center_x = (i + 1) * seat_spacing
-        rect = pygame.Rect(center_x - seat_radius, seat_y - seat_radius,
-                           seat_radius * 2, seat_radius * 2)
-        seats.append({"index": i, "center": (center_x, seat_y), "rect": rect})
-
-    game.seat_index = NUM_SEATS // 2  
-
-    # jetons
+    
+    btn_w, btn_h = 280, 60
+    play_rect = pygame.Rect(WIDTH//2 - btn_w//2, 380, btn_w, btn_h)
+    sett_rect = pygame.Rect(WIDTH//2 - btn_w//2, 460, btn_w, btn_h)
+    stat_rect = pygame.Rect(WIDTH//2 - btn_w//2, 540, btn_w, btn_h)
+    
+    # jetons bien en bas
     chips = []
-    chip_margin = 20
-    chip_y = HEIGHT - 110
-
-    sample_img = load_chip_image(CHIP_FILES[0][1])
-    chip_w, chip_h = sample_img.get_size()
-    total_width = len(CHIP_FILES) * chip_w + (len(CHIP_FILES) - 1) * chip_margin
-    start_x = WIDTH // 2 - total_width // 2
-
-    for i, (value, filename) in enumerate(CHIP_FILES):
-        img = load_chip_image(filename)
-        rect = img.get_rect()
-        rect.topleft = (start_x + i * (chip_w + chip_margin), chip_y)
-        chips.append({"value": value, "image": img, "rect": rect})
-
-    #bouton commencer
-    bet_start_button_rect = pygame.Rect(
-        WIDTH // 2 - 150,
-        HEIGHT - 200,
-        300,
-        50
-    )
-
+    chip_y = HEIGHT - 100
+    total_chips_w = len(CHIP_FILES) * 95
+    start_cx = WIDTH//2 - total_chips_w//2
+    for i, (val, name) in enumerate(CHIP_FILES):
+        img = load_chip_image(name)
+        r = img.get_rect(topleft=(start_cx + i*95, chip_y))
+        chips.append({"value": val, "image": img, "rect": r})
+        
+    start_rect = pygame.Rect(WIDTH//2 - 120, HEIGHT - 160, 240, 50)
 
     while True:
-
         dt = clock.tick(FPS) / 1000.0
         game.update(dt)
-
-        # gere inputs
-        start_round = handle_game_input(
-            game,
-            chips,
-            seats,
-            play_button_rect,
-            settings_button_rect,
-            stats_button_rect,
-            bet_start_button_rect,
-        )
-
-        # lance nouvelle manche
-        if start_round:
-            game.reset()                   
-            dealer_revealed = False
-            state_changed_time = 0
+        should_start = handle_input(game, chips, play_rect, sett_rect, stat_rect, start_rect)
+        
+        if should_start:
+            game.reset()
             game.state = GameState.INITIAL_DEAL
-            game.deal_initial_cards()      
-
-        # gestion des transi auto
-        current_time = game.frame_counter
-
-        #transition INITIAL_DEAL vers PLAYER_TURN
-        if game.state == GameState.INITIAL_DEAL and current_time > 1.0:
-            game.state = GameState.PLAYER_TURN
-
-        #transition DEALER_REVEAL vers DEALER_TURN
-        if game.state == GameState.DEALER_REVEAL and current_time - game.last_action_time > 1.0:
-            dealer_revealed = True
-            game.state = GameState.DEALER_TURN
-            game.dealer_play()
-
-        #transition DEALER_TURN vers RESULT_SCREEN
-        if game.state == GameState.DEALER_TURN and current_time - game.last_action_time > 1.0:
+            game.deal_initial_cards()
+            
+        ct = game.frame_counter
+        if game.state == GameState.INITIAL_DEAL and ct > 1.0: game.state = GameState.PLAYER_TURN
+        if game.state == GameState.DEALER_REVEAL and ct - game.last_action_time > 1.0:
+            game.state = GameState.DEALER_TURN; game.dealer_play()
+        if game.state == GameState.DEALER_TURN and ct - game.last_action_time > 1.0:
             game.state = GameState.RESULT_SCREEN
-
-        # qd  partie finie enregistrer stats une fois
-        if game.state == GameState.RESULT_SCREEN and state_changed_time == 0:
-            state_changed_time = current_time
-
-            # Gérer le surrender
-            if game.has_surrendered:
-                # Le joueur récupère 50% de sa mise (perd 50%)
-                player.lose_hand(game.player_bet // 2)
             
-            # Gérer les mains multiples (split)
+        if game.state == GameState.RESULT_SCREEN and not getattr(game, "money_processed", False):
+            game.money_processed = True
+            if game.has_surrendered: player.lose_hand(game.player_bet // 2)
             elif len(game.hands) > 1:
-                # Calculer les gains/pertes pour chaque main
-                for i, hand in enumerate(game.hands):
-                    bet = game.hand_bets[i]
-                    result = game.hand_results[i]
-                    
-                    if result == GameResult.PLAYER_WIN:
-                        if hand.is_blackjack():
-                            # Blackjack paie 3:2
-                            player.win_hand(int(bet * 1.5))
-                            player.record_blackjack()
-                        else:
-                            player.win_hand(bet)
-                    elif result == GameResult.DEALER_WIN:
-                        player.lose_hand(bet)
-                    else:
-                        player.push_hand()
-            
-            # Une seule main
+                for i, h in enumerate(game.hands):
+                    res = game.hand_results[i]; bet = game.hand_bets[i]
+                    if res == GameResult.PLAYER_WIN:
+                        mult = 1.5 if h.is_blackjack() else 1.0
+                        player.win_hand(int(bet * mult))
+                    elif res == GameResult.DEALER_WIN: player.lose_hand(bet)
+                    else: player.push_hand()
             else:
-                if game.result == GameResult.PLAYER_WIN:
-                    bet_amount = game.hand_bets[0]
-                    if game.hands[0].is_blackjack():
-                        # Blackjack paie 3:2
-                        player.win_hand(int(bet_amount * 1.5))
-                        player.record_blackjack()
-                    else:
-                        player.win_hand(bet_amount)
-
-                elif game.result == GameResult.DEALER_WIN:
-                    player.lose_hand(game.hand_bets[0])
-
-                else:
-                    player.push_hand()
-            
-            # Gérer l'assurance
-            if game.has_insurance:
-                if game.dealer_hand.is_blackjack():
-                    # L'assurance paie 2:1
-                    player.win_hand(game.insurance_bet * 2)
-                else:
-                    # L'assurance est perdue
-                    player.lose_hand(game.insurance_bet)
-
+                res = game.result
+                if res == GameResult.PLAYER_WIN:
+                    mult = 1.5 if game.hands[0].is_blackjack() else 1.0
+                    player.win_hand(int(game.hand_bets[0] * mult))
+                elif res == GameResult.DEALER_WIN: player.lose_hand(game.hand_bets[0])
+                else: player.push_hand()
             player.save()
+            
+        if game.state != GameState.RESULT_SCREEN:
+            game.money_processed = False
 
-        #affiche selon etat
-        if game.state == GameState.MENU:
-            draw_main_menu(
-                screen,
-                player,
-                play_button_rect,
-                settings_button_rect,
-                stats_button_rect
-            )
-
-        elif game.state == GameState.BETTING:
-            draw_bet_screen(
-                screen,
-                game,
-                player,
-                chips,
-                seats,
-                bet_start_button_rect
-            )
-
-        elif game.state == GameState.SETTINGS:
-            draw_settings_screen(screen, game)
-
-        elif game.state == GameState.STATS:
-            draw_stats_screen(screen, player)
-
-        else:
-            # ecran jeu nrml
-            draw_game_screen(
-                screen,
-                game,
-                player,
-                dealer_revealed,
-                chips,
-                seats
-            )
-
+        if game.state == GameState.MENU: draw_main_menu(screen, player, play_rect, sett_rect, stat_rect)
+        elif game.state == GameState.BETTING: draw_bet_screen(screen, game, player, chips, SEAT_POSITIONS, start_rect)
+        elif game.state == GameState.SETTINGS: draw_settings_screen(screen, game)
+        elif game.state == GameState.STATS: draw_stats_screen(screen, player)
+        else: draw_game_screen(screen, game, player, game.state in [GameState.DEALER_TURN, GameState.RESULT_SCREEN], chips, SEAT_POSITIONS)
+        
         pygame.display.flip()
-
-
 
 if __name__ == "__main__":
     main()

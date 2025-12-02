@@ -1,8 +1,3 @@
-"""
-Gestionnaire de configuration pour Blackjack.
-Permet de charger, modifier et sauvegarder les paramètres.
-"""
-
 import json
 import os
 from pathlib import Path
@@ -10,13 +5,13 @@ from typing import Any, Dict
 
 
 class ConfigManager:
-    """Gère les paramètres de l'application."""
+    # gere les parametres de l application
     
-    # Chemins
+    # chemins
     CONFIG_DIR = "config"
     CONFIG_FILE = os.path.join(CONFIG_DIR, "settings.json")
     
-    # Configuration par défaut
+    # configuration par defaut style vip
     DEFAULT_CONFIG = {
         "game": {
             "width": 1280,
@@ -31,14 +26,14 @@ class ConfigManager:
             "spacing": 20
         },
         "colors": {
-            "bg": [0, 100, 0],
-            "bg_dark": [20, 60, 20],
-            "menu_bg": [15, 15, 40],
-            "text": [255, 255, 255],
-            "text_gold": [255, 215, 0],
-            "win": [100, 255, 100],
-            "lose": [255, 100, 100],
-            "push": [255, 255, 100]
+            "bg": [20, 20, 25],
+            "bg_dark": [0, 70, 80],
+            "menu_bg": [20, 20, 25],
+            "text": [240, 240, 240],
+            "text_gold": [212, 175, 55],
+            "win": [50, 205, 50],
+            "lose": [220, 60, 60],
+            "push": [255, 165, 0]
         },
         "timing": {
             "initial_deal_duration": 1.0,
@@ -62,34 +57,34 @@ class ConfigManager:
     }
     
     def __init__(self):
-        """Initialise le gestionnaire de configuration."""
+        # initialise le gestionnaire de configuration
         self.config = self._load_config()
     
     def _load_config(self) -> Dict[str, Any]:
-        """Charge la configuration depuis le fichier JSON."""
+        # charge la configuration depuis le fichier json
         if os.path.exists(self.CONFIG_FILE):
             try:
                 with open(self.CONFIG_FILE, 'r') as f:
                     return json.load(f)
             except Exception as e:
-                print(f"Erreur lors du chargement de la config: {e}")
+                print(f"erreur lors du chargement de la config {e}")
                 return self.DEFAULT_CONFIG.copy()
         
-        # Créer la config par défaut si elle n'existe pas
+        # creer la config par defaut si elle n existe pas
         self._save_config(self.DEFAULT_CONFIG)
         return self.DEFAULT_CONFIG.copy()
     
     def _save_config(self, config: Dict[str, Any]) -> None:
-        """Sauvegarde la configuration dans le fichier JSON."""
+        # sauvegarde la configuration dans le fichier json
         os.makedirs(self.CONFIG_DIR, exist_ok=True)
         try:
             with open(self.CONFIG_FILE, 'w') as f:
                 json.dump(config, f, indent=2)
         except Exception as e:
-            print(f"Erreur lors de la sauvegarde de la config: {e}")
+            print(f"erreur lors de la sauvegarde de la config {e}")
     
     def get(self, key: str, default: Any = None) -> Any:
-        """Récupère une valeur de configuration."""
+        # recupere une valeur de configuration
         keys = key.split('.')
         value = self.config
         
@@ -104,7 +99,7 @@ class ConfigManager:
         return value
     
     def set(self, key: str, value: Any) -> None:
-        """Définit une valeur de configuration."""
+        # definit une valeur de configuration
         keys = key.split('.')
         config = self.config
         
@@ -117,45 +112,45 @@ class ConfigManager:
         self._save_config(self.config)
     
     def get_all(self) -> Dict[str, Any]:
-        """Retourne toute la configuration."""
+        # retourne toute la configuration
         return self.config.copy()
     
     def reset_to_default(self) -> None:
-        """Réinitialise la configuration par défaut."""
+        # reinitialise la configuration par defaut
         self.config = self.DEFAULT_CONFIG.copy()
         self._save_config(self.config)
     
     def get_game_settings(self) -> Dict[str, Any]:
-        """Retourne les paramètres du jeu."""
+        # retourne les parametres du jeu
         return self.config.get("game", {})
     
     def get_card_settings(self) -> Dict[str, Any]:
-        """Retourne les paramètres des cartes."""
+        # retourne les parametres des cartes
         return self.config.get("cards", {})
     
     def get_color_settings(self) -> Dict[str, Any]:
-        """Retourne les paramètres des couleurs."""
+        # retourne les parametres des couleurs
         return self.config.get("colors", {})
     
     def get_timing_settings(self) -> Dict[str, Any]:
-        """Retourne les paramètres de timing."""
+        # retourne les parametres de timing
         return self.config.get("timing", {})
     
     def get_player_settings(self) -> Dict[str, Any]:
-        """Retourne les paramètres du joueur."""
+        # retourne les parametres du joueur
         return self.config.get("player", {})
     
     def get_features(self) -> Dict[str, Any]:
-        """Retourne les paramètres de fonctionnalités."""
+        # retourne les parametres de fonctionnalites
         return self.config.get("features", {})
     
     def set_game_settings(self, settings: Dict[str, Any]) -> None:
-        """Définit les paramètres du jeu."""
+        # definit les parametres du jeu
         self.config["game"].update(settings)
         self._save_config(self.config)
     
     def toggle_feature(self, feature: str) -> bool:
-        """Bascule l'état d'une fonctionnalité."""
+        # bascule l etat d une fonctionnalite
         features = self.config.get("features", {})
         current_state = features.get(feature, False)
         new_state = not current_state
@@ -165,16 +160,16 @@ class ConfigManager:
         return new_state
     
     def print_config(self) -> None:
-        """Affiche la configuration dans la console."""
+        # affiche la configuration dans la console
         print(json.dumps(self.config, indent=2))
 
 
-# Instance globale
+# instance globale
 _config_manager = None
 
 
 def get_config_manager() -> ConfigManager:
-    """Retourne l'instance globale du gestionnaire de configuration."""
+    # retourne l instance globale du gestionnaire de configuration
     global _config_manager
     if _config_manager is None:
         _config_manager = ConfigManager()

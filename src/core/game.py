@@ -134,13 +134,13 @@ class Game:
             return f"Le croupier joue"
         elif self.state == GameState.RESULT_SCREEN:
             if self.has_surrendered:
-                return "🏁 Vous avez abandonné (50% retourné)"
+                return " Vous avez abandonné (50% retourné)"
             if self.result == GameResult.PLAYER_WIN:
-                return "🎉 Vous avez gagné!"
+                return " Vous avez gagné!"
             elif self.result == GameResult.DEALER_WIN:
-                return "😔 Le croupier a gagné"
+                return " Le croupier a gagné"
             else:
-                return "⚖️ Égalité!"
+                return "Égalité!"
         else:
             return "Attente..."
     

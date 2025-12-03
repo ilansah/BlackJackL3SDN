@@ -1,131 +1,181 @@
+# core/player.py
+
 import json
 import os
-from pathlib import Path
+from typing import Optional
 
-# chemin pour eviter les erreurs de fichier non trouve
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-STATS_FILE = os.path.join(BASE_DIR, "player_stats.json")
 
 class Player:
-    # gere les statistiques et le profil du joueur
+    """Représente un joueur de Blackjack avec ses statistiques et son solde"""
     
-    def __init__(self, name: str = "Player"):
-        self.name = name
-        self.balance = 1000 # solde du joueur ajoute pour fixer l erreur
+    SAVE_FILE = "player_stats.json"
+    
+    def __init__(self, balance: int = 1000):
+        """
+        Initialise un nouveau joueur
+        
+        Args:
+            balance: Solde initial du joueur (par défaut 1000)
+        """
+        self.balance = balance
+        self.total_hands = 0
         self.wins = 0
         self.losses = 0
         self.pushes = 0
         self.blackjacks = 0
-        self.total_hands = 0
-        self.total_money_won = 0
-        self.total_money_lost = 0
-        
-        # nouvelles statistiques
-        self.surrenders = 0
-        self.insurances_taken = 0
-        self.insurances_won = 0
-        self.splits_made = 0
+        self.total_wagered = 0
+        self.total_won = 0
+        self.initial_balance = balance
     
-    def win_hand(self, amount: int = 100) -> None:
-        # enregistre une main gagnee et met a jour le solde
+    def win_hand(self, amount: int):
+        """
+        Enregistre une victoire et met à jour le solde
+        
+        Args:
+            amount: Montant gagné
+        """
         self.wins += 1
         self.total_hands += 1
-        self.total_money_won += amount
-        self.balance += amount # ajout du gain au solde
+        self.balance += amount
+        self.total_won += amount
     
-    def lose_hand(self, amount: int = 100) -> None:
-        # enregistre une main perdue et met a jour le solde
+    def lose_hand(self, amount: int):
+        """
+        Enregistre une défaite et met à jour le solde
+        
+        Args:
+            amount: Montant perdu
+        """
         self.losses += 1
         self.total_hands += 1
-        self.total_money_lost += amount
-        self.balance -= amount # retrait de la perte du solde
+        self.balance -= amount
+        self.total_wagered += amount
     
-    def push_hand(self) -> None:
-        # enregistre une egalite
+    def push_hand(self):
+        """Enregistre une égalité (push)"""
         self.pushes += 1
         self.total_hands += 1
     
-    def record_blackjack(self) -> None:
-        # enregistre un blackjack
+    def record_blackjack(self):
+        """Enregistre un blackjack"""
         self.blackjacks += 1
     
+    def get_net_profit(self) -> int:
+        """
+        Calcule le profit net du joueur
+        
+        Returns:
+            Profit net (peut être négatif)
+        """
+        return self.balance - self.initial_balance
+    
     def get_win_rate(self) -> float:
-        # retourne le pourcentage de victoires
+        """
+        Calcule le taux de victoire
+        
+        Returns:
+            Taux de victoire en pourcentage (0-100)
+        """
         if self.total_hands == 0:
             return 0.0
         return (self.wins / self.total_hands) * 100
     
-    def get_net_profit(self) -> int:
-        # retourne le benefice net gagne moins perdu
-        return self.total_money_won - self.total_money_lost
-    
     def to_dict(self) -> dict:
-        # convertit le profil en dictionnaire pour la sauvegarde
+        """
+        Convertit le joueur en dictionnaire pour la sauvegarde
+        
+        Returns:
+            Dictionnaire contenant toutes les données du joueur
+        """
         return {
-            "name": self.name,
-            "balance": self.balance, # on sauvegarde le solde
+            "balance": self.balance,
+            "total_hands": self.total_hands,
             "wins": self.wins,
             "losses": self.losses,
             "pushes": self.pushes,
             "blackjacks": self.blackjacks,
-            "total_hands": self.total_hands,
-            "total_money_won": self.total_money_won,
-            "total_money_lost": self.total_money_lost,
-            "surrenders": self.surrenders,
-            "insurances_taken": self.insurances_taken,
-            "insurances_won": self.insurances_won,
-            "splits_made": self.splits_made,
+            "total_wagered": self.total_wagered,
+            "total_won": self.total_won,
+            "initial_balance": self.initial_balance
         }
     
-    @staticmethod
-    def from_dict(data: dict) -> "Player":
-        # cree un player depuis un dictionnaire charge
-        player = Player(data.get("name", "Player"))
+    @classmethod
+    def from_dict(cls, data: dict) -> "Player":
+        """
+        Crée un joueur à partir d'un dictionnaire
         
-        # recuperation des sous
-        player.total_money_won = data.get("total_money_won", 0)
-        player.total_money_lost = data.get("total_money_lost", 0)
-        
-        # calcul intelligent du solde si absent dans le fichier de sauvegarde
-        if "balance" in data:
-            player.balance = data["balance"]
-        else:
-            # si pas de solde on le recalcule base 1000 plus gains moins pertes
-            player.balance = 1000 + player.total_money_won - player.total_money_lost
+        Args:
+            data: Dictionnaire contenant les données du joueur
             
+        Returns:
+            Instance de Player
+        """
+        player = cls(balance=data.get("balance", 1000))
+        player.total_hands = data.get("total_hands", 0)
         player.wins = data.get("wins", 0)
         player.losses = data.get("losses", 0)
         player.pushes = data.get("pushes", 0)
         player.blackjacks = data.get("blackjacks", 0)
-        player.total_hands = data.get("total_hands", 0)
-        player.surrenders = data.get("surrenders", 0)
-        player.insurances_taken = data.get("insurances_taken", 0)
-        player.insurances_won = data.get("insurances_won", 0)
-        player.splits_made = data.get("splits_made", 0)
+        player.total_wagered = data.get("total_wagered", 0)
+        player.total_won = data.get("total_won", 0)
+        player.initial_balance = data.get("initial_balance", 1000)
         return player
     
-    def save(self, filepath: str = None) -> None:
-        # sauvegarde les statistiques dans un fichier json
+    def save(self, filepath: Optional[str] = None):
+        """
+        Sauvegarde les données du joueur dans un fichier JSON
+        
+        Args:
+            filepath: Chemin du fichier de sauvegarde (optionnel)
+        """
         if filepath is None:
-            filepath = STATS_FILE
-            
+            # Sauvegarder dans le répertoire parent de src
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            filepath = os.path.join(base_dir, "..", self.SAVE_FILE)
+        
         try:
-            with open(filepath, 'w') as f:
-                json.dump(self.to_dict(), f, indent=2)
-        except Exception:
-            pass
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(self.to_dict(), f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            print(f"Erreur lors de la sauvegarde: {e}")
     
-    @staticmethod
-    def load(filepath: str = None) -> "Player":
-        # charge les statistiques depuis un fichier json
-        if filepath is None:
-            filepath = STATS_FILE
+    @classmethod
+    def load(cls, filepath: Optional[str] = None) -> "Player":
+        """
+        Charge les données du joueur depuis un fichier JSON
+        
+        Args:
+            filepath: Chemin du fichier de sauvegarde (optionnel)
             
-        if os.path.exists(filepath):
-            try:
-                with open(filepath, 'r') as f:
-                    data = json.load(f)
-                    return Player.from_dict(data)
-            except Exception:
-                pass
-        return Player()
+        Returns:
+            Instance de Player chargée ou nouvelle instance si le fichier n'existe pas
+        """
+        if filepath is None:
+            # Chercher dans le répertoire parent de src
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            filepath = os.path.join(base_dir, "..", cls.SAVE_FILE)
+        
+        if not os.path.exists(filepath):
+            print(f"Fichier de sauvegarde non trouvé, création d'un nouveau joueur")
+            return cls()
+        
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return cls.from_dict(data)
+        except Exception as e:
+            print(f"Erreur lors du chargement: {e}, création d'un nouveau joueur")
+            return cls()
+    
+    def reset_stats(self):
+        """Réinitialise toutes les statistiques mais garde le solde"""
+        self.total_hands = 0
+        self.wins = 0
+        self.losses = 0
+        self.pushes = 0
+        self.blackjacks = 0
+        self.total_wagered = 0
+        self.total_won = 0
+    
+    def __repr__(self) -> str:
+        return f"Player(balance=${self.balance}, hands={self.total_hands}, wins={self.wins})"

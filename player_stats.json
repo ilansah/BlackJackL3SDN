@@ -1,15 +1,11 @@
 {
-  "name": "Player",
-  "balance": 2165,
-  "wins": 29,
-  "losses": 28,
-  "pushes": 8,
-  "blackjacks": 2,
-  "total_hands": 65,
-  "total_money_won": 8210,
-  "total_money_lost": 7045,
-  "surrenders": 0,
-  "insurances_taken": 0,
-  "insurances_won": 0,
-  "splits_made": 0
+  "balance": 5300,
+  "total_hands": 3,
+  "wins": 2,
+  "losses": 1,
+  "pushes": 0,
+  "blackjacks": 0,
+  "total_wagered": 40,
+  "total_won": 1500,
+  "initial_balance": 1000
 }

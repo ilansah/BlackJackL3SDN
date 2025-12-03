@@ -70,8 +70,15 @@
   "features": {
     "sound_enabled": false,
     "animations_enabled": true,
-    "show_hints": true,
     "music_enabled": true,
-    "music_volume": 0.5
+    "music_volume": 0.56,
+    "auto_save": false,
+    "show_probabilities": true
+  },
+  "ui": {
+    "card_back_style": "classic",
+    "table_theme": "red",
+    "show_balance": true,
+    "dealer_speed": 2.0
   }
 }

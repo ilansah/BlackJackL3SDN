@@ -6,8 +6,9 @@ from .card import Card
 class Hand:
     # represente une main joueur ou croupier
     
-    def __init__(self):
+    def __init__(self, seat_index: int = 0):
         self.cards: List[Card] = []
+        self.seat_index = seat_index
     
     def add_card(self, card: Card) -> None:
         # ajoute une carte a la main

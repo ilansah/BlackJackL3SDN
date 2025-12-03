@@ -1,4 +1,3 @@
-# config/settings.json
 {
   "game": {
     "width": 1280,
@@ -13,14 +12,46 @@
     "spacing": 20
   },
   "colors": {
-    "bg": [0, 100, 0],
-    "bg_dark": [20, 60, 20],
-    "menu_bg": [15, 15, 40],
-    "text": [255, 255, 255],
-    "text_gold": [255, 215, 0],
-    "win": [100, 255, 100],
-    "lose": [255, 100, 100],
-    "push": [255, 255, 100]
+    "bg": [
+      0,
+      100,
+      0
+    ],
+    "bg_dark": [
+      20,
+      60,
+      20
+    ],
+    "menu_bg": [
+      15,
+      15,
+      40
+    ],
+    "text": [
+      255,
+      255,
+      255
+    ],
+    "text_gold": [
+      255,
+      215,
+      0
+    ],
+    "win": [
+      100,
+      255,
+      100
+    ],
+    "lose": [
+      255,
+      100,
+      100
+    ],
+    "push": [
+      255,
+      255,
+      100
+    ]
   },
   "timing": {
     "initial_deal_duration": 1.0,
@@ -39,6 +70,8 @@
   "features": {
     "sound_enabled": false,
     "animations_enabled": true,
-    "show_hints": true
+    "show_hints": true,
+    "music_enabled": true,
+    "music_volume": 0.5
   }
 }

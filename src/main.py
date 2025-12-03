@@ -8,6 +8,7 @@ from core.deck import Deck
 from core.card import Card
 from core.game import Game, GameState, GameResult
 from core.player import Player
+from config_manager import get_config_manager
 
 #  config graphique 
 WIDTH, HEIGHT = 1280, 720
@@ -39,6 +40,11 @@ CHIP_FILES = [
 ]
 
 _image_cache: dict[str, pygame.Surface] = {}
+# Musique
+MUSIC_FILE = os.path.join(os.path.dirname(__file__), "..", "Indochine - Jai demandé à la lune (Clip officiel).mp3")
+music_enabled = True
+music_volume = 0.5
+
 
 # positions des sieges 
 SEAT_POSITIONS = []
@@ -61,9 +67,25 @@ for angle in angles:
 
 def init_pygame():
     pygame.init()
+    pygame.mixer.init()
     pygame.display.set_caption("Blackjack VIP Lounge")
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
+    
+    # Charger et jouer la musique
+    config = get_config_manager()
+    global music_enabled, music_volume
+    music_enabled = config.get('features.music_enabled', True)
+    music_volume = config.get('features.music_volume', 0.5)
+    
+    if os.path.exists(MUSIC_FILE) and music_enabled:
+        try:
+            pygame.mixer.music.load(MUSIC_FILE)
+            pygame.mixer.music.set_volume(music_volume)
+            pygame.mixer.music.play(-1)  # -1 = loop infiniment
+        except Exception as e:
+            print(f"Erreur lors du chargement de la musique: {e}")
+    
     return screen, clock
 
 def get_font(name="sans", size=20, bold=False):
@@ -386,7 +408,16 @@ def draw_settings_screen(screen: pygame.Surface, game: Game):
     
     draw_shadow_text(screen, "PARAMÈTRES", get_font("serif", 40, True), COLOR_GOLD, WIDTH//2, 150, center=True)
     
-    lines = ["Son: ON", "Musique: OFF", "Difficulté: Normale", "Vitesse: x1"]
+    config = get_config_manager()
+    music_status = "ON" if config.get('features.music_enabled', True) else "OFF"
+    sound_status = "ON" if config.get('features.sound_enabled', False) else "OFF"
+    
+    lines = [
+        f"Son: {sound_status}",
+        f"Musique: {music_status} [M pour changer]",
+        "Difficulté: Normale",
+        "Vitesse: x1"
+    ]
     for i, line in enumerate(lines):
         draw_shadow_text(screen, line, get_font("sans", 24), COLOR_TEXT_WHITE, WIDTH//2, 250 + i*50, center=True)
         
@@ -444,6 +475,20 @@ def handle_input(game: Game, chips, play_rect, sett_rect, stat_rect, start_rect)
             if event.key == pygame.K_ESCAPE:
                 if game.state == GameState.MENU: pygame.quit(); sys.exit()
                 else: game.state = GameState.MENU
+            
+            # Toggle musique dans les paramètres
+            if event.key == pygame.K_m and game.state == GameState.SETTINGS:
+                config = get_config_manager()
+                new_state = config.toggle_feature('music_enabled')
+                if new_state:
+                    if os.path.exists(MUSIC_FILE):
+                        try:
+                            pygame.mixer.music.load(MUSIC_FILE)
+                            pygame.mixer.music.set_volume(config.get('features.music_volume', 0.5))
+                            pygame.mixer.music.play(-1)
+                        except: pass
+                else:
+                    pygame.mixer.music.stop()
             
             if game.state == GameState.PLAYER_TURN:
                 if event.key == pygame.K_h and game.can_hit(): game.player_hit()

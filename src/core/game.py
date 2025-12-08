@@ -69,6 +69,14 @@ class Game:
         self.has_insurance = False
         self.insurance_offered = False
         
+        # Multi-seat gameplay
+        self.seat_bets = {}  # Dict {seat_index: bet_amount}
+        self.seat_hands = {}  # Dict {seat_index: Hand}
+        self.seat_results = {}  # Dict {seat_index: GameResult}
+        self.active_seats = []  # List of seat indices with bets
+        self.current_seat_playing = 0  # Index dans active_seats de la place en cours
+        self.current_seat_for_betting = 0  # Place sélectionnée pour miser
+        
         # Surrender (abandon)
         self.has_surrendered = False
     
@@ -83,6 +91,10 @@ class Game:
         self.frame_counter = 0
         self.player_action = None
         self.last_action_time = 0
+        self.seat_hands = {}
+        self.seat_results = {}
+        self.active_seats = []
+        self.current_seat_playing = 0
         self.insurance_bet = 0
         self.has_insurance = False
         self.insurance_offered = False
@@ -187,22 +199,43 @@ class Game:
     
     # ===== Actions du joueur =====
     
+    def _switch_to_next_seat(self) -> None:
+        """Passe à la place suivante dans le jeu multi-places."""
+        self.current_seat_playing += 1
+        if self.current_seat_playing >= len(self.active_seats):
+            # Toutes les places ont été jouées, le croupier joue
+            self.state = GameState.DEALER_REVEAL
+    
     def player_hit(self) -> None:
         """Le joueur tire une carte."""
         if not self.can_hit():
             return
         
-        current_hand = self.hands[self.current_hand_index]
-        current_hand.add_cards(self.deck.draw(1))
-        self.last_action_time = self.frame_counter
-        
-        # Vérifier si la main a bust
-        if current_hand.is_bust():
-            self.hand_results[self.current_hand_index] = GameResult.DEALER_WIN
-            # Passer à la main suivante ou terminer
-            if not self.switch_to_next_hand():
-                # Toutes les mains ont été jouées
-                self.state = GameState.DEALER_REVEAL
+        # Multi-seat: utiliser la place active actuelle
+        if self.active_seats:
+            seat_idx = self.active_seats[self.current_seat_playing]
+            current_hand = self.seat_hands[seat_idx]
+            current_hand.add_cards(self.deck.draw(1))
+            self.last_action_time = self.frame_counter
+            
+            # Vérifier si la main a bust
+            if current_hand.is_bust():
+                self.seat_results[seat_idx] = GameResult.DEALER_WIN
+                # Passer à la place suivante
+                self._switch_to_next_seat()
+        else:
+            # Fallback pour le mode single-seat
+            current_hand = self.hands[self.current_hand_index]
+            current_hand.add_cards(self.deck.draw(1))
+            self.last_action_time = self.frame_counter
+            
+            # Vérifier si la main a bust
+            if current_hand.is_bust():
+                self.hand_results[self.current_hand_index] = GameResult.DEALER_WIN
+                # Passer à la main suivante ou terminer
+                if not self.switch_to_next_hand():
+                    # Toutes les mains ont été jouées
+                    self.state = GameState.DEALER_REVEAL
 
     
     def player_stand(self) -> None:
@@ -210,10 +243,15 @@ class Game:
         if not self.can_stand():
             return
         
-        # Passer à la main suivante ou au croupier
-        if not self.switch_to_next_hand():
-            # Toutes les mains ont été jouées, le croupier joue
-            self.state = GameState.DEALER_REVEAL
+        # Multi-seat: passer à la place suivante
+        if self.active_seats:
+            self._switch_to_next_seat()
+        else:
+            # Fallback pour le mode single-seat
+            # Passer à la main suivante ou au croupier
+            if not self.switch_to_next_hand():
+                # Toutes les mains ont été jouées, le croupier joue
+                self.state = GameState.DEALER_REVEAL
         
         self.last_action_time = self.frame_counter
     
@@ -302,15 +340,40 @@ class Game:
         dealer_value = self.dealer_hand.get_value()
         dealer_bust = dealer_value > 21
         
-        # Si on a plusieurs mains (split), calculer le résultat pour chaque main
-        if len(self.hands) > 1:
-            for i, hand in enumerate(self.hands):
-                if self.hand_results[i] is not None:
-                    # Résultat déjà déterminé (bust)
+        # Multi-seat: calculer le résultat pour chaque place active
+        if self.active_seats:
+            for seat_idx in self.active_seats:
+                if self.seat_results[seat_idx] is not None:
+                    # Résultat déjà déterminé (bust ou blackjack)
                     continue
                 
+                hand = self.seat_hands[seat_idx]
                 player_value = hand.get_value()
                 
+                if dealer_bust:
+                    self.seat_results[seat_idx] = GameResult.PLAYER_WIN
+                elif player_value > dealer_value:
+                    self.seat_results[seat_idx] = GameResult.PLAYER_WIN
+                elif dealer_value > player_value:
+                    self.seat_results[seat_idx] = GameResult.DEALER_WIN
+                else:
+                    self.seat_results[seat_idx] = GameResult.PUSH
+            
+            # Déterminer le résultat global
+            wins = sum(1 for r in self.seat_results.values() if r == GameResult.PLAYER_WIN)
+            losses = sum(1 for r in self.seat_results.values() if r == GameResult.DEALER_WIN)
+            if wins > losses:
+                self.result = GameResult.PLAYER_WIN
+            elif losses > wins:
+                self.result = GameResult.DEALER_WIN
+            else:
+                self.result = GameResult.PUSH
+        elif len(self.hands) > 1:
+            # Mode split (fallback)
+            for i, hand in enumerate(self.hands):
+                if self.hand_results[i] is not None:
+                    continue
+                player_value = hand.get_value()
                 if dealer_bust:
                     self.hand_results[i] = GameResult.PLAYER_WIN
                 elif player_value > dealer_value:
@@ -319,8 +382,6 @@ class Game:
                     self.hand_results[i] = GameResult.DEALER_WIN
                 else:
                     self.hand_results[i] = GameResult.PUSH
-            
-            # Déterminer le résultat global (pour l'affichage)
             wins = sum(1 for r in self.hand_results if r == GameResult.PLAYER_WIN)
             losses = sum(1 for r in self.hand_results if r == GameResult.DEALER_WIN)
             if wins > losses:
@@ -330,9 +391,8 @@ class Game:
             else:
                 self.result = GameResult.PUSH
         else:
-            # Une seule main
+            # Une seule main (fallback)
             player_value = self.hands[0].get_value()
-            
             if dealer_bust:
                 self.result = GameResult.PLAYER_WIN
             elif player_value > 21:
@@ -343,7 +403,6 @@ class Game:
                 self.result = GameResult.DEALER_WIN
             else:
                 self.result = GameResult.PUSH
-            
             self.hand_results[0] = self.result
         
         # Gérer l'assurance
@@ -385,4 +444,53 @@ class Game:
             self.state = GameState.RESULT_SCREEN
         else:
             # Pas de blackjack, le joueur commence
+            self.state = GameState.PLAYER_TURN
+
+    def deal_initial_cards_multiseat(self) -> None:
+        """Distribue les 2 cartes initiales à toutes les places actives et au croupier."""
+        # Identifier les places actives (celles avec des mises)
+        self.active_seats = sorted([seat for seat, bet in self.seat_bets.items() if bet > 0])
+        
+        if not self.active_seats:
+            return
+        
+        # Initialiser les mains pour chaque place active
+        for seat_idx in self.active_seats:
+            self.seat_hands[seat_idx] = Hand()
+            self.seat_results[seat_idx] = None
+        
+        # Distribution alternée: 1 carte à chaque place, puis 1 au croupier, puis 2ème carte à chaque place, puis 2ème au croupier
+        for seat_idx in self.active_seats:
+            self.seat_hands[seat_idx].add_cards(self.deck.draw(1))
+        
+        self.dealer_hand.add_cards(self.deck.draw(1))
+        
+        for seat_idx in self.active_seats:
+            self.seat_hands[seat_idx].add_cards(self.deck.draw(1))
+        
+        self.dealer_hand.add_cards(self.deck.draw(1))
+        
+        # Vérifier les blackjacks
+        dealer_bj = self.dealer_hand.is_blackjack()
+        
+        # Vérifier chaque place pour les blackjacks
+        all_done = True
+        for seat_idx in self.active_seats:
+            player_bj = self.seat_hands[seat_idx].is_blackjack()
+            
+            if player_bj and dealer_bj:
+                self.seat_results[seat_idx] = GameResult.PUSH
+            elif player_bj:
+                self.seat_results[seat_idx] = GameResult.PLAYER_WIN
+            elif dealer_bj:
+                self.seat_results[seat_idx] = GameResult.DEALER_WIN
+            else:
+                all_done = False
+        
+        # Si tous ont des blackjacks ou le croupier a un blackjack, terminer
+        if dealer_bj or all_done:
+            self.state = GameState.RESULT_SCREEN
+        else:
+            # Commencer à jouer la première place
+            self.current_seat_playing = 0
             self.state = GameState.PLAYER_TURN

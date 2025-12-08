@@ -71,13 +71,13 @@
     "sound_enabled": false,
     "animations_enabled": true,
     "music_enabled": true,
-    "music_volume": 0.56,
+    "music_volume": 0.45,
     "auto_save": false,
     "show_probabilities": true
   },
   "ui": {
     "card_back_style": "classic",
-    "table_theme": "red",
+    "table_theme": "black",
     "show_balance": true,
     "dealer_speed": 2.0
   }

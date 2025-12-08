@@ -1,11 +1,11 @@
 {
-  "balance": 5300,
-  "total_hands": 3,
-  "wins": 2,
-  "losses": 1,
+  "balance": 475,
+  "total_hands": 12,
+  "wins": 6,
+  "losses": 6,
   "pushes": 0,
   "blackjacks": 0,
-  "total_wagered": 40,
-  "total_won": 1500,
+  "total_wagered": 380,
+  "total_won": 520,
   "initial_balance": 1000
 }

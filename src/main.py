@@ -360,54 +360,104 @@ def draw_game_screen(screen: pygame.Surface, game: Game, player: Player, dealer_
             draw_card(screen, card, current_dx, DEALER_Y)
         current_dx += spacing
 
-    # Joueur
-    seat_coords = SEAT_POSITIONS[game.seat_index]["center"]
-    seat_x, seat_y = seat_coords
+    # Mode multi-places
+    if game.active_seats:
+        for seat_idx in game.active_seats:
+            seat_coords = SEAT_POSITIONS[seat_idx]["center"]
+            seat_x, seat_y = seat_coords
+            
+            hand = game.seat_hands[seat_idx]
+            base_hand_y = seat_y - CARD_H // 2 - 20
+            
+            # Position de départ pour les cartes
+            card_spacing = 30
+            num_cards = len(hand.cards)
+            total_cards_width = num_cards * card_spacing + CARD_W - card_spacing
+            hand_x = seat_x - total_cards_width // 2
+            
+            # Cadre actif pour la place en cours de jeu
+            is_active = (game.current_seat_playing < len(game.active_seats) and 
+                        game.active_seats[game.current_seat_playing] == seat_idx and 
+                        game.state == GameState.PLAYER_TURN)
+            if is_active:
+                hand_w_px = total_cards_width + 20
+                glow_rect = pygame.Rect(hand_x - 10, base_hand_y - 10, hand_w_px, CARD_H + 20)
+                pygame.draw.rect(screen, (255, 215, 0, 60), glow_rect, border_radius=12)
+                pygame.draw.rect(screen, COLOR_GOLD, glow_rect, 2, border_radius=12)
+            
+            # Dessiner les cartes
+            for c_idx, card in enumerate(hand.cards):
+                draw_card(screen, card, hand_x + c_idx * card_spacing, base_hand_y)
+            
+            # Résultats
+            val = hand.get_value()
+            res_txt = f"{val}"
+            color_res = COLOR_TEXT_WHITE
+            
+            res = game.seat_results.get(seat_idx)
+            if res == GameResult.PLAYER_WIN: color_res = COLOR_WIN; res_txt = f"GAGNÉ {val}"
+            elif res == GameResult.DEALER_WIN: color_res = COLOR_LOSE; res_txt = f"PERDU {val}"
+            elif res == GameResult.PUSH: color_res = COLOR_PUSH; res_txt = f"ÉGALITÉ"
+            elif hand.is_bust(): color_res = COLOR_LOSE; res_txt = f"BUST {val}"
+            
+            # Étiquette sous la carte
+            lbl_y = base_hand_y + CARD_H + 15
+            bg_lbl = pygame.Rect(hand_x, lbl_y, 100, 28)
+            pygame.draw.rect(screen, (0,0,0,180), bg_lbl, border_radius=10)
+            draw_shadow_text(screen, res_txt, get_font("sans", 16, True), color_res, bg_lbl.centerx, bg_lbl.centery, center=True)
+            
+            bet = game.seat_bets[seat_idx]
+            draw_shadow_text(screen, f"${bet}", get_font("sans", 14), COLOR_GOLD, bg_lbl.centerx, bg_lbl.bottom + 10, center=True)
     
-    base_hand_y = seat_y - CARD_H // 2 - 20
-    
-    num_hands = len(game.hands)
-    HAND_OFFSET = 120 
-    
-    # centrage du groupe de mains autour du siege
-    total_group_width = (num_hands - 1) * HAND_OFFSET
-    start_hx = seat_x - total_group_width // 2 - CARD_W // 2
+    # Mode single-seat (fallback)
+    else:
+        seat_coords = SEAT_POSITIONS[game.seat_index]["center"]
+        seat_x, seat_y = seat_coords
+        
+        base_hand_y = seat_y - CARD_H // 2 - 20
+        
+        num_hands = len(game.hands)
+        HAND_OFFSET = 120 
+        
+        # centrage du groupe de mains autour du siege
+        total_group_width = (num_hands - 1) * HAND_OFFSET
+        start_hx = seat_x - total_group_width // 2 - CARD_W // 2
 
-    for i, hand in enumerate(game.hands):
-        hand_x = start_hx + i * HAND_OFFSET
-        card_spacing = 30
-        
-        # cadre actif
-        is_active = (i == game.current_hand_index and game.state == GameState.PLAYER_TURN)
-        if is_active:
-            hand_w_px = len(hand.cards) * card_spacing + CARD_W
-            glow_rect = pygame.Rect(hand_x - 10, base_hand_y - 10, hand_w_px + 20, CARD_H + 20)
-            pygame.draw.rect(screen, (255, 215, 0, 60), glow_rect, border_radius=12)
-            pygame.draw.rect(screen, COLOR_GOLD, glow_rect, 2, border_radius=12)
+        for i, hand in enumerate(game.hands):
+            hand_x = start_hx + i * HAND_OFFSET
+            card_spacing = 30
+            
+            # cadre actif
+            is_active = (i == game.current_hand_index and game.state == GameState.PLAYER_TURN)
+            if is_active:
+                hand_w_px = len(hand.cards) * card_spacing + CARD_W
+                glow_rect = pygame.Rect(hand_x - 10, base_hand_y - 10, hand_w_px + 20, CARD_H + 20)
+                pygame.draw.rect(screen, (255, 215, 0, 60), glow_rect, border_radius=12)
+                pygame.draw.rect(screen, COLOR_GOLD, glow_rect, 2, border_radius=12)
 
-        # cartes
-        for c_idx, card in enumerate(hand.cards):
-            draw_card(screen, card, hand_x + c_idx * card_spacing, base_hand_y)
-        
-        # resultats
-        val = hand.get_value()
-        res_txt = f"{val}"
-        color_res = COLOR_TEXT_WHITE
-        
-        res = game.hand_results[i]
-        if res == GameResult.PLAYER_WIN: color_res = COLOR_WIN; res_txt = f"GAGNÉ {val}"
-        elif res == GameResult.DEALER_WIN: color_res = COLOR_LOSE; res_txt = f"PERDU {val}"
-        elif res == GameResult.PUSH: color_res = COLOR_PUSH; res_txt = f"ÉGALITÉ"
-        elif hand.is_bust(): color_res = COLOR_LOSE; res_txt = f"BUST {val}"
-        
-        # etiquette sous la carte
-        lbl_y = base_hand_y + CARD_H + 15
-        bg_lbl = pygame.Rect(hand_x, lbl_y, 100, 28)
-        pygame.draw.rect(screen, (0,0,0,180), bg_lbl, border_radius=10)
-        draw_shadow_text(screen, res_txt, get_font("sans", 16, True), color_res, bg_lbl.centerx, bg_lbl.centery, center=True)
-        
-        bet = game.hand_bets[i]
-        draw_shadow_text(screen, f"${bet}", get_font("sans", 14), COLOR_GOLD, bg_lbl.centerx, bg_lbl.bottom + 10, center=True)
+            # cartes
+            for c_idx, card in enumerate(hand.cards):
+                draw_card(screen, card, hand_x + c_idx * card_spacing, base_hand_y)
+            
+            # resultats
+            val = hand.get_value()
+            res_txt = f"{val}"
+            color_res = COLOR_TEXT_WHITE
+            
+            res = game.hand_results[i]
+            if res == GameResult.PLAYER_WIN: color_res = COLOR_WIN; res_txt = f"GAGNÉ {val}"
+            elif res == GameResult.DEALER_WIN: color_res = COLOR_LOSE; res_txt = f"PERDU {val}"
+            elif res == GameResult.PUSH: color_res = COLOR_PUSH; res_txt = f"ÉGALITÉ"
+            elif hand.is_bust(): color_res = COLOR_LOSE; res_txt = f"BUST {val}"
+            
+            # etiquette sous la carte
+            lbl_y = base_hand_y + CARD_H + 15
+            bg_lbl = pygame.Rect(hand_x, lbl_y, 100, 28)
+            pygame.draw.rect(screen, (0,0,0,180), bg_lbl, border_radius=10)
+            draw_shadow_text(screen, res_txt, get_font("sans", 16, True), color_res, bg_lbl.centerx, bg_lbl.centery, center=True)
+            
+            bet = game.hand_bets[i]
+            draw_shadow_text(screen, f"${bet}", get_font("sans", 14), COLOR_GOLD, bg_lbl.centerx, bg_lbl.bottom + 10, center=True)
 
 
     #  Message Central
@@ -450,25 +500,33 @@ def draw_game_screen(screen: pygame.Surface, game: Game, player: Player, dealer_
     draw_shadow_text(screen, f"SOLDE: ${player.balance}", get_font("sans", 18, True), COLOR_GOLD, panel.centerx, panel.centery, center=True)
 
 
+
 def draw_bet_screen(screen: pygame.Surface, game: Game, player: Player, chips, seats, start_button_rect):
     render_table_bg(screen)
     draw_shadow_text(screen, "CHOISISSEZ VOTRE PLACE & MISE", get_font("serif", 40, True), COLOR_GOLD, WIDTH//2, 50, center=True)
 
     mouse_pos = pygame.mouse.get_pos()
 
-    # Sieges 
+    # Sieges - afficher les mises sur chaque place
     for i, seat in enumerate(SEAT_POSITIONS):
         cx, cy = seat["center"]
         rect = seat["rect"]
         
-        is_sel = (i == game.seat_index)
+        # Vérifier si cette place a une mise
+        has_bet = i in game.seat_bets and game.seat_bets[i] > 0
+        is_sel = (i == game.current_seat_for_betting)
         is_hov = rect.collidepoint(mouse_pos)
         
         rad = 38
-        if is_sel:
+        if has_bet:
+            # Place avec mise - afficher en doré
             pygame.draw.circle(screen, COLOR_GOLD, (cx, cy), rad, 4)
             pygame.draw.circle(screen, (255, 215, 0, 50), (cx, cy), rad)
             col_txt = COLOR_GOLD
+        elif is_sel:
+            # Place sélectionnée pour miser
+            pygame.draw.circle(screen, COLOR_GOLD_LIGHT, (cx, cy), rad, 3)
+            col_txt = COLOR_GOLD_LIGHT
         elif is_hov:
             pygame.draw.circle(screen, COLOR_TEXT_WHITE, (cx, cy), rad, 2)
             col_txt = COLOR_TEXT_WHITE
@@ -477,14 +535,25 @@ def draw_bet_screen(screen: pygame.Surface, game: Game, player: Player, chips, s
             col_txt = (100, 100, 100)
             
         draw_shadow_text(screen, f"P{i+1}", get_font("sans", 20, True), col_txt, cx, cy, center=True)
+        
+        # Afficher la mise sur cette place
+        if has_bet:
+            bet_y = cy + 50
+            draw_shadow_text(screen, f"${game.seat_bets[i]}", get_font("sans", 16, True), COLOR_GOLD, cx, bet_y, center=True)
 
     # Zone de contrôle bas
     
-    # mise un peu plus bas
-    draw_shadow_text(screen, f"MISE: ${game.player_bet}", get_font("sans", 28, True), COLOR_TEXT_WHITE, WIDTH//2, HEIGHT - 180, center=True)
+    # mise totale
+    total_bet = sum(game.seat_bets.values())
+    active_seats = sum(1 for bet in game.seat_bets.values() if bet > 0)
+    if total_bet > 0:
+        bet_text = f"MISE TOTALE: ${total_bet} ({active_seats} place{'s' if active_seats > 1 else ''})"
+    else:
+        bet_text = "Sélectionnez une place et ajoutez des jetons"
+    draw_shadow_text(screen, bet_text, get_font("sans", 24, True), COLOR_TEXT_WHITE, WIDTH//2, HEIGHT - 180, center=True)
     
     # bouton distribuer
-    is_valid = game.player_bet > 0
+    is_valid = total_bet > 0
     draw_vip_button(screen, start_button_rect, "DISTRIBUER", start_button_rect.collidepoint(mouse_pos), is_active=is_valid)
     
     # jetons 
@@ -588,17 +657,33 @@ def handle_input(game: Game, player: Player, chips, play_rect, sett_rect, stat_r
                 elif stat_rect.collidepoint(pos): game.state = GameState.STATS
             
             elif game.state == GameState.BETTING:
+                # Sélection de siège pour placer les mises
                 for i, seat in enumerate(SEAT_POSITIONS):
                     if seat["rect"].collidepoint(pos):
-                        game.seat_index = i
+                        if event.button == 1:
+                            # Clic gauche: sélectionner cette place pour miser
+                            game.current_seat_for_betting = i
+                        elif event.button == 3:
+                            # Clic droit: retirer la mise de cette place
+                            if i in game.seat_bets:
+                                game.seat_bets[i] = 0
                 
-                if start_rect.collidepoint(pos) and game.player_bet > 0:
+                # Calculer la mise totale
+                total_bet = sum(game.seat_bets.values())
+                
+                if start_rect.collidepoint(pos) and total_bet > 0:
                     start_round = True
                 
                 for chip in chips:
                     if chip["rect"].collidepoint(pos):
-                        if event.button == 1: game.player_bet += chip["value"]
-                        elif event.button == 3: game.player_bet = max(0, game.player_bet - chip["value"])
+                        # Ajouter/retirer des jetons à la place sélectionnée
+                        if event.button == 1:
+                            if game.current_seat_for_betting not in game.seat_bets:
+                                game.seat_bets[game.current_seat_for_betting] = 0
+                            game.seat_bets[game.current_seat_for_betting] += chip["value"]
+                        elif event.button == 3:
+                            if game.current_seat_for_betting in game.seat_bets:
+                                game.seat_bets[game.current_seat_for_betting] = max(0, game.seat_bets[game.current_seat_for_betting] - chip["value"])
 
             # Gestion des clics dans les paramètres
             elif game.state == GameState.SETTINGS:
@@ -715,7 +800,7 @@ def handle_input(game: Game, player: Player, chips, play_rect, sett_rect, stat_r
             if game.state == GameState.RESULT_SCREEN:
                 if event.key == pygame.K_SPACE:
                     game.reset()
-                    game.player_bet = 0
+                    game.seat_bets = {}
                     game.state = GameState.BETTING
     return start_round
 
@@ -749,7 +834,11 @@ def main():
         if should_start:
             game.reset()
             game.state = GameState.INITIAL_DEAL
-            game.deal_initial_cards()
+            # Utiliser le dealing multi-places si des mises sont placées sur plusieurs sièges
+            if game.seat_bets:
+                game.deal_initial_cards_multiseat()
+            else:
+                game.deal_initial_cards()
             
         ct = game.frame_counter
         if game.state == GameState.INITIAL_DEAL and ct > 1.0: game.state = GameState.PLAYER_TURN
@@ -760,7 +849,23 @@ def main():
             
         if game.state == GameState.RESULT_SCREEN and not getattr(game, "money_processed", False):
             game.money_processed = True
-            if game.has_surrendered: player.lose_hand(game.player_bet // 2)
+            
+            # Multi-seat: traiter chaque place active
+            if game.active_seats:
+                for seat_idx in game.active_seats:
+                    res = game.seat_results[seat_idx]
+                    bet = game.seat_bets[seat_idx]
+                    hand = game.seat_hands[seat_idx]
+                    
+                    if res == GameResult.PLAYER_WIN:
+                        mult = 1.5 if hand.is_blackjack() else 1.0
+                        player.win_hand(int(bet * mult))
+                    elif res == GameResult.DEALER_WIN:
+                        player.lose_hand(bet)
+                    else:
+                        player.push_hand()
+            elif game.has_surrendered:
+                player.lose_hand(game.player_bet // 2)
             elif len(game.hands) > 1:
                 for i, h in enumerate(game.hands):
                     res = game.hand_results[i]; bet = game.hand_bets[i]

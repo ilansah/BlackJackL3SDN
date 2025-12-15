@@ -70,14 +70,14 @@
   "features": {
     "sound_enabled": false,
     "animations_enabled": true,
-    "music_enabled": true,
+    "music_enabled": false,
     "music_volume": 0.45,
     "auto_save": false,
     "show_probabilities": true
   },
   "ui": {
     "card_back_style": "classic",
-    "table_theme": "black",
+    "table_theme": "green",
     "show_balance": true,
     "dealer_speed": 2.0
   }

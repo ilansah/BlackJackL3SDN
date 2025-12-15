@@ -1,8 +1,24 @@
+"""Module des composants d'interface utilisateur pour les paramètres.
+
+Ce module fournit des fonctions pour dessiner des composants UI interactifs
+comme les boutons toggle, sliders et boutons de cycle.
+"""
 
 # Fonctions pour l'interface interactive des paramètres
 
 def draw_toggle_button(screen, rect, is_on, label, is_hover=False):
-    """Dessine un bouton toggle ON/OFF"""
+    """Dessine un bouton toggle ON/OFF.
+    
+    Args:
+        screen: Surface Pygame sur laquelle dessiner
+        rect: Rectangle définissant la position et taille du bouton
+        is_on (bool): État actuel du bouton (True=ON, False=OFF)
+        label (str): Texte du label affiché à gauche du bouton
+        is_hover (bool, optional): Si True, applique l'effet de survol
+        
+    Returns:
+        pygame.Rect: Rectangle du bouton dessiné
+    """
     # Couleurs
     bg_color = (50, 205, 50) if is_on else (220, 60, 60)  # Vert si ON, Rouge si OFF
     if is_hover:
@@ -24,7 +40,21 @@ def draw_toggle_button(screen, rect, is_on, label, is_hover=False):
     return rect
 
 def draw_slider(screen, rect, value, min_val, max_val, label, is_dragging=False, is_hover=False):
-    """Dessine un slider pour les valeurs continues (0-1)"""
+    """Dessine un slider pour les valeurs continues.
+    
+    Args:
+        screen: Surface Pygame sur laquelle dessiner
+        rect: Rectangle définissant la position et taille du slider
+        value (float): Valeur actuelle du slider
+        min_val (float): Valeur minimale
+        max_val (float): Valeur maximale
+        label (str): Texte du label affiché à gauche
+        is_dragging (bool, optional): Si True, indique que le slider est en cours de glissement
+        is_hover (bool, optional): Si True, applique l'effet de survol
+        
+    Returns:
+        pygame.Rect: Rectangle du handle du slider pour la détection de clic
+    """
     # Barre de fond
     bar_rect = pygame.Rect(rect.x, rect.centery - 3, rect.width, 6)
     pygame.draw.rect(screen, (60, 60, 60), bar_rect, border_radius=3)
@@ -53,7 +83,26 @@ def draw_slider(screen, rect, value, min_val, max_val, label, is_dragging=False,
     return rect, handle_x
 
 def draw_cycle_button(screen, rect, options, current_index, label, is_hover=False):
-    """Dessine un bouton pour cycler entre des options"""
+    """Dessine un bouton pour cycler entre des options.
+    
+    Permet de naviguer entre plusieurs options prédéfinies
+    avec des flèches gauche/droite.
+    
+    Args:
+        screen: Surface Pygame sur laquelle dessiner
+        rect: Rectangle définissant la position et taille du bouton
+        options (list): Liste des options disponibles
+        current_index (int): Index de l'option actuellement sélectionnée
+        label (str): Texte du label affiché à gauche
+        is_hover (bool, optional): Si True, applique l'effet de survol
+        
+    Returns:
+        pygame.Rect: Rectangle du bouton dessiné
+        
+    Examples:
+        >>> options = ['Green', 'Blue', 'Red', 'Black']
+        >>> draw_cycle_button(screen, rect, options, 0, "Thème")
+    """
     # Fond
     bg_color = (40, 40, 45) if not is_hover else (60, 60, 65)
     pygame.draw.rect(screen, bg_color, rect, border_radius=8)

@@ -1,4 +1,8 @@
-# core/game.py
+"""Module de gestion du jeu de Blackjack.
+
+Ce module contient la logique principale du jeu de Blackjack, incluant
+les états du jeu, les actions possibles et la gestion des parties.
+"""
 
 from enum import Enum
 from .deck import Deck
@@ -6,82 +10,149 @@ from .hand import Hand
 
 
 class GameState(Enum):
-    """États possibles d'une partie."""
-    MENU = "menu"                      # Menu principal (Jouer / Settings / Stats)
-    BETTING = "betting"                # Écran de mise (place + jetons)
-    SETTINGS = "settings"              # Écran des paramètres
-    STATS = "stats"                    # Écran des stats détaillées
-    INITIAL_DEAL = "initial_deal"      # Distribution initiale (2 cartes chacun)
-    PLAYER_TURN = "player_turn"        # Tour du joueur (choisir action)
-    DEALER_REVEAL = "dealer_reveal"    # Révéler la carte cachée du croupier
-    DEALER_TURN = "dealer_turn"        # Tour du croupier
-    RESULT_SCREEN = "result_screen"    # Afficher le résultat
+    """Énumération des états possibles d'une partie de Blackjack.
+    
+    Attributes:
+        MENU (str): Menu principal (Jouer / Paramètres / Statistiques)
+        BETTING (str): Écran de mise (sélection place + jetons)
+        SETTINGS (str): Écran des paramètres du jeu
+        STATS (str): Écran des statistiques détaillées
+        CLICKER (str): Écran du mini-jeu clicker pour gagner de l'argent
+        INITIAL_DEAL (str): Distribution initiale (2 cartes chacun)
+        PLAYER_TURN (str): Tour du joueur (choisir une action)
+        DEALER_REVEAL (str): Révélation de la carte cachée du croupier
+        DEALER_TURN (str): Tour du croupier (tire jusqu'à 17+)
+        RESULT_SCREEN (str): Affichage du résultat de la partie
+        GAME_OVER (str): Fin de partie
+        WAITING_TO_CONTINUE (str): En attente de continuation
+    """
+    MENU = "menu"
+    BETTING = "betting"
+    SETTINGS = "settings"
+    STATS = "stats"
+    CLICKER = "clicker"
+    INITIAL_DEAL = "initial_deal"
+    PLAYER_TURN = "player_turn"
+    DEALER_REVEAL = "dealer_reveal"
+    DEALER_TURN = "dealer_turn"
+    RESULT_SCREEN = "result_screen"
     GAME_OVER = "game_over"
     WAITING_TO_CONTINUE = "waiting"
 
 
-
 class GameResult(Enum):
-    """Résultats possibles."""
+    """Énumération des résultats possibles d'une main de Blackjack.
+    
+    Attributes:
+        PLAYER_WIN (str): Victoire du joueur
+        DEALER_WIN (str): Victoire du croupier
+        PUSH (str): Égalité (pas de gain ni de perte)
+    """
     PLAYER_WIN = "player_win"
     DEALER_WIN = "dealer_win"
-    PUSH = "push"                      # Égalité
+    PUSH = "push"
 
 
 class PlayerAction(Enum):
-    """Actions possibles du joueur."""
-    HIT = "hit"                        # Tirer une carte
-    STAND = "stand"                    # S'arrêter
-    DOUBLE = "double"                  # Doubler la mise (tirer 1 carte supplémentaire)
-    SPLIT = "split"                    # Diviser si les 2 cartes ont la même valeur
+    """Énumération des actions possibles du joueur.
+    
+    Attributes:
+        HIT (str): Tirer une carte supplémentaire
+        STAND (str): S'arrêter et garder sa main actuelle
+        DOUBLE (str): Doubler la mise et tirer exactement 1 carte
+        SPLIT (str): Diviser une paire en deux mains séparées
+    """
+    HIT = "hit"
+    STAND = "stand"
+    DOUBLE = "double"
+    SPLIT = "split"
 
 
 class Game:
-    """Gère une partie de blackjack complète."""
+    """Gère une partie complète de Blackjack.
+    
+    Cette classe orchestre tout le déroulement d'une partie de Blackjack,
+    incluant la distribution des cartes, les actions des joueurs, les mises,
+    le mode multi-places et les fonctionnalités avancées comme le split,
+    le double down, l'assurance et l'abandon.
+    
+    Attributes:
+        deck (Deck): Le sabot de cartes utilisé pour la partie
+        hands (List[Hand]): Liste des mains du joueur (plusieurs si split)
+        hand_bets (List[int]): Mises pour chaque main
+        hand_results (List[GameResult]): Résultats pour chaque main
+        current_hand_index (int): Index de la main actuellement jouée
+        dealer_hand (Hand): Main du croupier
+        state (GameState): État actuel du jeu
+        result (GameResult): Résultat global de la partie
+        frame_counter (float): Compteur pour les animations
+        animation_delay (float): Délai entre les actions en secondes
+        player_bet (int): Mise initiale du joueur
+        seat_index (int): Place choisie par le joueur (0-4)
+        insurance_bet (int): Montant de l'assurance
+        has_insurance (bool): Indique si le joueur a pris l'assurance
+        seat_bets (dict): Dictionnaire {seat_index: bet_amount}
+        seat_hands (dict): Dictionnaire {seat_index: Hand}
+        seat_results (dict): Dictionnaire {seat_index: GameResult}
+        active_seats (List[int]): Liste des indices de places avec mises
+        has_surrendered (bool): Indique si le joueur a abandonné
+        
+    Examples:
+        >>> game = Game(num_decks=6)
+        >>> game.state = GameState.BETTING
+        >>> game.player_bet = 100
+        >>> game.deal_initial_cards()
+        >>> game.state
+        <GameState.PLAYER_TURN: 'player_turn'>
+    """
     
     def __init__(self, num_decks: int = 1):
-        """
-        Initialise une partie.
+        """Initialise une nouvelle partie de Blackjack.
         
         Args:
-            num_decks: Nombre de jeux dans le sabot
+            num_decks (int, optional): Nombre de jeux de 52 cartes dans le sabot.
+                Par défaut 1. Les casinos utilisent généralement 6 à 8 jeux.
         """
         self.deck = Deck(num_decks)
         
         # Système de mains multiples pour le split
-        self.hands = [Hand()]  # Liste des mains du joueur (peut contenir plusieurs mains après split)
-        self.hand_bets = [0]  # Mise pour chaque main
-        self.hand_results = [None]  # Résultat pour chaque main
-        self.current_hand_index = 0  # Index de la main actuellement jouée
+        self.hands = [Hand()]
+        self.hand_bets = [0]
+        self.hand_results = [None]
+        self.current_hand_index = 0
         
         self.dealer_hand = Hand()
         self.state = GameState.MENU
-        self.result = None  # Résultat global (utilisé quand pas de split)
+        self.result = None
         self.frame_counter = 0
-        self.animation_delay = 0.5  # Délai entre les actions (secondes)
-        self.player_action = None  # Action en attente du joueur
-        self.player_bet = 0  # Mise initiale
-        self.seat_index = 0  # Place choisie (0..4) par défaut
-        self.last_action_time = 0  # Timestamp de la dernière action
+        self.animation_delay = 0.5
+        self.player_action = None
+        self.player_bet = 0
+        self.seat_index = 0
+        self.last_action_time = 0
         
-        # Insurance (assurance)
+        # Assurance
         self.insurance_bet = 0
         self.has_insurance = False
         self.insurance_offered = False
         
-        # Multi-seat gameplay
-        self.seat_bets = {}  # Dict {seat_index: bet_amount}
-        self.seat_hands = {}  # Dict {seat_index: Hand}
-        self.seat_results = {}  # Dict {seat_index: GameResult}
-        self.active_seats = []  # List of seat indices with bets
-        self.current_seat_playing = 0  # Index dans active_seats de la place en cours
-        self.current_seat_for_betting = 0  # Place sélectionnée pour miser
+        # Mode multi-places
+        self.seat_bets = {}
+        self.seat_hands = {}
+        self.seat_results = {}
+        self.active_seats = []
+        self.current_seat_playing = 0
+        self.current_seat_for_betting = 0
         
-        # Surrender (abandon)
+        # Abandon
         self.has_surrendered = False
     
     def reset(self) -> None:
-        """Réinitialise pour une nouvelle partie."""
+        """Réinitialise l'état du jeu pour une nouvelle partie.
+        
+        Vide toutes les mains, réinitialise les mises et les résultats,
+        mais conserve le sabot et la configuration.
+        """
         self.hands = [Hand()]
         self.hand_bets = [0]
         self.hand_results = [None]

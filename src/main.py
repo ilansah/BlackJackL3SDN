@@ -306,7 +306,7 @@ def render_table_bg(screen: pygame.Surface):
 
 #  ecrans
 
-def draw_main_menu(screen: pygame.Surface, player: Player, play_rect, settings_rect, stats_rect):
+def draw_main_menu(screen: pygame.Surface, player: Player, play_rect, settings_rect, stats_rect, clicker_rect):
     screen.fill(COLOR_ROOM_BG)
     glow = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
     pygame.draw.circle(glow, (30, 30, 60), (WIDTH//2, HEIGHT//2), 450)
@@ -331,6 +331,7 @@ def draw_main_menu(screen: pygame.Surface, player: Player, play_rect, settings_r
     draw_vip_button(screen, play_rect, "JOUER", play_rect.collidepoint(mouse_pos))
     draw_vip_button(screen, settings_rect, "PARAMÈTRES", settings_rect.collidepoint(mouse_pos))
     draw_vip_button(screen, stats_rect, "STATISTIQUES", stats_rect.collidepoint(mouse_pos))
+    draw_vip_button(screen, clicker_rect, "CLICKER", clicker_rect.collidepoint(mouse_pos))
 
 
 def draw_game_screen(screen: pygame.Surface, game: Game, player: Player, dealer_revealed: bool, chips, seats):
@@ -642,9 +643,50 @@ def draw_stats_screen(screen: pygame.Surface, player: Player):
     draw_shadow_text(screen, "ESC pour retour", get_font("sans", 18), COLOR_TEXT_GREY, WIDTH//2, HEIGHT - 50, center=True)
 
 
+def draw_clicker_screen(screen: pygame.Surface, player: Player, click_button_rect, total_clicks):
+    """Écran du clicker pour gagner de l'argent"""
+    screen.fill(COLOR_ROOM_BG)
+    
+    # Titre
+    draw_shadow_text(screen, "CLICKER", get_font("serif", 60, True), COLOR_GOLD, WIDTH//2, 80, center=True)
+    draw_shadow_text(screen, "Cliquez pour gagner de l'argent!", get_font("sans", 24), COLOR_TEXT_WHITE, WIDTH//2, 150, center=True)
+    
+    # Affichage du solde actuel
+    balance_text = f"Solde: ${player.balance}"
+    draw_shadow_text(screen, balance_text, get_font("serif", 40, True), COLOR_GOLD_LIGHT, WIDTH//2, 220, center=True)
+    
+    # Affichage du nombre de clics
+    clicks_text = f"Clics: {total_clicks}"
+    draw_shadow_text(screen, clicks_text, get_font("sans", 28), COLOR_TEXT_WHITE, WIDTH//2, 280, center=True)
+    
+    # Bouton de clic géant
+    mouse_pos = pygame.mouse.get_pos()
+    is_hover = click_button_rect.collidepoint(mouse_pos)
+    
+    # Effet de hover
+    button_color = COLOR_GOLD_LIGHT if is_hover else COLOR_GOLD
+    shadow_offset = 6 if not is_hover else 3
+    
+    # Ombre du bouton
+    shadow_center = (click_button_rect.centerx, click_button_rect.centery + shadow_offset)
+    pygame.draw.circle(screen, (5, 5, 5), shadow_center, click_button_rect.width // 2)
+    
+    # Bouton principal
+    pygame.draw.circle(screen, button_color, click_button_rect.center, click_button_rect.width // 2)
+    pygame.draw.circle(screen, COLOR_GOLD_LIGHT if is_hover else COLOR_TEXT_WHITE, click_button_rect.center, click_button_rect.width // 2, 5)
+    
+    # Texte sur le bouton
+    button_text = "+$1"
+    draw_shadow_text(screen, button_text, get_font("serif", 60, True), (0, 0, 0), click_button_rect.centerx, click_button_rect.centery, center=True)
+    
+    # Instructions
+    draw_shadow_text(screen, "Cliquez sur le bouton pour gagner 1$ par clic!", get_font("sans", 20), COLOR_TEXT_GREY, WIDTH//2, HEIGHT - 120, center=True)
+    draw_shadow_text(screen, "ESC pour retour au menu", get_font("sans", 18), COLOR_TEXT_GREY, WIDTH//2, HEIGHT - 50, center=True)
+
+
 #  main loop
 
-def handle_input(game: Game, player: Player, chips, play_rect, sett_rect, stat_rect, start_rect) -> bool:
+def handle_input(game: Game, player: Player, chips, play_rect, sett_rect, stat_rect, clicker_rect, start_rect, click_button_rect, total_clicks) -> tuple[bool, int]:
     start_round = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT: pygame.quit(); sys.exit()
@@ -655,6 +697,14 @@ def handle_input(game: Game, player: Player, chips, play_rect, sett_rect, stat_r
                 if play_rect.collidepoint(pos): game.state = GameState.BETTING
                 elif sett_rect.collidepoint(pos): game.state = GameState.SETTINGS
                 elif stat_rect.collidepoint(pos): game.state = GameState.STATS
+                elif clicker_rect.collidepoint(pos): game.state = GameState.CLICKER
+            
+            elif game.state == GameState.CLICKER:
+                # Gestion du clic sur le bouton du clicker
+                if click_button_rect.collidepoint(pos):
+                    player.earn_money(1)
+                    total_clicks += 1
+                    player.save()  # Sauvegarder après chaque clic
             
             elif game.state == GameState.BETTING:
                 # Sélection de siège pour placer les mises
@@ -774,6 +824,9 @@ def handle_input(game: Game, player: Player, chips, play_rect, sett_rect, stat_r
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 if game.state == GameState.MENU: pygame.quit(); sys.exit()
+                elif game.state == GameState.CLICKER: 
+                    game.state = GameState.MENU
+                    player.save()  # Sauvegarder avant de quitter le clicker
                 else: game.state = GameState.MENU
             
             # Toggle musique dans les paramètres
@@ -802,7 +855,7 @@ def handle_input(game: Game, player: Player, chips, play_rect, sett_rect, stat_r
                     game.reset()
                     game.seat_bets = {}
                     game.state = GameState.BETTING
-    return start_round
+    return start_round, total_clicks
 
 def main():
     screen, clock = init_pygame()
@@ -813,6 +866,12 @@ def main():
     play_rect = pygame.Rect(WIDTH//2 - btn_w//2, 380, btn_w, btn_h)
     sett_rect = pygame.Rect(WIDTH//2 - btn_w//2, 460, btn_w, btn_h)
     stat_rect = pygame.Rect(WIDTH//2 - btn_w//2, 540, btn_w, btn_h)
+    clicker_rect = pygame.Rect(WIDTH//2 - btn_w//2, 620, btn_w, btn_h)
+    
+    # Bouton du clicker (bouton circulaire géant)
+    click_button_size = 200
+    click_button_rect = pygame.Rect(WIDTH//2 - click_button_size//2, HEIGHT//2 - click_button_size//2 + 50, click_button_size, click_button_size)
+    total_clicks = 0
     
     # jetons bien en bas
     chips = []
@@ -829,7 +888,7 @@ def main():
     while True:
         dt = clock.tick(FPS) / 1000.0
         game.update(dt)
-        should_start = handle_input(game, player, chips, play_rect, sett_rect, stat_rect, start_rect)
+        should_start, total_clicks = handle_input(game, player, chips, play_rect, sett_rect, stat_rect, clicker_rect, start_rect, click_button_rect, total_clicks)
         
         if should_start:
             game.reset()
@@ -886,7 +945,8 @@ def main():
         if game.state != GameState.RESULT_SCREEN:
             game.money_processed = False
 
-        if game.state == GameState.MENU: draw_main_menu(screen, player, play_rect, sett_rect, stat_rect)
+        if game.state == GameState.MENU: draw_main_menu(screen, player, play_rect, sett_rect, stat_rect, clicker_rect)
+        elif game.state == GameState.CLICKER: draw_clicker_screen(screen, player, click_button_rect, total_clicks)
         elif game.state == GameState.BETTING: draw_bet_screen(screen, game, player, chips, SEAT_POSITIONS, start_rect)
         elif game.state == GameState.SETTINGS: draw_settings_screen(screen, game)
         elif game.state == GameState.STATS: draw_stats_screen(screen, player)

@@ -1,1 +1,41 @@
+# Fichiers de sauvegarde utilisateur
 player_stats.json
+
+# Configuration utilisateur
+config/settings.json
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Environnements virtuels
+venv/
+env/
+ENV/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs et databases
+*.log
+*.sqlite
+*.db
+
+# Fichiers de build
+build/
+dist/
+*.egg-info/
+
+# Fichiers temporaires
+*.tmp
+*.bak
+.cache/

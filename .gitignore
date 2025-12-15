@@ -3,6 +3,7 @@ player_stats.json
 
 # Fichiers de configuration personnels
 config/*.json
+config/settings.json
 
 # Cache Python
 __pycache__/
@@ -53,9 +54,16 @@ ENV/
 test_*.py
 *_test.py
 
-# Logs
+# Logs et databases
 *.log
+*.sqlite
+*.db
 
 # Fichiers système
 Thumbs.db
 .DS_Store
+
+# Fichiers temporaires
+*.tmp
+*.bak
+.cache/

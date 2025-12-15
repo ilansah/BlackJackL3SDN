@@ -13,12 +13,12 @@ from core.game import Game
 def test_card_values():
     """Test les valeurs des cartes."""
     print("=== Test des valeurs des cartes ===")
-    assert Card("2", "♠").value() == 2
-    assert Card("10", "♥").value() == 10
-    assert Card("J", "♦").value() == 10
-    assert Card("K", "♣").value() == 10
-    assert Card("A", "♠").value() == 11
-    print("✓ Valeurs des cartes correctes")
+    assert Card("2", "S").value() == 2
+    assert Card("10", "H").value() == 10
+    assert Card("J", "D").value() == 10
+    assert Card("K", "C").value() == 10
+    assert Card("A", "S").value() == 11
+    print("[OK] Valeurs des cartes correctes")
 
 
 def test_hand_value():
@@ -26,20 +26,20 @@ def test_hand_value():
     print("\n=== Test de la valeur de main ===")
     
     hand = Hand()
-    hand.add_cards([Card("5", "♠"), Card("6", "♥")])
+    hand.add_cards([Card("5", "S"), Card("6", "H")])
     assert hand.get_value() == 11
-    print(f"✓ 5 + 6 = {hand.get_value()}")
+    print(f"[OK] 5 + 6 = {hand.get_value()}")
     
     hand2 = Hand()
-    hand2.add_cards([Card("A", "♠"), Card("K", "♥")])
+    hand2.add_cards([Card("A", "S"), Card("K", "H")])
     assert hand2.is_blackjack()
     assert hand2.get_value() == 21
-    print(f"✓ A + K = {hand2.get_value()} (BLACKJACK)")
+    print(f"[OK] A + K = {hand2.get_value()} (BLACKJACK)")
     
     hand3 = Hand()
-    hand3.add_cards([Card("A", "♠"), Card("5", "♥"), Card("6", "♣")])
+    hand3.add_cards([Card("A", "S"), Card("5", "H"), Card("6", "C")])
     assert hand3.get_value() == 12  # A vaut 1 ici
-    print(f"✓ A + 5 + 6 = {hand3.get_value()} (As comme 1)")
+    print(f"[OK] A + 5 + 6 = {hand3.get_value()} (As comme 1)")
 
 
 def test_bust():
@@ -47,10 +47,10 @@ def test_bust():
     print("\n=== Test du bust ===")
     
     hand = Hand()
-    hand.add_cards([Card("K", "♠"), Card("Q", "♥"), Card("5", "♣")])
+    hand.add_cards([Card("K", "S"), Card("Q", "H"), Card("5", "C")])
     assert hand.is_bust()
     assert hand.get_value() > 21
-    print(f"✓ K + Q + 5 = {hand.get_value()} (BUST)")
+    print(f"[OK] K + Q + 5 = {hand.get_value()} (BUST)")
 
 
 def test_deck():
@@ -59,12 +59,12 @@ def test_deck():
     
     deck = Deck(1)
     assert len(deck.cards) == 52
-    print(f"✓ Deck avec 52 cartes")
+    print(f"[OK] Deck avec 52 cartes")
     
     drawn = deck.draw(5)
     assert len(drawn) == 5
     assert len(deck.cards) == 47
-    print(f"✓ Tiré 5 cartes, {len(deck.cards)} restantes")
+    print(f"[OK] Tire 5 cartes, {len(deck.cards)} restantes")
 
 
 def test_game_flow():
@@ -77,37 +77,37 @@ def test_game_flow():
     # Distribuer les cartes
     game.deal_initial_cards()
     assert game.state.value == "player_turn"
-    print(f"✓ Après distribution: état = {game.state.value}")
+    print(f"[OK] Apres distribution: etat = {game.state.value}")
     print(f"  Joueur: {game.player_hand.cards} = {game.player_hand.get_value()}")
-    print(f"  Croupier: {game.dealer_hand.cards} (2ème carte cachée)")
+    print(f"  Croupier: {game.dealer_hand.cards} (2eme carte cachee)")
     
     # Le joueur peut tirer
     assert game.can_hit()
-    print(f"✓ Le joueur peut tirer")
+    print(f"[OK] Le joueur peut tirer")
     
-    # Le joueur peut s'arrêter
+    # Le joueur peut s'arreter
     assert game.can_stand()
-    print(f"✓ Le joueur peut s'arrêter")
+    print(f"[OK] Le joueur peut s'arreter")
     
-    # Joueur s'arrête
+    # Joueur s'arrete
     game.player_stand()
     assert game.state.value == "dealer_turn"
-    print(f"✓ Après stand: état = {game.state.value}")
+    print(f"[OK] Apres stand: etat = {game.state.value}")
     
     # Le croupier joue
     game.dealer_play()
     assert game.state.value == "game_over"
-    print(f"✓ Après dealer_play: état = {game.state.value}")
+    print(f"[OK] Apres dealer_play: etat = {game.state.value}")
     print(f"  Résultat: {game.result.value}")
     print(f"  Joueur final: {game.player_hand.get_value()}")
     print(f"  Croupier final: {game.dealer_hand.get_value()}")
 
 
 if __name__ == "__main__":
-    print("🎴 Tests du Blackjack\n")
+    print("Tests du Blackjack\n")
     test_card_values()
     test_hand_value()
     test_bust()
     test_deck()
     test_game_flow()
-    print("\n✅ Tous les tests réussis!")
+    print("\nTous les tests réussis!")

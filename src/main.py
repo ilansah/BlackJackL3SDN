@@ -549,28 +549,45 @@ def draw_game_screen(screen: pygame.Surface, game: Game, player: Player, dealer_
         pygame.draw.rect(screen, (0,0,0, 220), bg, border_radius=20)
         pygame.draw.rect(screen, COLOR_GOLD, bg, 2, border_radius=20)
         screen.blit(s, r)
-        draw_shadow_text(screen, "ESPACE POUR REJOUER", get_font("sans", 20, True), COLOR_GOLD_LIGHT, WIDTH//2, r.bottom + 30, center=True)
+        
+        # Bouton Nouvelle Partie
+        mouse_pos = pygame.mouse.get_pos()
+        replay_button = pygame.Rect(WIDTH//2 - 150, r.bottom + 40, 300, 60)
+        is_hover = replay_button.collidepoint(mouse_pos)
+        draw_vip_button(screen, replay_button, "NOUVELLE PARTIE", is_hover, is_active=True)
+        game.replay_button = replay_button
 
-    # Barre d'actions 
+    # Barre d'actions avec boutons cliquables
     if game.state == GameState.PLAYER_TURN:
-        panel_rect = pygame.Rect(20, 20, 180, 160)
-        pygame.draw.rect(screen, (0, 0, 0, 180), panel_rect, border_radius=10)
-        pygame.draw.rect(screen, COLOR_WOOD_RAIL, panel_rect, 2, border_radius=10)
+        mouse_pos = pygame.mouse.get_pos()
         
-        draw_shadow_text(screen, "ACTIONS", get_font("sans", 16, True), COLOR_GOLD, panel_rect.centerx, panel_rect.y + 15, center=True)
+        # Créer les boutons d'action en bas de l'écran
+        button_width = 140
+        button_height = 50
+        button_spacing = 15
         
-        # liste des actions dispos
-        opts = []
-        if game.can_hit(): opts.append("[H] TIRER")
-        if game.can_stand(): opts.append("[S] RESTER")
-        if game.can_double(): opts.append("[D] DOUBLER")
-        if game.can_split(): opts.append("[P] SPLIT")
-        if game.can_surrender(): opts.append("[R] ABANDON")
+        actions = []
+        if game.can_hit(): actions.append(("TIRER", "hit"))
+        if game.can_stand(): actions.append(("RESTER", "stand"))
+        if game.can_double(): actions.append(("DOUBLER", "double"))
+        if game.can_split(): actions.append(("SPLIT", "split"))
+        if game.can_surrender(): actions.append(("ABANDON", "surrender"))
         
-        start_y = panel_rect.y + 40
-        for opt in opts:
-            draw_shadow_text(screen, opt, get_font("sans", 14, True), COLOR_TEXT_WHITE, 35, start_y, topleft=True)
-            start_y += 22
+        # Calculer la position de départ pour centrer les boutons
+        total_width = len(actions) * button_width + (len(actions) - 1) * button_spacing
+        start_x = WIDTH // 2 - total_width // 2
+        button_y = HEIGHT - 120
+        
+        # Stocker les boutons pour la détection de clics
+        game.action_buttons = []
+        
+        for i, (label, action) in enumerate(actions):
+            button_x = start_x + i * (button_width + button_spacing)
+            button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+            is_hover = button_rect.collidepoint(mouse_pos)
+            
+            draw_vip_button(screen, button_rect, label, is_hover, is_active=True)
+            game.action_buttons.append((button_rect, action))
 
     #  Solde 
     panel = pygame.Rect(20, HEIGHT - 50, 200, 40)
@@ -803,6 +820,24 @@ def handle_input(game: Game, player: Player, chips, play_rect, sett_rect, stat_r
                     total_clicks += 1
                     player.save()  # Sauvegarder après chaque clic
             
+            elif game.state == GameState.PLAYER_TURN:
+                # Gestion des clics sur les boutons d'action
+                if hasattr(game, 'action_buttons'):
+                    for button_rect, action in game.action_buttons:
+                        if button_rect.collidepoint(pos):
+                            if action == "hit": game.player_hit()
+                            elif action == "stand": game.player_stand()
+                            elif action == "double": game.player_double()
+                            elif action == "split": game.player_split()
+                            elif action == "surrender": game.player_surrender()
+            
+            elif game.state == GameState.RESULT_SCREEN:
+                # Gestion du clic sur le bouton Nouvelle Partie
+                if hasattr(game, 'replay_button') and game.replay_button.collidepoint(pos):
+                    game.reset()
+                    game.seat_bets = {}
+                    game.state = GameState.BETTING
+            
             elif game.state == GameState.BETTING:
                 # Sélection de siège pour placer les mises
                 for i, seat in enumerate(SEAT_POSITIONS):
@@ -944,18 +979,7 @@ def handle_input(game: Game, player: Player, chips, play_rect, sett_rect, stat_r
                 else:
                     pygame.mixer.music.stop()
             
-            if game.state == GameState.PLAYER_TURN:
-                if event.key == pygame.K_h and game.can_hit(): game.player_hit()
-                elif event.key == pygame.K_s and game.can_stand(): game.player_stand()
-                elif event.key == pygame.K_d and game.can_double(): game.player_double()
-                elif event.key == pygame.K_p and game.can_split(): game.player_split()
-                elif event.key == pygame.K_r and game.can_surrender(): game.player_surrender()
-                
-            if game.state == GameState.RESULT_SCREEN:
-                if event.key == pygame.K_SPACE:
-                    game.reset()
-                    game.seat_bets = {}
-                    game.state = GameState.BETTING
+            # Les commandes clavier pour les actions de jeu ont été remplacées par des boutons cliquables
     return start_round, total_clicks
 
 def main():

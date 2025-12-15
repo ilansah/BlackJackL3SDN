@@ -50,10 +50,6 @@ ENV/
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# Fichiers de test temporaires
-test_*.py
-*_test.py
-
 # Logs et databases
 *.log
 *.sqlite

@@ -1,0 +1,753 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="fr" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>core.game &mdash; Documentation Blackjack L3 SDN 1.0</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=7a28dfa3"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=e6b791cb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Recherche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Blackjack L3 SDN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Rechercher docs" aria-label="Rechercher docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Sommaire:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/core.html">Module Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game.html">Module Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Guide d’utilisation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Blackjack L3 SDN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Code du module</a></li>
+      <li class="breadcrumb-item active">core.game</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Code source de core.game</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module de gestion du jeu de Blackjack.</span>
+
+<span class="sd">Ce module contient la logique principale du jeu de Blackjack, incluant</span>
+<span class="sd">les états du jeu, les actions possibles et la gestion des parties.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.deck</span><span class="w"> </span><span class="kn">import</span> <span class="n">Deck</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.hand</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hand</span>
+
+
+<div class="viewcode-block" id="GameState">
+<a class="viewcode-back" href="../../modules/game.html#core.game.GameState">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GameState</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Énumération des états possibles d&#39;une partie de Blackjack.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        MENU (str): Menu principal (Jouer / Paramètres / Statistiques)</span>
+<span class="sd">        BETTING (str): Écran de mise (sélection place + jetons)</span>
+<span class="sd">        SETTINGS (str): Écran des paramètres du jeu</span>
+<span class="sd">        STATS (str): Écran des statistiques détaillées</span>
+<span class="sd">        CLICKER (str): Écran du mini-jeu clicker pour gagner de l&#39;argent</span>
+<span class="sd">        INITIAL_DEAL (str): Distribution initiale (2 cartes chacun)</span>
+<span class="sd">        PLAYER_TURN (str): Tour du joueur (choisir une action)</span>
+<span class="sd">        DEALER_REVEAL (str): Révélation de la carte cachée du croupier</span>
+<span class="sd">        DEALER_TURN (str): Tour du croupier (tire jusqu&#39;à 17+)</span>
+<span class="sd">        RESULT_SCREEN (str): Affichage du résultat de la partie</span>
+<span class="sd">        GAME_OVER (str): Fin de partie</span>
+<span class="sd">        WAITING_TO_CONTINUE (str): En attente de continuation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">MENU</span> <span class="o">=</span> <span class="s2">&quot;menu&quot;</span>
+    <span class="n">BETTING</span> <span class="o">=</span> <span class="s2">&quot;betting&quot;</span>
+    <span class="n">SETTINGS</span> <span class="o">=</span> <span class="s2">&quot;settings&quot;</span>
+    <span class="n">STATS</span> <span class="o">=</span> <span class="s2">&quot;stats&quot;</span>
+    <span class="n">CLICKER</span> <span class="o">=</span> <span class="s2">&quot;clicker&quot;</span>
+    <span class="n">INITIAL_DEAL</span> <span class="o">=</span> <span class="s2">&quot;initial_deal&quot;</span>
+    <span class="n">PLAYER_TURN</span> <span class="o">=</span> <span class="s2">&quot;player_turn&quot;</span>
+    <span class="n">DEALER_REVEAL</span> <span class="o">=</span> <span class="s2">&quot;dealer_reveal&quot;</span>
+    <span class="n">DEALER_TURN</span> <span class="o">=</span> <span class="s2">&quot;dealer_turn&quot;</span>
+    <span class="n">RESULT_SCREEN</span> <span class="o">=</span> <span class="s2">&quot;result_screen&quot;</span>
+    <span class="n">GAME_OVER</span> <span class="o">=</span> <span class="s2">&quot;game_over&quot;</span>
+    <span class="n">WAITING_TO_CONTINUE</span> <span class="o">=</span> <span class="s2">&quot;waiting&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="GameResult">
+<a class="viewcode-back" href="../../modules/game.html#core.game.GameResult">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GameResult</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Énumération des résultats possibles d&#39;une main de Blackjack.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        PLAYER_WIN (str): Victoire du joueur</span>
+<span class="sd">        DEALER_WIN (str): Victoire du croupier</span>
+<span class="sd">        PUSH (str): Égalité (pas de gain ni de perte)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">PLAYER_WIN</span> <span class="o">=</span> <span class="s2">&quot;player_win&quot;</span>
+    <span class="n">DEALER_WIN</span> <span class="o">=</span> <span class="s2">&quot;dealer_win&quot;</span>
+    <span class="n">PUSH</span> <span class="o">=</span> <span class="s2">&quot;push&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="PlayerAction">
+<a class="viewcode-back" href="../../modules/game.html#core.game.PlayerAction">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PlayerAction</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Énumération des actions possibles du joueur.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        HIT (str): Tirer une carte supplémentaire</span>
+<span class="sd">        STAND (str): S&#39;arrêter et garder sa main actuelle</span>
+<span class="sd">        DOUBLE (str): Doubler la mise et tirer exactement 1 carte</span>
+<span class="sd">        SPLIT (str): Diviser une paire en deux mains séparées</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">HIT</span> <span class="o">=</span> <span class="s2">&quot;hit&quot;</span>
+    <span class="n">STAND</span> <span class="o">=</span> <span class="s2">&quot;stand&quot;</span>
+    <span class="n">DOUBLE</span> <span class="o">=</span> <span class="s2">&quot;double&quot;</span>
+    <span class="n">SPLIT</span> <span class="o">=</span> <span class="s2">&quot;split&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="Game">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Game</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gère une partie complète de Blackjack.</span>
+<span class="sd">    </span>
+<span class="sd">    Cette classe orchestre tout le déroulement d&#39;une partie de Blackjack,</span>
+<span class="sd">    incluant la distribution des cartes, les actions des joueurs, les mises,</span>
+<span class="sd">    le mode multi-places et les fonctionnalités avancées comme le split,</span>
+<span class="sd">    le double down, l&#39;assurance et l&#39;abandon.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        deck (Deck): Le sabot de cartes utilisé pour la partie</span>
+<span class="sd">        hands (List[Hand]): Liste des mains du joueur (plusieurs si split)</span>
+<span class="sd">        hand_bets (List[int]): Mises pour chaque main</span>
+<span class="sd">        hand_results (List[GameResult]): Résultats pour chaque main</span>
+<span class="sd">        current_hand_index (int): Index de la main actuellement jouée</span>
+<span class="sd">        dealer_hand (Hand): Main du croupier</span>
+<span class="sd">        state (GameState): État actuel du jeu</span>
+<span class="sd">        result (GameResult): Résultat global de la partie</span>
+<span class="sd">        frame_counter (float): Compteur pour les animations</span>
+<span class="sd">        animation_delay (float): Délai entre les actions en secondes</span>
+<span class="sd">        player_bet (int): Mise initiale du joueur</span>
+<span class="sd">        seat_index (int): Place choisie par le joueur (0-4)</span>
+<span class="sd">        insurance_bet (int): Montant de l&#39;assurance</span>
+<span class="sd">        has_insurance (bool): Indique si le joueur a pris l&#39;assurance</span>
+<span class="sd">        seat_bets (dict): Dictionnaire {seat_index: bet_amount}</span>
+<span class="sd">        seat_hands (dict): Dictionnaire {seat_index: Hand}</span>
+<span class="sd">        seat_results (dict): Dictionnaire {seat_index: GameResult}</span>
+<span class="sd">        active_seats (List[int]): Liste des indices de places avec mises</span>
+<span class="sd">        has_surrendered (bool): Indique si le joueur a abandonné</span>
+<span class="sd">        </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; game = Game(num_decks=6)</span>
+<span class="sd">        &gt;&gt;&gt; game.state = GameState.BETTING</span>
+<span class="sd">        &gt;&gt;&gt; game.player_bet = 100</span>
+<span class="sd">        &gt;&gt;&gt; game.deal_initial_cards()</span>
+<span class="sd">        &gt;&gt;&gt; game.state</span>
+<span class="sd">        &lt;GameState.PLAYER_TURN: &#39;player_turn&#39;&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+<div class="viewcode-block" id="Game.__init__">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_decks</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise une nouvelle partie de Blackjack.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_decks (int, optional): Nombre de jeux de 52 cartes dans le sabot.</span>
+<span class="sd">                Par défaut 1. Les casinos utilisent généralement 6 à 8 jeux.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deck</span> <span class="o">=</span> <span class="n">Deck</span><span class="p">(</span><span class="n">num_decks</span><span class="p">)</span>
+        
+        <span class="c1"># Système de mains multiples pour le split</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hands</span> <span class="o">=</span> <span class="p">[</span><span class="n">Hand</span><span class="p">()]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hand_bets</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">dealer_hand</span> <span class="o">=</span> <span class="n">Hand</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">MENU</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">animation_delay</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player_action</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player_bet</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seat_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_action_time</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="c1"># Assurance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insurance_bet</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_insurance</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insurance_offered</span> <span class="o">=</span> <span class="kc">False</span>
+        
+        <span class="c1"># Mode multi-places</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seat_bets</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seat_hands</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seat_results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_seats</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_seat_playing</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_seat_for_betting</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="c1"># Abandon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_surrendered</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    
+<div class="viewcode-block" id="Game.reset">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Réinitialise l&#39;état du jeu pour une nouvelle partie.</span>
+<span class="sd">        </span>
+<span class="sd">        Vide toutes les mains, réinitialise les mises et les résultats,</span>
+<span class="sd">        mais conserve le sabot et la configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hands</span> <span class="o">=</span> <span class="p">[</span><span class="n">Hand</span><span class="p">()]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hand_bets</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dealer_hand</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player_action</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_action_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seat_hands</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seat_results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_seats</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_seat_playing</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insurance_bet</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_insurance</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insurance_offered</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_surrendered</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    
+<div class="viewcode-block" id="Game.can_hit">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.can_hit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_hit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retourne True si le joueur peut tirer.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">GameState</span><span class="o">.</span><span class="n">PLAYER_TURN</span></div>
+
+    
+<div class="viewcode-block" id="Game.can_stand">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.can_stand">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_stand</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retourne True si le joueur peut s&#39;arrêter.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">GameState</span><span class="o">.</span><span class="n">PLAYER_TURN</span></div>
+
+    
+<div class="viewcode-block" id="Game.can_double">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.can_double">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_double</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retourne True si le joueur peut doubler (seulement avec 2 cartes initiales).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">PLAYER_TURN</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">current_hand</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_hand</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span></div>
+
+    
+<div class="viewcode-block" id="Game.can_split">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.can_split">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retourne True si le joueur peut splitter (2 cartes de même valeur, pas encore de split).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">PLAYER_TURN</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="c1"># On ne peut splitter que s&#39;il n&#39;y a qu&#39;une seule main (pas de split déjà effectué)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">current_hand</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_hand</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="c1"># Vérifier que les deux cartes ont la même valeur</span>
+        <span class="k">return</span> <span class="n">current_hand</span><span class="o">.</span><span class="n">cards</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">==</span> <span class="n">current_hand</span><span class="o">.</span><span class="n">cards</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span></div>
+
+    
+<div class="viewcode-block" id="Game.get_status_message">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.get_status_message">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_status_message</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retourne un message décrivant l&#39;état actuel.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">GameState</span><span class="o">.</span><span class="n">MENU</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;BLACKJACK&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">GameState</span><span class="o">.</span><span class="n">INITIAL_DEAL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Distribution des cartes...&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">GameState</span><span class="o">.</span><span class="n">PLAYER_TURN</span><span class="p">:</span>
+            <span class="n">current_hand</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span><span class="p">]</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;À vous de jouer (main=</span><span class="si">{</span><span class="n">current_hand</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Main </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">)</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">return</span> <span class="n">msg</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">GameState</span><span class="o">.</span><span class="n">DEALER_REVEAL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Révélation du croupier...&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">GameState</span><span class="o">.</span><span class="n">DEALER_TURN</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Le croupier joue&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">GameState</span><span class="o">.</span><span class="n">RESULT_SCREEN</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_surrendered</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot; Vous avez abandonné (50</span><span class="si">% r</span><span class="s2">etourné)&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PLAYER_WIN</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot; Vous avez gagné!&quot;</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot; Le croupier a gagné&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;Égalité!&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Attente...&quot;</span></div>
+
+    
+<div class="viewcode-block" id="Game.update">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Met à jour l&#39;état du jeu (gestion des délais d&#39;animation).&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_counter</span> <span class="o">+=</span> <span class="n">dt</span></div>
+
+    
+    <span class="c1"># ===== Méthodes utilitaires =====</span>
+    
+<div class="viewcode-block" id="Game.get_current_hand">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.get_current_hand">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_current_hand</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Hand</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retourne la main actuellement jouée.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span><span class="p">]</span></div>
+
+    
+<div class="viewcode-block" id="Game.is_playing_split_hands">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.is_playing_split_hands">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_playing_split_hands</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Vérifie si on joue des mains splittées.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span></div>
+
+    
+<div class="viewcode-block" id="Game.can_take_insurance">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.can_take_insurance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_take_insurance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retourne True si le joueur peut prendre l&#39;assurance.&quot;&quot;&quot;</span>
+        <span class="c1"># L&#39;assurance est proposée quand le croupier a un As visible</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dealer_hand</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dealer_hand</span><span class="o">.</span><span class="n">cards</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">insurance_offered</span></div>
+
+    
+<div class="viewcode-block" id="Game.can_surrender">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.can_surrender">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_surrender</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retourne True si le joueur peut abandonner (seulement au début du tour).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">PLAYER_TURN</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="c1"># On peut abandonner seulement avec 2 cartes et pas de split</span>
+        <span class="n">current_hand</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_hand</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span></div>
+
+    
+<div class="viewcode-block" id="Game.switch_to_next_hand">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.switch_to_next_hand">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">switch_to_next_hand</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Passe à la main suivante après stand/bust.</span>
+<span class="sd">        Retourne True s&#39;il reste des mains à jouer, False sinon.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Toutes les mains ont été jouées</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+    
+    <span class="c1"># ===== Actions du joueur =====</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_switch_to_next_seat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Passe à la place suivante dans le jeu multi-places.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_seat_playing</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_seat_playing</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">active_seats</span><span class="p">):</span>
+            <span class="c1"># Toutes les places ont été jouées, le croupier joue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">DEALER_REVEAL</span>
+    
+<div class="viewcode-block" id="Game.player_hit">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.player_hit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">player_hit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Le joueur tire une carte.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">can_hit</span><span class="p">():</span>
+            <span class="k">return</span>
+        
+        <span class="c1"># Multi-seat: utiliser la place active actuelle</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_seats</span><span class="p">:</span>
+            <span class="n">seat_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_seats</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_seat_playing</span><span class="p">]</span>
+            <span class="n">current_hand</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seat_hands</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span>
+            <span class="n">current_hand</span><span class="o">.</span><span class="n">add_cards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_action_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_counter</span>
+            
+            <span class="c1"># Vérifier si la main a bust</span>
+            <span class="k">if</span> <span class="n">current_hand</span><span class="o">.</span><span class="n">is_bust</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">seat_results</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span>
+                <span class="c1"># Passer à la place suivante</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_switch_to_next_seat</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Fallback pour le mode single-seat</span>
+            <span class="n">current_hand</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span><span class="p">]</span>
+            <span class="n">current_hand</span><span class="o">.</span><span class="n">add_cards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_action_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_counter</span>
+            
+            <span class="c1"># Vérifier si la main a bust</span>
+            <span class="k">if</span> <span class="n">current_hand</span><span class="o">.</span><span class="n">is_bust</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span>
+                <span class="c1"># Passer à la main suivante ou terminer</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">switch_to_next_hand</span><span class="p">():</span>
+                    <span class="c1"># Toutes les mains ont été jouées</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">DEALER_REVEAL</span></div>
+
+
+    
+<div class="viewcode-block" id="Game.player_stand">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.player_stand">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">player_stand</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Le joueur s&#39;arrête et passe à la main suivante ou au croupier.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">can_stand</span><span class="p">():</span>
+            <span class="k">return</span>
+        
+        <span class="c1"># Multi-seat: passer à la place suivante</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_seats</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_switch_to_next_seat</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Fallback pour le mode single-seat</span>
+            <span class="c1"># Passer à la main suivante ou au croupier</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">switch_to_next_hand</span><span class="p">():</span>
+                <span class="c1"># Toutes les mains ont été jouées, le croupier joue</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">DEALER_REVEAL</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_action_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_counter</span></div>
+
+    
+<div class="viewcode-block" id="Game.player_double">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.player_double">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">player_double</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Le joueur double sa mise et tire 1 carte.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">can_double</span><span class="p">():</span>
+            <span class="k">return</span>
+        
+        <span class="c1"># Doubler la mise de la main actuelle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hand_bets</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span><span class="p">]</span> <span class="o">*=</span> <span class="mi">2</span>
+        
+        <span class="n">current_hand</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span><span class="p">]</span>
+        <span class="n">current_hand</span><span class="o">.</span><span class="n">add_cards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_action_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_counter</span>
+        
+        <span class="k">if</span> <span class="n">current_hand</span><span class="o">.</span><span class="n">is_bust</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span>
+        
+        <span class="c1"># Après un double, on passe automatiquement à la main suivante ou au croupier</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">switch_to_next_hand</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">DEALER_REVEAL</span></div>
+
+    
+<div class="viewcode-block" id="Game.player_split">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.player_split">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">player_split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Le joueur divise sa main (si possible).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">can_split</span><span class="p">():</span>
+            <span class="k">return</span>
+        
+        <span class="c1"># Créer une deuxième main avec la deuxième carte</span>
+        <span class="n">original_hand</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">second_card</span> <span class="o">=</span> <span class="n">original_hand</span><span class="o">.</span><span class="n">cards</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        
+        <span class="c1"># Créer la nouvelle main</span>
+        <span class="n">new_hand</span> <span class="o">=</span> <span class="n">Hand</span><span class="p">()</span>
+        <span class="n">new_hand</span><span class="o">.</span><span class="n">add_cards</span><span class="p">([</span><span class="n">second_card</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_hand</span><span class="p">)</span>
+        
+        <span class="c1"># Dupliquer la mise pour la nouvelle main</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hand_bets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hand_bets</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        
+        <span class="c1"># Donner une nouvelle carte à chaque main</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_cards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add_cards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="c1"># Jouer la première main</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_hand_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_action_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_counter</span></div>
+
+    
+<div class="viewcode-block" id="Game.take_insurance">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.take_insurance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">take_insurance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Le joueur prend l&#39;assurance (max 50% de la mise).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">can_take_insurance</span><span class="p">():</span>
+            <span class="k">return</span>
+        
+        <span class="c1"># L&#39;assurance coûte 50% de la mise initiale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insurance_bet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_bet</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_insurance</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insurance_offered</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+    
+<div class="viewcode-block" id="Game.decline_insurance">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.decline_insurance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decline_insurance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Le joueur refuse l&#39;assurance.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insurance_offered</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_insurance</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    
+<div class="viewcode-block" id="Game.player_surrender">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.player_surrender">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">player_surrender</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Le joueur abandonne et récupère 50% de sa mise.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">can_surrender</span><span class="p">():</span>
+            <span class="k">return</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_surrendered</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># Le joueur récupère 50% de sa mise (perd 50%)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span>  <span class="c1"># Techniquement une perte, mais avec remboursement partiel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">RESULT_SCREEN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_action_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_counter</span></div>
+
+
+    
+<div class="viewcode-block" id="Game.dealer_play">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.dealer_play">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dealer_play</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Le croupier joue selon la règle fixe : tire si &lt; 17, s&#39;arrête sinon.&quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">dealer_hand</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">17</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dealer_hand</span><span class="o">.</span><span class="n">add_cards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="c1"># Comparer et déterminer le gagnant</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_determine_winner</span><span class="p">()</span></div>
+
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_determine_winner</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compare les mains et détermine le gagnant.&quot;&quot;&quot;</span>
+        <span class="n">dealer_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dealer_hand</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+        <span class="n">dealer_bust</span> <span class="o">=</span> <span class="n">dealer_value</span> <span class="o">&gt;</span> <span class="mi">21</span>
+        
+        <span class="c1"># Multi-seat: calculer le résultat pour chaque place active</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_seats</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">seat_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_seats</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">seat_results</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># Résultat déjà déterminé (bust ou blackjack)</span>
+                    <span class="k">continue</span>
+                
+                <span class="n">hand</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seat_hands</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span>
+                <span class="n">player_value</span> <span class="o">=</span> <span class="n">hand</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+                
+                <span class="k">if</span> <span class="n">dealer_bust</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">seat_results</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PLAYER_WIN</span>
+                <span class="k">elif</span> <span class="n">player_value</span> <span class="o">&gt;</span> <span class="n">dealer_value</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">seat_results</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PLAYER_WIN</span>
+                <span class="k">elif</span> <span class="n">dealer_value</span> <span class="o">&gt;</span> <span class="n">player_value</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">seat_results</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">seat_results</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PUSH</span>
+            
+            <span class="c1"># Déterminer le résultat global</span>
+            <span class="n">wins</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">seat_results</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PLAYER_WIN</span><span class="p">)</span>
+            <span class="n">losses</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">seat_results</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">wins</span> <span class="o">&gt;</span> <span class="n">losses</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PLAYER_WIN</span>
+            <span class="k">elif</span> <span class="n">losses</span> <span class="o">&gt;</span> <span class="n">wins</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PUSH</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Mode split (fallback)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">hand</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">player_value</span> <span class="o">=</span> <span class="n">hand</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">dealer_bust</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PLAYER_WIN</span>
+                <span class="k">elif</span> <span class="n">player_value</span> <span class="o">&gt;</span> <span class="n">dealer_value</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PLAYER_WIN</span>
+                <span class="k">elif</span> <span class="n">dealer_value</span> <span class="o">&gt;</span> <span class="n">player_value</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PUSH</span>
+            <span class="n">wins</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span> <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PLAYER_WIN</span><span class="p">)</span>
+            <span class="n">losses</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span> <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">wins</span> <span class="o">&gt;</span> <span class="n">losses</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PLAYER_WIN</span>
+            <span class="k">elif</span> <span class="n">losses</span> <span class="o">&gt;</span> <span class="n">wins</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PUSH</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Une seule main (fallback)</span>
+            <span class="n">player_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">dealer_bust</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PLAYER_WIN</span>
+            <span class="k">elif</span> <span class="n">player_value</span> <span class="o">&gt;</span> <span class="mi">21</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span>
+            <span class="k">elif</span> <span class="n">player_value</span> <span class="o">&gt;</span> <span class="n">dealer_value</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PLAYER_WIN</span>
+            <span class="k">elif</span> <span class="n">dealer_value</span> <span class="o">&gt;</span> <span class="n">player_value</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PUSH</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span>
+        
+        <span class="c1"># Gérer l&#39;assurance</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_insurance</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dealer_hand</span><span class="o">.</span><span class="n">is_blackjack</span><span class="p">():</span>
+            <span class="c1"># Le joueur gagne l&#39;assurance (paiement 2:1)</span>
+            <span class="k">pass</span>  <span class="c1"># Sera géré dans le calcul des gains</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">RESULT_SCREEN</span>
+    
+<div class="viewcode-block" id="Game.deal_initial_cards">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.deal_initial_cards">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">deal_initial_cards</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Distribue les 2 cartes initiales au joueur et au croupier.&quot;&quot;&quot;</span>
+        <span class="c1"># Initialiser la mise de la première main</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hand_bets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_bet</span>
+        
+        <span class="c1"># Donner 1 carte au joueur, 1 au croupier, puis 1 au joueur, 1 au croupier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_cards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dealer_hand</span><span class="o">.</span><span class="n">add_cards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_cards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dealer_hand</span><span class="o">.</span><span class="n">add_cards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="c1"># Vérifier les blackjacks initiaux</span>
+        <span class="n">player_bj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_blackjack</span><span class="p">()</span>
+        <span class="n">dealer_bj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dealer_hand</span><span class="o">.</span><span class="n">is_blackjack</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="n">player_bj</span> <span class="ow">and</span> <span class="n">dealer_bj</span><span class="p">:</span>
+            <span class="c1"># Les deux ont un blackjack = égalité</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PUSH</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PUSH</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">RESULT_SCREEN</span>
+        <span class="k">elif</span> <span class="n">player_bj</span><span class="p">:</span>
+            <span class="c1"># Joueur a un blackjack, gagne</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PLAYER_WIN</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PLAYER_WIN</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">RESULT_SCREEN</span>
+        <span class="k">elif</span> <span class="n">dealer_bj</span><span class="p">:</span>
+            <span class="c1"># Croupier a un blackjack, gagne</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hand_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">RESULT_SCREEN</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Pas de blackjack, le joueur commence</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">PLAYER_TURN</span></div>
+
+
+<div class="viewcode-block" id="Game.deal_initial_cards_multiseat">
+<a class="viewcode-back" href="../../modules/game.html#core.game.Game.deal_initial_cards_multiseat">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">deal_initial_cards_multiseat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Distribue les 2 cartes initiales à toutes les places actives et au croupier.&quot;&quot;&quot;</span>
+        <span class="c1"># Identifier les places actives (celles avec des mises)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_seats</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">seat</span> <span class="k">for</span> <span class="n">seat</span><span class="p">,</span> <span class="n">bet</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">seat_bets</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">bet</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_seats</span><span class="p">:</span>
+            <span class="k">return</span>
+        
+        <span class="c1"># Initialiser les mains pour chaque place active</span>
+        <span class="k">for</span> <span class="n">seat_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_seats</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seat_hands</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">Hand</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seat_results</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        
+        <span class="c1"># Distribution alternée: 1 carte à chaque place, puis 1 au croupier, puis 2ème carte à chaque place, puis 2ème au croupier</span>
+        <span class="k">for</span> <span class="n">seat_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_seats</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seat_hands</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span><span class="o">.</span><span class="n">add_cards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">dealer_hand</span><span class="o">.</span><span class="n">add_cards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="k">for</span> <span class="n">seat_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_seats</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seat_hands</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span><span class="o">.</span><span class="n">add_cards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">dealer_hand</span><span class="o">.</span><span class="n">add_cards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="c1"># Vérifier les blackjacks</span>
+        <span class="n">dealer_bj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dealer_hand</span><span class="o">.</span><span class="n">is_blackjack</span><span class="p">()</span>
+        
+        <span class="c1"># Vérifier chaque place pour les blackjacks</span>
+        <span class="n">all_done</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">seat_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_seats</span><span class="p">:</span>
+            <span class="n">player_bj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seat_hands</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span><span class="o">.</span><span class="n">is_blackjack</span><span class="p">()</span>
+            
+            <span class="k">if</span> <span class="n">player_bj</span> <span class="ow">and</span> <span class="n">dealer_bj</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">seat_results</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PUSH</span>
+            <span class="k">elif</span> <span class="n">player_bj</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">seat_results</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">PLAYER_WIN</span>
+            <span class="k">elif</span> <span class="n">dealer_bj</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">seat_results</span><span class="p">[</span><span class="n">seat_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">GameResult</span><span class="o">.</span><span class="n">DEALER_WIN</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">all_done</span> <span class="o">=</span> <span class="kc">False</span>
+        
+        <span class="c1"># Si tous ont des blackjacks ou le croupier a un blackjack, terminer</span>
+        <span class="k">if</span> <span class="n">dealer_bj</span> <span class="ow">or</span> <span class="n">all_done</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">RESULT_SCREEN</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Commencer à jouer la première place</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_seat_playing</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">PLAYER_TURN</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Droits d'auteur 2025, Équipe Blackjack.</p>
+  </div>
+
+  Compilé avec <a href="https://www.sphinx-doc.org/">Sphinx</a> en utilisant un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">thème</a>
+    fourni par <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

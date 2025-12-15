@@ -1,0 +1,1009 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="fr" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module Core &mdash; Documentation Blackjack L3 SDN 1.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=7a28dfa3"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=e6b791cb"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+    <link rel="next" title="Module Game" href="game.html" />
+    <link rel="prev" title="Installation" href="../installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Blackjack L3 SDN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Rechercher docs" aria-label="Rechercher docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Sommaire:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Module Core</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#vue-d-ensemble">Vue d’ensemble</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-core.card">Module card</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core.card.RANKS"><code class="docutils literal notranslate"><span class="pre">RANKS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.card.SUITS"><code class="docutils literal notranslate"><span class="pre">SUITS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.card.Card"><code class="docutils literal notranslate"><span class="pre">Card</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#core.card.Card.rank"><code class="docutils literal notranslate"><span class="pre">Card.rank</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.card.Card.suit"><code class="docutils literal notranslate"><span class="pre">Card.suit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.card.Card.__init__"><code class="docutils literal notranslate"><span class="pre">Card.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.card.Card.value"><code class="docutils literal notranslate"><span class="pre">Card.value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.card.Card.__repr__"><code class="docutils literal notranslate"><span class="pre">Card.__repr__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-core.deck">Module deck</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core.deck.Deck"><code class="docutils literal notranslate"><span class="pre">Deck</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#core.deck.Deck.num_decks"><code class="docutils literal notranslate"><span class="pre">Deck.num_decks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.deck.Deck.cards"><code class="docutils literal notranslate"><span class="pre">Deck.cards</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.deck.Deck.__init__"><code class="docutils literal notranslate"><span class="pre">Deck.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.deck.Deck.shuffle"><code class="docutils literal notranslate"><span class="pre">Deck.shuffle()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.deck.Deck.draw"><code class="docutils literal notranslate"><span class="pre">Deck.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.deck.Deck.burn"><code class="docutils literal notranslate"><span class="pre">Deck.burn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.deck.Deck.reset"><code class="docutils literal notranslate"><span class="pre">Deck.reset()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-core.hand">Module hand</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core.hand.Hand"><code class="docutils literal notranslate"><span class="pre">Hand</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#core.hand.Hand.cards"><code class="docutils literal notranslate"><span class="pre">Hand.cards</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.hand.Hand.seat_index"><code class="docutils literal notranslate"><span class="pre">Hand.seat_index</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.hand.Hand.__init__"><code class="docutils literal notranslate"><span class="pre">Hand.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.hand.Hand.add_card"><code class="docutils literal notranslate"><span class="pre">Hand.add_card()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.hand.Hand.add_cards"><code class="docutils literal notranslate"><span class="pre">Hand.add_cards()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.hand.Hand.get_value"><code class="docutils literal notranslate"><span class="pre">Hand.get_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.hand.Hand.is_blackjack"><code class="docutils literal notranslate"><span class="pre">Hand.is_blackjack()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.hand.Hand.is_bust"><code class="docutils literal notranslate"><span class="pre">Hand.is_bust()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.hand.Hand.is_soft_hand"><code class="docutils literal notranslate"><span class="pre">Hand.is_soft_hand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.hand.Hand.clear"><code class="docutils literal notranslate"><span class="pre">Hand.clear()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.hand.Hand.__repr__"><code class="docutils literal notranslate"><span class="pre">Hand.__repr__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-core.player">Module player</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core.player.Player"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.balance"><code class="docutils literal notranslate"><span class="pre">Player.balance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.total_hands"><code class="docutils literal notranslate"><span class="pre">Player.total_hands</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.wins"><code class="docutils literal notranslate"><span class="pre">Player.wins</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.losses"><code class="docutils literal notranslate"><span class="pre">Player.losses</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.pushes"><code class="docutils literal notranslate"><span class="pre">Player.pushes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.blackjacks"><code class="docutils literal notranslate"><span class="pre">Player.blackjacks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.total_wagered"><code class="docutils literal notranslate"><span class="pre">Player.total_wagered</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.total_won"><code class="docutils literal notranslate"><span class="pre">Player.total_won</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.initial_balance"><code class="docutils literal notranslate"><span class="pre">Player.initial_balance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.SAVE_FILE"><code class="docutils literal notranslate"><span class="pre">Player.SAVE_FILE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.__init__"><code class="docutils literal notranslate"><span class="pre">Player.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.win_hand"><code class="docutils literal notranslate"><span class="pre">Player.win_hand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.lose_hand"><code class="docutils literal notranslate"><span class="pre">Player.lose_hand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.push_hand"><code class="docutils literal notranslate"><span class="pre">Player.push_hand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.record_blackjack"><code class="docutils literal notranslate"><span class="pre">Player.record_blackjack()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.earn_money"><code class="docutils literal notranslate"><span class="pre">Player.earn_money()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.get_net_profit"><code class="docutils literal notranslate"><span class="pre">Player.get_net_profit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.get_win_rate"><code class="docutils literal notranslate"><span class="pre">Player.get_win_rate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.to_dict"><code class="docutils literal notranslate"><span class="pre">Player.to_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.from_dict"><code class="docutils literal notranslate"><span class="pre">Player.from_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.save"><code class="docutils literal notranslate"><span class="pre">Player.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.load"><code class="docutils literal notranslate"><span class="pre">Player.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.reset_stats"><code class="docutils literal notranslate"><span class="pre">Player.reset_stats()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.player.Player.__repr__"><code class="docutils literal notranslate"><span class="pre">Player.__repr__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exemples-d-utilisation">Exemples d’utilisation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creer-et-manipuler-une-carte">Créer et manipuler une carte</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creer-et-utiliser-un-sabot">Créer et utiliser un sabot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gerer-une-main-de-cartes">Gérer une main de cartes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gerer-un-joueur">Gérer un joueur</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Module Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Guide d’utilisation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Blackjack L3 SDN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Module Core</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/core.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-core">
+<h1>Module Core<a class="headerlink" href="#module-core" title="Lien vers cette rubrique"></a></h1>
+<p>Le module <code class="docutils literal notranslate"><span class="pre">core</span></code> contient tous les composants de base du jeu de Blackjack.</p>
+<section id="vue-d-ensemble">
+<h2>Vue d’ensemble<a class="headerlink" href="#vue-d-ensemble" title="Lien vers cette rubrique"></a></h2>
+<p>Le package <code class="docutils literal notranslate"><span class="pre">core</span></code> est organisé en plusieurs modules spécialisés :</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">card</span></code> : Représentation des cartes à jouer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deck</span></code> : Gestion du sabot de cartes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hand</span></code> : Gestion des mains de cartes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">game</span></code> : Logique principale du jeu</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">player</span></code> : Gestion du joueur et statistiques</p></li>
+</ul>
+</section>
+<section id="module-core.card">
+<span id="module-card"></span><h2>Module card<a class="headerlink" href="#module-core.card" title="Lien vers cette rubrique"></a></h2>
+<p>Module de gestion des cartes à jouer.</p>
+<p>Ce module définit la classe Card et les constantes associées pour représenter
+les cartes à jouer dans un jeu de Blackjack.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="core.card.RANKS">
+<span class="sig-prename descclassname"><span class="pre">core.card.</span></span><span class="sig-name descname"><span class="pre">RANKS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['A',</span> <span class="pre">'2',</span> <span class="pre">'3',</span> <span class="pre">'4',</span> <span class="pre">'5',</span> <span class="pre">'6',</span> <span class="pre">'7',</span> <span class="pre">'8',</span> <span class="pre">'9',</span> <span class="pre">'10',</span> <span class="pre">'J',</span> <span class="pre">'Q',</span> <span class="pre">'K']</span></em><a class="headerlink" href="#core.card.RANKS" title="Lien vers cette définition"></a></dt>
+<dd><p>Liste de toutes les valeurs possibles des cartes (As à Roi)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="core.card.SUITS">
+<span class="sig-prename descclassname"><span class="pre">core.card.</span></span><span class="sig-name descname"><span class="pre">SUITS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['♠',</span> <span class="pre">'♥',</span> <span class="pre">'♦',</span> <span class="pre">'♣']</span></em><a class="headerlink" href="#core.card.SUITS" title="Lien vers cette définition"></a></dt>
+<dd><p>Liste des quatre familles de cartes (Pique, Cœur, Carreau, Trèfle)</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.card.Card">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.card.</span></span><span class="sig-name descname"><span class="pre">Card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/card.html#Card"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.card.Card" title="Lien vers cette définition"></a></dt>
+<dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Représente une carte à jouer.</p>
+<p>Une carte est définie par sa valeur (rank) et sa famille (suit).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.card.Card.rank">
+<span class="sig-name descname"><span class="pre">rank</span></span><a class="headerlink" href="#core.card.Card.rank" title="Lien vers cette définition"></a></dt>
+<dd><p>La valeur de la carte (A, 2-10, J, Q, K)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.card.Card.suit">
+<span class="sig-name descname"><span class="pre">suit</span></span><a class="headerlink" href="#core.card.Card.suit" title="Lien vers cette définition"></a></dt>
+<dd><p>La famille de la carte (♠, ♥, ♦, ♣)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">card</span> <span class="o">=</span> <span class="n">Card</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;♠&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">card</span><span class="p">)</span>
+<span class="go">A♠</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">card</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+<span class="go">11</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.card.Card.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/card.html#Card.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.card.Card.__init__" title="Lien vers cette définition"></a></dt>
+<dd><p>Initialise une carte avec sa valeur et sa famille.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rank</strong> (<em>str</em>) – La valeur de la carte, doit être dans RANKS</p></li>
+<li><p><strong>suit</strong> (<em>str</em>) – La famille de la carte, doit être dans SUITS</p></li>
+</ul>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – Si la valeur ou la famille n’est pas valide</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.card.Card.value">
+<span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/core/card.html#Card.value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.card.Card.value" title="Lien vers cette définition"></a></dt>
+<dd><p>Calcule la valeur numérique de la carte pour le Blackjack.</p>
+<p>L’As vaut 11 (ajustement à 1 géré par la classe Hand),
+les figures (J, Q, K) valent 10,
+les autres cartes valent leur valeur nominale.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>La valeur numérique de la carte (1-11)</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Card</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;♠&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+<span class="go">11</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Card</span><span class="p">(</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;♥&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+<span class="go">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Card</span><span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="s2">&quot;♦&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+<span class="go">5</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.card.Card.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/core/card.html#Card.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.card.Card.__repr__" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne une représentation textuelle de la carte.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>La carte au format « RangFamille » (ex: « A♠ »)</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-core.deck">
+<span id="module-deck"></span><h2>Module deck<a class="headerlink" href="#module-core.deck" title="Lien vers cette rubrique"></a></h2>
+<p>Module de gestion du sabot de cartes.</p>
+<p>Ce module définit la classe Deck qui représente un sabot de cartes
+pouvant contenir un ou plusieurs jeux de 52 cartes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.deck.Deck">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.deck.</span></span><span class="sig-name descname"><span class="pre">Deck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_decks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/deck.html#Deck"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.deck.Deck" title="Lien vers cette définition"></a></dt>
+<dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Représente un sabot de cartes pour le Blackjack.</p>
+<p>Le sabot peut contenir un ou plusieurs jeux de 52 cartes standard.
+Les cartes sont automatiquement mélangées à la création.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.deck.Deck.num_decks">
+<span class="sig-name descname"><span class="pre">num_decks</span></span><a class="headerlink" href="#core.deck.Deck.num_decks" title="Lien vers cette définition"></a></dt>
+<dd><p>Le nombre de jeux de 52 cartes dans le sabot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.deck.Deck.cards">
+<span class="sig-name descname"><span class="pre">cards</span></span><a class="headerlink" href="#core.deck.Deck.cards" title="Lien vers cette définition"></a></dt>
+<dd><p>Liste des cartes restantes dans le sabot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#core.card.Card" title="core.card.Card">Card</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">deck</span> <span class="o">=</span> <span class="n">Deck</span><span class="p">(</span><span class="n">num_decks</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span>
+<span class="go">52</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span> <span class="o">=</span> <span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">cards</span><span class="p">)</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.deck.Deck.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_decks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/deck.html#Deck.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.deck.Deck.__init__" title="Lien vers cette définition"></a></dt>
+<dd><p>Initialise un sabot avec le nombre spécifié de jeux.</p>
+<p>Les cartes sont automatiquement mélangées après création.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>num_decks</strong> (<em>int</em><em>, </em><em>optional</em>) – Nombre de jeux de 52 cartes. Par défaut 1.</p>
+</dd>
+</dl>
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">deck</span> <span class="o">=</span> <span class="n">Deck</span><span class="p">(</span><span class="n">num_decks</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>  <span class="c1"># Sabot de 6 jeux (casino)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span>
+<span class="go">312</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.deck.Deck.shuffle">
+<span class="sig-name descname"><span class="pre">shuffle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/deck.html#Deck.shuffle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.deck.Deck.shuffle" title="Lien vers cette définition"></a></dt>
+<dd><p>Mélange aléatoirement toutes les cartes du sabot.</p>
+<p>Utilise l’algorithme de Fisher-Yates via random.shuffle().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.deck.Deck.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#core.card.Card" title="core.card.Card"><span class="pre">Card</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/core/deck.html#Deck.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.deck.Deck.draw" title="Lien vers cette définition"></a></dt>
+<dd><p>Tire n cartes du dessus du sabot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Nombre de cartes à tirer. Par défaut 1.</p>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>Liste des cartes tirées</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#core.card.Card" title="core.card.Card">Card</a>]</p>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Si le sabot ne contient pas assez de cartes</p>
+</dd>
+</dl>
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">deck</span> <span class="o">=</span> <span class="n">Deck</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span> <span class="o">=</span> <span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">cards</span><span class="p">)</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span>
+<span class="go">47</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.deck.Deck.burn">
+<span class="sig-name descname"><span class="pre">burn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/deck.html#Deck.burn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.deck.Deck.burn" title="Lien vers cette définition"></a></dt>
+<dd><p>Brûle (défausse) n cartes du dessus sans les utiliser.</p>
+<p>Cette pratique est courante dans les casinos pour éviter la triche.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Nombre de cartes à brûler. Par défaut 1.</p>
+</dd>
+</dl>
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">deck</span> <span class="o">=</span> <span class="n">Deck</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">deck</span><span class="o">.</span><span class="n">burn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># Brûle 3 cartes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span>
+<span class="go">49</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.deck.Deck.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/deck.html#Deck.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.deck.Deck.reset" title="Lien vers cette définition"></a></dt>
+<dd><p>Réinitialise le sabot avec un nouveau jeu complet mélangé.</p>
+<p>Recrée toutes les cartes et les mélange.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-core.hand">
+<span id="module-hand"></span><h2>Module hand<a class="headerlink" href="#module-core.hand" title="Lien vers cette rubrique"></a></h2>
+<p>Module de gestion des mains de cartes.</p>
+<p>Ce module définit la classe Hand qui représente une main de cartes
+pour le joueur ou le croupier dans un jeu de Blackjack.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.hand.Hand">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.hand.</span></span><span class="sig-name descname"><span class="pre">Hand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seat_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/hand.html#Hand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.hand.Hand" title="Lien vers cette définition"></a></dt>
+<dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Représente une main de cartes au Blackjack.</p>
+<p>Une main contient une liste de cartes et gère automatiquement
+le calcul de la valeur totale en tenant compte des As.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.hand.Hand.cards">
+<span class="sig-name descname"><span class="pre">cards</span></span><a class="headerlink" href="#core.hand.Hand.cards" title="Lien vers cette définition"></a></dt>
+<dd><p>Liste des cartes dans la main</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#core.card.Card" title="core.card.Card">Card</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.hand.Hand.seat_index">
+<span class="sig-name descname"><span class="pre">seat_index</span></span><a class="headerlink" href="#core.hand.Hand.seat_index" title="Lien vers cette définition"></a></dt>
+<dd><p>Index de la place du joueur (pour le mode multi-places)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hand</span> <span class="o">=</span> <span class="n">Hand</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hand</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">Card</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;♠&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hand</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">Card</span><span class="p">(</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;♥&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hand</span><span class="o">.</span><span class="n">is_blackjack</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.hand.Hand.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seat_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/hand.html#Hand.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.hand.Hand.__init__" title="Lien vers cette définition"></a></dt>
+<dd><p>Initialise une main vide.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>seat_index</strong> (<em>int</em><em>, </em><em>optional</em>) – Index de la place du joueur. Par défaut 0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.hand.Hand.add_card">
+<span class="sig-name descname"><span class="pre">add_card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">card</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.card.Card" title="core.card.Card"><span class="pre">Card</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/hand.html#Hand.add_card"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.hand.Hand.add_card" title="Lien vers cette définition"></a></dt>
+<dd><p>Ajoute une carte à la main.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>card</strong> (<a class="reference internal" href="#core.card.Card" title="core.card.Card"><em>Card</em></a>) – La carte à ajouter</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.hand.Hand.add_cards">
+<span class="sig-name descname"><span class="pre">add_cards</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cards</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#core.card.Card" title="core.card.Card"><span class="pre">Card</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/hand.html#Hand.add_cards"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.hand.Hand.add_cards" title="Lien vers cette définition"></a></dt>
+<dd><p>Ajoute plusieurs cartes à la main.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cards</strong> (<em>List</em><em>[</em><a class="reference internal" href="#core.card.Card" title="core.card.Card"><em>Card</em></a><em>]</em>) – Liste des cartes à ajouter</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.hand.Hand.get_value">
+<span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/core/hand.html#Hand.get_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.hand.Hand.get_value" title="Lien vers cette définition"></a></dt>
+<dd><p>Calcule la valeur totale de la main au Blackjack.</p>
+<p>Les As peuvent valoir 1 ou 11. La méthode optimise automatiquement
+la valeur des As pour obtenir le meilleur score possible sans dépasser 21.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>La valeur totale de la main (0-31+)</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hand</span> <span class="o">=</span> <span class="n">Hand</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hand</span><span class="o">.</span><span class="n">add_cards</span><span class="p">([</span><span class="n">Card</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;♠&quot;</span><span class="p">),</span> <span class="n">Card</span><span class="p">(</span><span class="s2">&quot;9&quot;</span><span class="p">,</span> <span class="s2">&quot;♥&quot;</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hand</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+<span class="go">20</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hand</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">Card</span><span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="s2">&quot;♦&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hand</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>  <span class="c1"># L&#39;As vaut maintenant 1</span>
+<span class="go">15</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.hand.Hand.is_blackjack">
+<span class="sig-name descname"><span class="pre">is_blackjack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/hand.html#Hand.is_blackjack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.hand.Hand.is_blackjack" title="Lien vers cette définition"></a></dt>
+<dd><p>Vérifie si la main est un Blackjack naturel.</p>
+<p>Un Blackjack est une main de 2 cartes valant exactement 21.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True si c’est un Blackjack, False sinon</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.hand.Hand.is_bust">
+<span class="sig-name descname"><span class="pre">is_bust</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/hand.html#Hand.is_bust"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.hand.Hand.is_bust" title="Lien vers cette définition"></a></dt>
+<dd><p>Vérifie si la main a dépassé 21 (bust).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True si la valeur dépasse 21, False sinon</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.hand.Hand.is_soft_hand">
+<span class="sig-name descname"><span class="pre">is_soft_hand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/hand.html#Hand.is_soft_hand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.hand.Hand.is_soft_hand" title="Lien vers cette définition"></a></dt>
+<dd><p>Vérifie si la main est une main souple.</p>
+<p>Une main souple contient un As comptabilisé comme 11.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True si la main contient un As valant 11, False sinon</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hand</span> <span class="o">=</span> <span class="n">Hand</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hand</span><span class="o">.</span><span class="n">add_cards</span><span class="p">([</span><span class="n">Card</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;♠&quot;</span><span class="p">),</span> <span class="n">Card</span><span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="s2">&quot;♥&quot;</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hand</span><span class="o">.</span><span class="n">is_soft_hand</span><span class="p">()</span>  <span class="c1"># As vaut 11, total = 17</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.hand.Hand.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/hand.html#Hand.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.hand.Hand.clear" title="Lien vers cette définition"></a></dt>
+<dd><p>Vide la main de toutes ses cartes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.hand.Hand.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/core/hand.html#Hand.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.hand.Hand.__repr__" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne une représentation textuelle de la main.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>La main au format « Hand([cartes] = valeur) »</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-core.player">
+<span id="module-player"></span><h2>Module player<a class="headerlink" href="#module-core.player" title="Lien vers cette rubrique"></a></h2>
+<p>Module de gestion du joueur et de ses statistiques.</p>
+<p>Ce module définit la classe Player qui gère le profil du joueur,
+son solde, ses statistiques de jeu et la persistance des données.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.player.Player">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.player.</span></span><span class="sig-name descname"><span class="pre">Player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">balance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/player.html#Player"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player" title="Lien vers cette définition"></a></dt>
+<dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Représente un joueur de Blackjack avec ses statistiques et son solde.</p>
+<p>Cette classe gère toutes les informations relatives au joueur :
+son solde, ses statistiques de jeu (victoires, défaites, etc.),
+et la sauvegarde/chargement de ces données.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.player.Player.balance">
+<span class="sig-name descname"><span class="pre">balance</span></span><a class="headerlink" href="#core.player.Player.balance" title="Lien vers cette définition"></a></dt>
+<dd><p>Solde actuel du joueur en dollars</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.player.Player.total_hands">
+<span class="sig-name descname"><span class="pre">total_hands</span></span><a class="headerlink" href="#core.player.Player.total_hands" title="Lien vers cette définition"></a></dt>
+<dd><p>Nombre total de mains jouées</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.player.Player.wins">
+<span class="sig-name descname"><span class="pre">wins</span></span><a class="headerlink" href="#core.player.Player.wins" title="Lien vers cette définition"></a></dt>
+<dd><p>Nombre de victoires</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.player.Player.losses">
+<span class="sig-name descname"><span class="pre">losses</span></span><a class="headerlink" href="#core.player.Player.losses" title="Lien vers cette définition"></a></dt>
+<dd><p>Nombre de défaites</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.player.Player.pushes">
+<span class="sig-name descname"><span class="pre">pushes</span></span><a class="headerlink" href="#core.player.Player.pushes" title="Lien vers cette définition"></a></dt>
+<dd><p>Nombre d’égalités</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.player.Player.blackjacks">
+<span class="sig-name descname"><span class="pre">blackjacks</span></span><a class="headerlink" href="#core.player.Player.blackjacks" title="Lien vers cette définition"></a></dt>
+<dd><p>Nombre de Blackjacks obtenus</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.player.Player.total_wagered">
+<span class="sig-name descname"><span class="pre">total_wagered</span></span><a class="headerlink" href="#core.player.Player.total_wagered" title="Lien vers cette définition"></a></dt>
+<dd><p>Montant total misé</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.player.Player.total_won">
+<span class="sig-name descname"><span class="pre">total_won</span></span><a class="headerlink" href="#core.player.Player.total_won" title="Lien vers cette définition"></a></dt>
+<dd><p>Montant total gagné</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.player.Player.initial_balance">
+<span class="sig-name descname"><span class="pre">initial_balance</span></span><a class="headerlink" href="#core.player.Player.initial_balance" title="Lien vers cette définition"></a></dt>
+<dd><p>Solde de départ du joueur</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="p">(</span><span class="n">balance</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">player</span><span class="o">.</span><span class="n">win_hand</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">player</span><span class="o">.</span><span class="n">balance</span>
+<span class="go">1100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">player</span><span class="o">.</span><span class="n">wins</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.player.Player.SAVE_FILE">
+<span class="sig-name descname"><span class="pre">SAVE_FILE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'player_stats.json'</span></em><a class="headerlink" href="#core.player.Player.SAVE_FILE" title="Lien vers cette définition"></a></dt>
+<dd><p>Nom du fichier de sauvegarde des statistiques</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.player.Player.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">balance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/player.html#Player.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player.__init__" title="Lien vers cette définition"></a></dt>
+<dd><p>Initialise un nouveau joueur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>balance</strong> (<em>int</em><em>, </em><em>optional</em>) – Solde initial du joueur. Par défaut 1000.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.player.Player.win_hand">
+<span class="sig-name descname"><span class="pre">win_hand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/player.html#Player.win_hand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player.win_hand" title="Lien vers cette définition"></a></dt>
+<dd><p>Enregistre une victoire et met à jour le solde.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>amount</strong> (<em>int</em>) – Montant gagné (inclut la mise initiale + gains)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.player.Player.lose_hand">
+<span class="sig-name descname"><span class="pre">lose_hand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/player.html#Player.lose_hand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player.lose_hand" title="Lien vers cette définition"></a></dt>
+<dd><p>Enregistre une défaite et met à jour le solde.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>amount</strong> (<em>int</em>) – Montant perdu (mise)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.player.Player.push_hand">
+<span class="sig-name descname"><span class="pre">push_hand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/player.html#Player.push_hand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player.push_hand" title="Lien vers cette définition"></a></dt>
+<dd><p>Enregistre une égalité (push).</p>
+<p>En cas de push, le joueur récupère sa mise sans gain ni perte.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.player.Player.record_blackjack">
+<span class="sig-name descname"><span class="pre">record_blackjack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/player.html#Player.record_blackjack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player.record_blackjack" title="Lien vers cette définition"></a></dt>
+<dd><p>Enregistre qu’un Blackjack naturel a été obtenu.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.player.Player.earn_money">
+<span class="sig-name descname"><span class="pre">earn_money</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/player.html#Player.earn_money"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player.earn_money" title="Lien vers cette définition"></a></dt>
+<dd><p>Ajoute de l’argent au solde du joueur (pour le clicker).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>amount</strong> (<em>int</em>) – Montant à ajouter au solde</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.player.Player.get_net_profit">
+<span class="sig-name descname"><span class="pre">get_net_profit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/core/player.html#Player.get_net_profit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player.get_net_profit" title="Lien vers cette définition"></a></dt>
+<dd><p>Calcule le profit net du joueur depuis le début.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Profit net (peut être négatif en cas de pertes)</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="p">(</span><span class="n">balance</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">player</span><span class="o">.</span><span class="n">balance</span> <span class="o">=</span> <span class="mi">1500</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">player</span><span class="o">.</span><span class="n">get_net_profit</span><span class="p">()</span>
+<span class="go">500</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.player.Player.get_win_rate">
+<span class="sig-name descname"><span class="pre">get_win_rate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/core/player.html#Player.get_win_rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player.get_win_rate" title="Lien vers cette définition"></a></dt>
+<dd><p>Calcule le taux de victoire du joueur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Taux de victoire en pourcentage (0-100)</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">player</span><span class="o">.</span><span class="n">wins</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">player</span><span class="o">.</span><span class="n">total_hands</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">player</span><span class="o">.</span><span class="n">get_win_rate</span><span class="p">()</span>
+<span class="go">70.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.player.Player.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/core/player.html#Player.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player.to_dict" title="Lien vers cette définition"></a></dt>
+<dd><p>Convertit le joueur en dictionnaire pour la sauvegarde.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionnaire contenant toutes les données du joueur</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.player.Player.from_dict">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.player.Player" title="core.player.Player"><span class="pre">Player</span></a></span></span><a class="reference internal" href="../_modules/core/player.html#Player.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player.from_dict" title="Lien vers cette définition"></a></dt>
+<dd><p>Crée un joueur à partir d’un dictionnaire.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – Dictionnaire contenant les données du joueur</p>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>Instance de Player restaurée depuis le dictionnaire</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#core.player.Player" title="core.player.Player">Player</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.player.Player.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/player.html#Player.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player.save" title="Lien vers cette définition"></a></dt>
+<dd><p>Sauvegarde les données du joueur dans un fichier JSON.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em><em>, </em><em>optional</em>) – Chemin du fichier de sauvegarde.
+Si None, utilise le chemin par défaut.</p>
+</dd>
+</dl>
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">player</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>  <span class="c1"># Sauvegarde dans player_stats.json</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.player.Player.load">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.player.Player" title="core.player.Player"><span class="pre">Player</span></a></span></span><a class="reference internal" href="../_modules/core/player.html#Player.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player.load" title="Lien vers cette définition"></a></dt>
+<dd><p>Charge les données du joueur depuis un fichier JSON.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em><em>, </em><em>optional</em>) – Chemin du fichier de sauvegarde.
+Si None, utilise le chemin par défaut.</p>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Instance de Player chargée ou nouvelle instance</dt><dd><p>si le fichier n’existe pas</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#core.player.Player" title="core.player.Player">Player</a></p>
+</dd>
+</dl>
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">balance</span><span class="p">)</span>
+<span class="go">1000</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.player.Player.reset_stats">
+<span class="sig-name descname"><span class="pre">reset_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/player.html#Player.reset_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player.reset_stats" title="Lien vers cette définition"></a></dt>
+<dd><p>Réinitialise toutes les statistiques mais garde le solde actuel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.player.Player.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/core/player.html#Player.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.player.Player.__repr__" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne une représentation textuelle du joueur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Représentation du joueur avec solde et statistiques</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="exemples-d-utilisation">
+<h2>Exemples d’utilisation<a class="headerlink" href="#exemples-d-utilisation" title="Lien vers cette rubrique"></a></h2>
+<section id="creer-et-manipuler-une-carte">
+<h3>Créer et manipuler une carte<a class="headerlink" href="#creer-et-manipuler-une-carte" title="Lien vers cette rubrique"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.card</span><span class="w"> </span><span class="kn">import</span> <span class="n">Card</span>
+
+<span class="c1"># Créer un As de pique</span>
+<span class="n">card</span> <span class="o">=</span> <span class="n">Card</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;♠&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">card</span><span class="p">)</span>  <span class="c1"># Affiche: A♠</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">card</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>  <span class="c1"># Affiche: 11</span>
+</pre></div>
+</div>
+</section>
+<section id="creer-et-utiliser-un-sabot">
+<h3>Créer et utiliser un sabot<a class="headerlink" href="#creer-et-utiliser-un-sabot" title="Lien vers cette rubrique"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.deck</span><span class="w"> </span><span class="kn">import</span> <span class="n">Deck</span>
+
+<span class="c1"># Créer un sabot de 6 jeux (standard casino)</span>
+<span class="n">deck</span> <span class="o">=</span> <span class="n">Deck</span><span class="p">(</span><span class="n">num_decks</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+
+<span class="c1"># Tirer 5 cartes</span>
+<span class="n">cards</span> <span class="o">=</span> <span class="n">deck</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Brûler 3 cartes</span>
+<span class="n">deck</span><span class="o">.</span><span class="n">burn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="gerer-une-main-de-cartes">
+<h3>Gérer une main de cartes<a class="headerlink" href="#gerer-une-main-de-cartes" title="Lien vers cette rubrique"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.hand</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">core.card</span><span class="w"> </span><span class="kn">import</span> <span class="n">Card</span>
+
+<span class="n">hand</span> <span class="o">=</span> <span class="n">Hand</span><span class="p">()</span>
+<span class="n">hand</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">Card</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;♠&quot;</span><span class="p">))</span>
+<span class="n">hand</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">Card</span><span class="p">(</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;♥&quot;</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">hand</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>  <span class="c1"># 21</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">hand</span><span class="o">.</span><span class="n">is_blackjack</span><span class="p">())</span>  <span class="c1"># True</span>
+</pre></div>
+</div>
+</section>
+<section id="gerer-un-joueur">
+<h3>Gérer un joueur<a class="headerlink" href="#gerer-un-joueur" title="Lien vers cette rubrique"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.player</span><span class="w"> </span><span class="kn">import</span> <span class="n">Player</span>
+
+<span class="c1"># Créer un nouveau joueur</span>
+<span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="p">(</span><span class="n">balance</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># Enregistrer une victoire de 100$</span>
+<span class="n">player</span><span class="o">.</span><span class="n">win_hand</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Sauvegarder les données</span>
+<span class="n">player</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="c1"># Charger un joueur existant</span>
+<span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pied de page">
+        <a href="../installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+        <a href="game.html" class="btn btn-neutral float-right" title="Module Game" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Droits d'auteur 2025, Équipe Blackjack.</p>
+  </div>
+
+  Compilé avec <a href="https://www.sphinx-doc.org/">Sphinx</a> en utilisant un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">thème</a>
+    fourni par <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

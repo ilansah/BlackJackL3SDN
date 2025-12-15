@@ -1,0 +1,1901 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="fr" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module Game &mdash; Documentation Blackjack L3 SDN 1.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=7a28dfa3"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=e6b791cb"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+    <link rel="next" title="Guide d’utilisation" href="../usage.html" />
+    <link rel="prev" title="Module Core" href="core.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Blackjack L3 SDN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Rechercher docs" aria-label="Rechercher docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Sommaire:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Module Core</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Module Game</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#core.game.GameState"><code class="docutils literal notranslate"><span class="pre">GameState</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameState.MENU"><code class="docutils literal notranslate"><span class="pre">GameState.MENU</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameState.BETTING"><code class="docutils literal notranslate"><span class="pre">GameState.BETTING</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameState.SETTINGS"><code class="docutils literal notranslate"><span class="pre">GameState.SETTINGS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameState.STATS"><code class="docutils literal notranslate"><span class="pre">GameState.STATS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameState.CLICKER"><code class="docutils literal notranslate"><span class="pre">GameState.CLICKER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameState.INITIAL_DEAL"><code class="docutils literal notranslate"><span class="pre">GameState.INITIAL_DEAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameState.PLAYER_TURN"><code class="docutils literal notranslate"><span class="pre">GameState.PLAYER_TURN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameState.DEALER_REVEAL"><code class="docutils literal notranslate"><span class="pre">GameState.DEALER_REVEAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameState.DEALER_TURN"><code class="docutils literal notranslate"><span class="pre">GameState.DEALER_TURN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameState.RESULT_SCREEN"><code class="docutils literal notranslate"><span class="pre">GameState.RESULT_SCREEN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameState.GAME_OVER"><code class="docutils literal notranslate"><span class="pre">GameState.GAME_OVER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameState.WAITING_TO_CONTINUE"><code class="docutils literal notranslate"><span class="pre">GameState.WAITING_TO_CONTINUE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">GameState.MENU</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">GameState.BETTING</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">GameState.SETTINGS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">GameState.STATS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">GameState.CLICKER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">GameState.INITIAL_DEAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">GameState.PLAYER_TURN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">GameState.DEALER_REVEAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">GameState.DEALER_TURN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">GameState.RESULT_SCREEN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10"><code class="docutils literal notranslate"><span class="pre">GameState.GAME_OVER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11"><code class="docutils literal notranslate"><span class="pre">GameState.WAITING_TO_CONTINUE</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#core.game.GameResult"><code class="docutils literal notranslate"><span class="pre">GameResult</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameResult.PLAYER_WIN"><code class="docutils literal notranslate"><span class="pre">GameResult.PLAYER_WIN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameResult.DEALER_WIN"><code class="docutils literal notranslate"><span class="pre">GameResult.DEALER_WIN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.GameResult.PUSH"><code class="docutils literal notranslate"><span class="pre">GameResult.PUSH</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12"><code class="docutils literal notranslate"><span class="pre">GameResult.PLAYER_WIN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13"><code class="docutils literal notranslate"><span class="pre">GameResult.DEALER_WIN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14"><code class="docutils literal notranslate"><span class="pre">GameResult.PUSH</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#core.game.PlayerAction"><code class="docutils literal notranslate"><span class="pre">PlayerAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.PlayerAction.HIT"><code class="docutils literal notranslate"><span class="pre">PlayerAction.HIT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.PlayerAction.STAND"><code class="docutils literal notranslate"><span class="pre">PlayerAction.STAND</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.PlayerAction.DOUBLE"><code class="docutils literal notranslate"><span class="pre">PlayerAction.DOUBLE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.PlayerAction.SPLIT"><code class="docutils literal notranslate"><span class="pre">PlayerAction.SPLIT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15"><code class="docutils literal notranslate"><span class="pre">PlayerAction.HIT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16"><code class="docutils literal notranslate"><span class="pre">PlayerAction.STAND</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id17"><code class="docutils literal notranslate"><span class="pre">PlayerAction.DOUBLE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id18"><code class="docutils literal notranslate"><span class="pre">PlayerAction.SPLIT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#core.game.Game"><code class="docutils literal notranslate"><span class="pre">Game</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.deck"><code class="docutils literal notranslate"><span class="pre">Game.deck</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.hands"><code class="docutils literal notranslate"><span class="pre">Game.hands</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.hand_bets"><code class="docutils literal notranslate"><span class="pre">Game.hand_bets</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.hand_results"><code class="docutils literal notranslate"><span class="pre">Game.hand_results</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.current_hand_index"><code class="docutils literal notranslate"><span class="pre">Game.current_hand_index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.dealer_hand"><code class="docutils literal notranslate"><span class="pre">Game.dealer_hand</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.state"><code class="docutils literal notranslate"><span class="pre">Game.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.result"><code class="docutils literal notranslate"><span class="pre">Game.result</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.frame_counter"><code class="docutils literal notranslate"><span class="pre">Game.frame_counter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.animation_delay"><code class="docutils literal notranslate"><span class="pre">Game.animation_delay</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.player_bet"><code class="docutils literal notranslate"><span class="pre">Game.player_bet</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.seat_index"><code class="docutils literal notranslate"><span class="pre">Game.seat_index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.insurance_bet"><code class="docutils literal notranslate"><span class="pre">Game.insurance_bet</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.has_insurance"><code class="docutils literal notranslate"><span class="pre">Game.has_insurance</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.seat_bets"><code class="docutils literal notranslate"><span class="pre">Game.seat_bets</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.seat_hands"><code class="docutils literal notranslate"><span class="pre">Game.seat_hands</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.seat_results"><code class="docutils literal notranslate"><span class="pre">Game.seat_results</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.active_seats"><code class="docutils literal notranslate"><span class="pre">Game.active_seats</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.has_surrendered"><code class="docutils literal notranslate"><span class="pre">Game.has_surrendered</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.__init__"><code class="docutils literal notranslate"><span class="pre">Game.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.reset"><code class="docutils literal notranslate"><span class="pre">Game.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.can_hit"><code class="docutils literal notranslate"><span class="pre">Game.can_hit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.can_stand"><code class="docutils literal notranslate"><span class="pre">Game.can_stand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.can_double"><code class="docutils literal notranslate"><span class="pre">Game.can_double()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.can_split"><code class="docutils literal notranslate"><span class="pre">Game.can_split()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.get_status_message"><code class="docutils literal notranslate"><span class="pre">Game.get_status_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.update"><code class="docutils literal notranslate"><span class="pre">Game.update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.get_current_hand"><code class="docutils literal notranslate"><span class="pre">Game.get_current_hand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.is_playing_split_hands"><code class="docutils literal notranslate"><span class="pre">Game.is_playing_split_hands()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.can_take_insurance"><code class="docutils literal notranslate"><span class="pre">Game.can_take_insurance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.can_surrender"><code class="docutils literal notranslate"><span class="pre">Game.can_surrender()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.switch_to_next_hand"><code class="docutils literal notranslate"><span class="pre">Game.switch_to_next_hand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.player_hit"><code class="docutils literal notranslate"><span class="pre">Game.player_hit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.player_stand"><code class="docutils literal notranslate"><span class="pre">Game.player_stand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.player_double"><code class="docutils literal notranslate"><span class="pre">Game.player_double()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.player_split"><code class="docutils literal notranslate"><span class="pre">Game.player_split()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.take_insurance"><code class="docutils literal notranslate"><span class="pre">Game.take_insurance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.decline_insurance"><code class="docutils literal notranslate"><span class="pre">Game.decline_insurance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.player_surrender"><code class="docutils literal notranslate"><span class="pre">Game.player_surrender()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.dealer_play"><code class="docutils literal notranslate"><span class="pre">Game.dealer_play()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.deal_initial_cards"><code class="docutils literal notranslate"><span class="pre">Game.deal_initial_cards()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core.game.Game.deal_initial_cards_multiseat"><code class="docutils literal notranslate"><span class="pre">Game.deal_initial_cards_multiseat()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#etats-du-jeu">États du jeu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id19"><code class="docutils literal notranslate"><span class="pre">GameState</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id20"><code class="docutils literal notranslate"><span class="pre">GameState.MENU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id21"><code class="docutils literal notranslate"><span class="pre">GameState.BETTING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id22"><code class="docutils literal notranslate"><span class="pre">GameState.SETTINGS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id23"><code class="docutils literal notranslate"><span class="pre">GameState.STATS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id24"><code class="docutils literal notranslate"><span class="pre">GameState.CLICKER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id25"><code class="docutils literal notranslate"><span class="pre">GameState.INITIAL_DEAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id26"><code class="docutils literal notranslate"><span class="pre">GameState.PLAYER_TURN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id27"><code class="docutils literal notranslate"><span class="pre">GameState.DEALER_REVEAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id28"><code class="docutils literal notranslate"><span class="pre">GameState.DEALER_TURN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id29"><code class="docutils literal notranslate"><span class="pre">GameState.RESULT_SCREEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id30"><code class="docutils literal notranslate"><span class="pre">GameState.GAME_OVER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id31"><code class="docutils literal notranslate"><span class="pre">GameState.WAITING_TO_CONTINUE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id32"><code class="docutils literal notranslate"><span class="pre">GameState.MENU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id33"><code class="docutils literal notranslate"><span class="pre">GameState.BETTING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id34"><code class="docutils literal notranslate"><span class="pre">GameState.SETTINGS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id35"><code class="docutils literal notranslate"><span class="pre">GameState.STATS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id36"><code class="docutils literal notranslate"><span class="pre">GameState.CLICKER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id37"><code class="docutils literal notranslate"><span class="pre">GameState.INITIAL_DEAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id38"><code class="docutils literal notranslate"><span class="pre">GameState.PLAYER_TURN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id39"><code class="docutils literal notranslate"><span class="pre">GameState.DEALER_REVEAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id40"><code class="docutils literal notranslate"><span class="pre">GameState.DEALER_TURN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id41"><code class="docutils literal notranslate"><span class="pre">GameState.RESULT_SCREEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id42"><code class="docutils literal notranslate"><span class="pre">GameState.GAME_OVER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id43"><code class="docutils literal notranslate"><span class="pre">GameState.WAITING_TO_CONTINUE</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cycle-de-vie-d-une-partie">Cycle de vie d’une partie</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#resultats-possibles">Résultats possibles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id44"><code class="docutils literal notranslate"><span class="pre">GameResult</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id45"><code class="docutils literal notranslate"><span class="pre">GameResult.PLAYER_WIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id46"><code class="docutils literal notranslate"><span class="pre">GameResult.DEALER_WIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id47"><code class="docutils literal notranslate"><span class="pre">GameResult.PUSH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id48"><code class="docutils literal notranslate"><span class="pre">GameResult.PLAYER_WIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id49"><code class="docutils literal notranslate"><span class="pre">GameResult.DEALER_WIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id50"><code class="docutils literal notranslate"><span class="pre">GameResult.PUSH</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#actions-du-joueur">Actions du joueur</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id51"><code class="docutils literal notranslate"><span class="pre">PlayerAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id52"><code class="docutils literal notranslate"><span class="pre">PlayerAction.HIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id53"><code class="docutils literal notranslate"><span class="pre">PlayerAction.STAND</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id54"><code class="docutils literal notranslate"><span class="pre">PlayerAction.DOUBLE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id55"><code class="docutils literal notranslate"><span class="pre">PlayerAction.SPLIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id56"><code class="docutils literal notranslate"><span class="pre">PlayerAction.HIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id57"><code class="docutils literal notranslate"><span class="pre">PlayerAction.STAND</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id58"><code class="docutils literal notranslate"><span class="pre">PlayerAction.DOUBLE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id59"><code class="docutils literal notranslate"><span class="pre">PlayerAction.SPLIT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#actions-disponibles">Actions disponibles</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#classe-game">Classe Game</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id60"><code class="docutils literal notranslate"><span class="pre">Game</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id61"><code class="docutils literal notranslate"><span class="pre">Game.deck</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id62"><code class="docutils literal notranslate"><span class="pre">Game.hands</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id63"><code class="docutils literal notranslate"><span class="pre">Game.hand_bets</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id64"><code class="docutils literal notranslate"><span class="pre">Game.hand_results</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id65"><code class="docutils literal notranslate"><span class="pre">Game.current_hand_index</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id66"><code class="docutils literal notranslate"><span class="pre">Game.dealer_hand</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id67"><code class="docutils literal notranslate"><span class="pre">Game.state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id68"><code class="docutils literal notranslate"><span class="pre">Game.result</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id69"><code class="docutils literal notranslate"><span class="pre">Game.frame_counter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id70"><code class="docutils literal notranslate"><span class="pre">Game.animation_delay</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id71"><code class="docutils literal notranslate"><span class="pre">Game.player_bet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id72"><code class="docutils literal notranslate"><span class="pre">Game.seat_index</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id73"><code class="docutils literal notranslate"><span class="pre">Game.insurance_bet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id74"><code class="docutils literal notranslate"><span class="pre">Game.has_insurance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id75"><code class="docutils literal notranslate"><span class="pre">Game.seat_bets</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id76"><code class="docutils literal notranslate"><span class="pre">Game.seat_hands</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id77"><code class="docutils literal notranslate"><span class="pre">Game.seat_results</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id78"><code class="docutils literal notranslate"><span class="pre">Game.active_seats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id79"><code class="docutils literal notranslate"><span class="pre">Game.has_surrendered</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id80"><code class="docutils literal notranslate"><span class="pre">Game.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id81"><code class="docutils literal notranslate"><span class="pre">Game.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id82"><code class="docutils literal notranslate"><span class="pre">Game.can_hit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id83"><code class="docutils literal notranslate"><span class="pre">Game.can_stand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id84"><code class="docutils literal notranslate"><span class="pre">Game.can_double()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id85"><code class="docutils literal notranslate"><span class="pre">Game.can_split()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id86"><code class="docutils literal notranslate"><span class="pre">Game.get_status_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id87"><code class="docutils literal notranslate"><span class="pre">Game.update()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id88"><code class="docutils literal notranslate"><span class="pre">Game.get_current_hand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id89"><code class="docutils literal notranslate"><span class="pre">Game.is_playing_split_hands()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id90"><code class="docutils literal notranslate"><span class="pre">Game.can_take_insurance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id91"><code class="docutils literal notranslate"><span class="pre">Game.can_surrender()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id92"><code class="docutils literal notranslate"><span class="pre">Game.switch_to_next_hand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id93"><code class="docutils literal notranslate"><span class="pre">Game.player_hit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id94"><code class="docutils literal notranslate"><span class="pre">Game.player_stand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id95"><code class="docutils literal notranslate"><span class="pre">Game.player_double()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id96"><code class="docutils literal notranslate"><span class="pre">Game.player_split()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id97"><code class="docutils literal notranslate"><span class="pre">Game.take_insurance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id98"><code class="docutils literal notranslate"><span class="pre">Game.decline_insurance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id99"><code class="docutils literal notranslate"><span class="pre">Game.player_surrender()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id100"><code class="docutils literal notranslate"><span class="pre">Game.dealer_play()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id101"><code class="docutils literal notranslate"><span class="pre">Game.deal_initial_cards()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id102"><code class="docutils literal notranslate"><span class="pre">Game.deal_initial_cards_multiseat()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#methodes-principales">Méthodes principales</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#verification-des-actions">Vérification des actions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id103">Actions du joueur</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gestion-du-jeu">Gestion du jeu</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exemples-d-utilisation">Exemples d’utilisation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#initialiser-une-partie">Initialiser une partie</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jouer-une-main">Jouer une main</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utiliser-le-split">Utiliser le split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mode-multi-places">Mode multi-places</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#regles-du-blackjack">Règles du Blackjack</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#objectif">Objectif</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#valeurs-des-cartes">Valeurs des cartes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#blackjack-naturel">Blackjack naturel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#regles-du-croupier">Règles du croupier</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Guide d’utilisation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Blackjack L3 SDN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Module Game</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/game.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-game">
+<h1>Module Game<a class="headerlink" href="#module-game" title="Lien vers cette rubrique"></a></h1>
+<p>Le module <code class="docutils literal notranslate"><span class="pre">game</span></code> contient la logique principale du jeu de Blackjack,
+incluant les états du jeu, les actions possibles et l’orchestration des parties.</p>
+<p id="module-core.game">Module de gestion du jeu de Blackjack.</p>
+<p>Ce module contient la logique principale du jeu de Blackjack, incluant
+les états du jeu, les actions possibles et la gestion des parties.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.game.GameState">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.game.</span></span><span class="sig-name descname"><span class="pre">GameState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/game.html#GameState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.GameState" title="Lien vers cette définition"></a></dt>
+<dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Énumération des états possibles d’une partie de Blackjack.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameState.MENU">
+<span class="sig-name descname"><span class="pre">MENU</span></span><a class="headerlink" href="#core.game.GameState.MENU" title="Lien vers cette définition"></a></dt>
+<dd><p>Menu principal (Jouer / Paramètres / Statistiques)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameState.BETTING">
+<span class="sig-name descname"><span class="pre">BETTING</span></span><a class="headerlink" href="#core.game.GameState.BETTING" title="Lien vers cette définition"></a></dt>
+<dd><p>Écran de mise (sélection place + jetons)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameState.SETTINGS">
+<span class="sig-name descname"><span class="pre">SETTINGS</span></span><a class="headerlink" href="#core.game.GameState.SETTINGS" title="Lien vers cette définition"></a></dt>
+<dd><p>Écran des paramètres du jeu</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameState.STATS">
+<span class="sig-name descname"><span class="pre">STATS</span></span><a class="headerlink" href="#core.game.GameState.STATS" title="Lien vers cette définition"></a></dt>
+<dd><p>Écran des statistiques détaillées</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameState.CLICKER">
+<span class="sig-name descname"><span class="pre">CLICKER</span></span><a class="headerlink" href="#core.game.GameState.CLICKER" title="Lien vers cette définition"></a></dt>
+<dd><p>Écran du mini-jeu clicker pour gagner de l’argent</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameState.INITIAL_DEAL">
+<span class="sig-name descname"><span class="pre">INITIAL_DEAL</span></span><a class="headerlink" href="#core.game.GameState.INITIAL_DEAL" title="Lien vers cette définition"></a></dt>
+<dd><p>Distribution initiale (2 cartes chacun)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameState.PLAYER_TURN">
+<span class="sig-name descname"><span class="pre">PLAYER_TURN</span></span><a class="headerlink" href="#core.game.GameState.PLAYER_TURN" title="Lien vers cette définition"></a></dt>
+<dd><p>Tour du joueur (choisir une action)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameState.DEALER_REVEAL">
+<span class="sig-name descname"><span class="pre">DEALER_REVEAL</span></span><a class="headerlink" href="#core.game.GameState.DEALER_REVEAL" title="Lien vers cette définition"></a></dt>
+<dd><p>Révélation de la carte cachée du croupier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameState.DEALER_TURN">
+<span class="sig-name descname"><span class="pre">DEALER_TURN</span></span><a class="headerlink" href="#core.game.GameState.DEALER_TURN" title="Lien vers cette définition"></a></dt>
+<dd><p>Tour du croupier (tire jusqu’à 17+)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameState.RESULT_SCREEN">
+<span class="sig-name descname"><span class="pre">RESULT_SCREEN</span></span><a class="headerlink" href="#core.game.GameState.RESULT_SCREEN" title="Lien vers cette définition"></a></dt>
+<dd><p>Affichage du résultat de la partie</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameState.GAME_OVER">
+<span class="sig-name descname"><span class="pre">GAME_OVER</span></span><a class="headerlink" href="#core.game.GameState.GAME_OVER" title="Lien vers cette définition"></a></dt>
+<dd><p>Fin de partie</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameState.WAITING_TO_CONTINUE">
+<span class="sig-name descname"><span class="pre">WAITING_TO_CONTINUE</span></span><a class="headerlink" href="#core.game.GameState.WAITING_TO_CONTINUE" title="Lien vers cette définition"></a></dt>
+<dd><p>En attente de continuation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">MENU</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'menu'</span></em><a class="headerlink" href="#id0" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">BETTING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'betting'</span></em><a class="headerlink" href="#id1" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">SETTINGS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'settings'</span></em><a class="headerlink" href="#id2" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">STATS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'stats'</span></em><a class="headerlink" href="#id3" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">CLICKER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'clicker'</span></em><a class="headerlink" href="#id4" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">INITIAL_DEAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'initial_deal'</span></em><a class="headerlink" href="#id5" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">PLAYER_TURN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'player_turn'</span></em><a class="headerlink" href="#id6" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">DEALER_REVEAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dealer_reveal'</span></em><a class="headerlink" href="#id7" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">DEALER_TURN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dealer_turn'</span></em><a class="headerlink" href="#id8" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">RESULT_SCREEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'result_screen'</span></em><a class="headerlink" href="#id9" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">GAME_OVER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'game_over'</span></em><a class="headerlink" href="#id10" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">WAITING_TO_CONTINUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'waiting'</span></em><a class="headerlink" href="#id11" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.game.GameResult">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.game.</span></span><span class="sig-name descname"><span class="pre">GameResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/game.html#GameResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.GameResult" title="Lien vers cette définition"></a></dt>
+<dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Énumération des résultats possibles d’une main de Blackjack.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameResult.PLAYER_WIN">
+<span class="sig-name descname"><span class="pre">PLAYER_WIN</span></span><a class="headerlink" href="#core.game.GameResult.PLAYER_WIN" title="Lien vers cette définition"></a></dt>
+<dd><p>Victoire du joueur</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameResult.DEALER_WIN">
+<span class="sig-name descname"><span class="pre">DEALER_WIN</span></span><a class="headerlink" href="#core.game.GameResult.DEALER_WIN" title="Lien vers cette définition"></a></dt>
+<dd><p>Victoire du croupier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.GameResult.PUSH">
+<span class="sig-name descname"><span class="pre">PUSH</span></span><a class="headerlink" href="#core.game.GameResult.PUSH" title="Lien vers cette définition"></a></dt>
+<dd><p>Égalité (pas de gain ni de perte)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">PLAYER_WIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'player_win'</span></em><a class="headerlink" href="#id12" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">DEALER_WIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dealer_win'</span></em><a class="headerlink" href="#id13" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">PUSH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'push'</span></em><a class="headerlink" href="#id14" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.game.PlayerAction">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.game.</span></span><span class="sig-name descname"><span class="pre">PlayerAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/game.html#PlayerAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.PlayerAction" title="Lien vers cette définition"></a></dt>
+<dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Énumération des actions possibles du joueur.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.PlayerAction.HIT">
+<span class="sig-name descname"><span class="pre">HIT</span></span><a class="headerlink" href="#core.game.PlayerAction.HIT" title="Lien vers cette définition"></a></dt>
+<dd><p>Tirer une carte supplémentaire</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.PlayerAction.STAND">
+<span class="sig-name descname"><span class="pre">STAND</span></span><a class="headerlink" href="#core.game.PlayerAction.STAND" title="Lien vers cette définition"></a></dt>
+<dd><p>S’arrêter et garder sa main actuelle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.PlayerAction.DOUBLE">
+<span class="sig-name descname"><span class="pre">DOUBLE</span></span><a class="headerlink" href="#core.game.PlayerAction.DOUBLE" title="Lien vers cette définition"></a></dt>
+<dd><p>Doubler la mise et tirer exactement 1 carte</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.PlayerAction.SPLIT">
+<span class="sig-name descname"><span class="pre">SPLIT</span></span><a class="headerlink" href="#core.game.PlayerAction.SPLIT" title="Lien vers cette définition"></a></dt>
+<dd><p>Diviser une paire en deux mains séparées</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">HIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'hit'</span></em><a class="headerlink" href="#id15" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id16">
+<span class="sig-name descname"><span class="pre">STAND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'stand'</span></em><a class="headerlink" href="#id16" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id17">
+<span class="sig-name descname"><span class="pre">DOUBLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'double'</span></em><a class="headerlink" href="#id17" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id18">
+<span class="sig-name descname"><span class="pre">SPLIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'split'</span></em><a class="headerlink" href="#id18" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.game.Game">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.game.</span></span><span class="sig-name descname"><span class="pre">Game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_decks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/game.html#Game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game" title="Lien vers cette définition"></a></dt>
+<dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Gère une partie complète de Blackjack.</p>
+<p>Cette classe orchestre tout le déroulement d’une partie de Blackjack,
+incluant la distribution des cartes, les actions des joueurs, les mises,
+le mode multi-places et les fonctionnalités avancées comme le split,
+le double down, l’assurance et l’abandon.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.deck">
+<span class="sig-name descname"><span class="pre">deck</span></span><a class="headerlink" href="#core.game.Game.deck" title="Lien vers cette définition"></a></dt>
+<dd><p>Le sabot de cartes utilisé pour la partie</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="core.html#core.deck.Deck" title="core.deck.Deck">Deck</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.hands">
+<span class="sig-name descname"><span class="pre">hands</span></span><a class="headerlink" href="#core.game.Game.hands" title="Lien vers cette définition"></a></dt>
+<dd><p>Liste des mains du joueur (plusieurs si split)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="core.html#core.hand.Hand" title="core.hand.Hand">Hand</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.hand_bets">
+<span class="sig-name descname"><span class="pre">hand_bets</span></span><a class="headerlink" href="#core.game.Game.hand_bets" title="Lien vers cette définition"></a></dt>
+<dd><p>Mises pour chaque main</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.hand_results">
+<span class="sig-name descname"><span class="pre">hand_results</span></span><a class="headerlink" href="#core.game.Game.hand_results" title="Lien vers cette définition"></a></dt>
+<dd><p>Résultats pour chaque main</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#id44" title="core.game.GameResult">GameResult</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.current_hand_index">
+<span class="sig-name descname"><span class="pre">current_hand_index</span></span><a class="headerlink" href="#core.game.Game.current_hand_index" title="Lien vers cette définition"></a></dt>
+<dd><p>Index de la main actuellement jouée</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.dealer_hand">
+<span class="sig-name descname"><span class="pre">dealer_hand</span></span><a class="headerlink" href="#core.game.Game.dealer_hand" title="Lien vers cette définition"></a></dt>
+<dd><p>Main du croupier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="core.html#core.hand.Hand" title="core.hand.Hand">Hand</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.state">
+<span class="sig-name descname"><span class="pre">state</span></span><a class="headerlink" href="#core.game.Game.state" title="Lien vers cette définition"></a></dt>
+<dd><p>État actuel du jeu</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#id19" title="core.game.GameState">GameState</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.result">
+<span class="sig-name descname"><span class="pre">result</span></span><a class="headerlink" href="#core.game.Game.result" title="Lien vers cette définition"></a></dt>
+<dd><p>Résultat global de la partie</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#id44" title="core.game.GameResult">GameResult</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.frame_counter">
+<span class="sig-name descname"><span class="pre">frame_counter</span></span><a class="headerlink" href="#core.game.Game.frame_counter" title="Lien vers cette définition"></a></dt>
+<dd><p>Compteur pour les animations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.animation_delay">
+<span class="sig-name descname"><span class="pre">animation_delay</span></span><a class="headerlink" href="#core.game.Game.animation_delay" title="Lien vers cette définition"></a></dt>
+<dd><p>Délai entre les actions en secondes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.player_bet">
+<span class="sig-name descname"><span class="pre">player_bet</span></span><a class="headerlink" href="#core.game.Game.player_bet" title="Lien vers cette définition"></a></dt>
+<dd><p>Mise initiale du joueur</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.seat_index">
+<span class="sig-name descname"><span class="pre">seat_index</span></span><a class="headerlink" href="#core.game.Game.seat_index" title="Lien vers cette définition"></a></dt>
+<dd><p>Place choisie par le joueur (0-4)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.insurance_bet">
+<span class="sig-name descname"><span class="pre">insurance_bet</span></span><a class="headerlink" href="#core.game.Game.insurance_bet" title="Lien vers cette définition"></a></dt>
+<dd><p>Montant de l’assurance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.has_insurance">
+<span class="sig-name descname"><span class="pre">has_insurance</span></span><a class="headerlink" href="#core.game.Game.has_insurance" title="Lien vers cette définition"></a></dt>
+<dd><p>Indique si le joueur a pris l’assurance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.seat_bets">
+<span class="sig-name descname"><span class="pre">seat_bets</span></span><a class="headerlink" href="#core.game.Game.seat_bets" title="Lien vers cette définition"></a></dt>
+<dd><p>Dictionnaire {seat_index: bet_amount}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.seat_hands">
+<span class="sig-name descname"><span class="pre">seat_hands</span></span><a class="headerlink" href="#core.game.Game.seat_hands" title="Lien vers cette définition"></a></dt>
+<dd><p>Dictionnaire {seat_index: Hand}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.seat_results">
+<span class="sig-name descname"><span class="pre">seat_results</span></span><a class="headerlink" href="#core.game.Game.seat_results" title="Lien vers cette définition"></a></dt>
+<dd><p>Dictionnaire {seat_index: GameResult}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.active_seats">
+<span class="sig-name descname"><span class="pre">active_seats</span></span><a class="headerlink" href="#core.game.Game.active_seats" title="Lien vers cette définition"></a></dt>
+<dd><p>Liste des indices de places avec mises</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.game.Game.has_surrendered">
+<span class="sig-name descname"><span class="pre">has_surrendered</span></span><a class="headerlink" href="#core.game.Game.has_surrendered" title="Lien vers cette définition"></a></dt>
+<dd><p>Indique si le joueur a abandonné</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">game</span> <span class="o">=</span> <span class="n">Game</span><span class="p">(</span><span class="n">num_decks</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">BETTING</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">game</span><span class="o">.</span><span class="n">player_bet</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">game</span><span class="o">.</span><span class="n">deal_initial_cards</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">game</span><span class="o">.</span><span class="n">state</span>
+<span class="go">&lt;GameState.PLAYER_TURN: &#39;player_turn&#39;&gt;</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_decks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/game.html#Game.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.__init__" title="Lien vers cette définition"></a></dt>
+<dd><p>Initialise une nouvelle partie de Blackjack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>num_decks</strong> (<em>int</em><em>, </em><em>optional</em>) – Nombre de jeux de 52 cartes dans le sabot.
+Par défaut 1. Les casinos utilisent généralement 6 à 8 jeux.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.reset" title="Lien vers cette définition"></a></dt>
+<dd><p>Réinitialise l’état du jeu pour une nouvelle partie.</p>
+<p>Vide toutes les mains, réinitialise les mises et les résultats,
+mais conserve le sabot et la configuration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.can_hit">
+<span class="sig-name descname"><span class="pre">can_hit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.can_hit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.can_hit" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne True si le joueur peut tirer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.can_stand">
+<span class="sig-name descname"><span class="pre">can_stand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.can_stand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.can_stand" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne True si le joueur peut s’arrêter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.can_double">
+<span class="sig-name descname"><span class="pre">can_double</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.can_double"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.can_double" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne True si le joueur peut doubler (seulement avec 2 cartes initiales).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.can_split">
+<span class="sig-name descname"><span class="pre">can_split</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.can_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.can_split" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne True si le joueur peut splitter (2 cartes de même valeur, pas encore de split).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.get_status_message">
+<span class="sig-name descname"><span class="pre">get_status_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.get_status_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.get_status_message" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne un message décrivant l’état actuel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.update" title="Lien vers cette définition"></a></dt>
+<dd><p>Met à jour l’état du jeu (gestion des délais d’animation).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.get_current_hand">
+<span class="sig-name descname"><span class="pre">get_current_hand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="core.html#core.hand.Hand" title="core.hand.Hand"><span class="pre">Hand</span></a></span></span><a class="reference internal" href="../_modules/core/game.html#Game.get_current_hand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.get_current_hand" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne la main actuellement jouée.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.is_playing_split_hands">
+<span class="sig-name descname"><span class="pre">is_playing_split_hands</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.is_playing_split_hands"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.is_playing_split_hands" title="Lien vers cette définition"></a></dt>
+<dd><p>Vérifie si on joue des mains splittées.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.can_take_insurance">
+<span class="sig-name descname"><span class="pre">can_take_insurance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.can_take_insurance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.can_take_insurance" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne True si le joueur peut prendre l’assurance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.can_surrender">
+<span class="sig-name descname"><span class="pre">can_surrender</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.can_surrender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.can_surrender" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne True si le joueur peut abandonner (seulement au début du tour).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.switch_to_next_hand">
+<span class="sig-name descname"><span class="pre">switch_to_next_hand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.switch_to_next_hand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.switch_to_next_hand" title="Lien vers cette définition"></a></dt>
+<dd><p>Passe à la main suivante après stand/bust.
+Retourne True s’il reste des mains à jouer, False sinon.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.player_hit">
+<span class="sig-name descname"><span class="pre">player_hit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.player_hit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.player_hit" title="Lien vers cette définition"></a></dt>
+<dd><p>Le joueur tire une carte.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.player_stand">
+<span class="sig-name descname"><span class="pre">player_stand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.player_stand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.player_stand" title="Lien vers cette définition"></a></dt>
+<dd><p>Le joueur s’arrête et passe à la main suivante ou au croupier.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.player_double">
+<span class="sig-name descname"><span class="pre">player_double</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.player_double"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.player_double" title="Lien vers cette définition"></a></dt>
+<dd><p>Le joueur double sa mise et tire 1 carte.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.player_split">
+<span class="sig-name descname"><span class="pre">player_split</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.player_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.player_split" title="Lien vers cette définition"></a></dt>
+<dd><p>Le joueur divise sa main (si possible).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.take_insurance">
+<span class="sig-name descname"><span class="pre">take_insurance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.take_insurance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.take_insurance" title="Lien vers cette définition"></a></dt>
+<dd><p>Le joueur prend l’assurance (max 50% de la mise).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.decline_insurance">
+<span class="sig-name descname"><span class="pre">decline_insurance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.decline_insurance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.decline_insurance" title="Lien vers cette définition"></a></dt>
+<dd><p>Le joueur refuse l’assurance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.player_surrender">
+<span class="sig-name descname"><span class="pre">player_surrender</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.player_surrender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.player_surrender" title="Lien vers cette définition"></a></dt>
+<dd><p>Le joueur abandonne et récupère 50% de sa mise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.dealer_play">
+<span class="sig-name descname"><span class="pre">dealer_play</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.dealer_play"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.dealer_play" title="Lien vers cette définition"></a></dt>
+<dd><p>Le croupier joue selon la règle fixe : tire si &lt; 17, s’arrête sinon.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.deal_initial_cards">
+<span class="sig-name descname"><span class="pre">deal_initial_cards</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.deal_initial_cards"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.deal_initial_cards" title="Lien vers cette définition"></a></dt>
+<dd><p>Distribue les 2 cartes initiales au joueur et au croupier.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.game.Game.deal_initial_cards_multiseat">
+<span class="sig-name descname"><span class="pre">deal_initial_cards_multiseat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.deal_initial_cards_multiseat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.game.Game.deal_initial_cards_multiseat" title="Lien vers cette définition"></a></dt>
+<dd><p>Distribue les 2 cartes initiales à toutes les places actives et au croupier.</p>
+</dd></dl>
+
+</dd></dl>
+
+<section id="etats-du-jeu">
+<h2>États du jeu<a class="headerlink" href="#etats-du-jeu" title="Lien vers cette rubrique"></a></h2>
+<p>Le jeu utilise une machine à états pour gérer les différentes phases :</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="id19">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.game.</span></span><span class="sig-name descname"><span class="pre">GameState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/game.html#GameState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id19" title="Lien vers cette définition"></a></dt>
+<dd><p>Énumération des états possibles d’une partie de Blackjack.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id20">
+<span class="sig-name descname"><span class="pre">MENU</span></span><a class="headerlink" href="#id20" title="Lien vers cette définition"></a></dt>
+<dd><p>Menu principal (Jouer / Paramètres / Statistiques)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id21">
+<span class="sig-name descname"><span class="pre">BETTING</span></span><a class="headerlink" href="#id21" title="Lien vers cette définition"></a></dt>
+<dd><p>Écran de mise (sélection place + jetons)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id22">
+<span class="sig-name descname"><span class="pre">SETTINGS</span></span><a class="headerlink" href="#id22" title="Lien vers cette définition"></a></dt>
+<dd><p>Écran des paramètres du jeu</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id23">
+<span class="sig-name descname"><span class="pre">STATS</span></span><a class="headerlink" href="#id23" title="Lien vers cette définition"></a></dt>
+<dd><p>Écran des statistiques détaillées</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id24">
+<span class="sig-name descname"><span class="pre">CLICKER</span></span><a class="headerlink" href="#id24" title="Lien vers cette définition"></a></dt>
+<dd><p>Écran du mini-jeu clicker pour gagner de l’argent</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id25">
+<span class="sig-name descname"><span class="pre">INITIAL_DEAL</span></span><a class="headerlink" href="#id25" title="Lien vers cette définition"></a></dt>
+<dd><p>Distribution initiale (2 cartes chacun)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id26">
+<span class="sig-name descname"><span class="pre">PLAYER_TURN</span></span><a class="headerlink" href="#id26" title="Lien vers cette définition"></a></dt>
+<dd><p>Tour du joueur (choisir une action)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id27">
+<span class="sig-name descname"><span class="pre">DEALER_REVEAL</span></span><a class="headerlink" href="#id27" title="Lien vers cette définition"></a></dt>
+<dd><p>Révélation de la carte cachée du croupier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id28">
+<span class="sig-name descname"><span class="pre">DEALER_TURN</span></span><a class="headerlink" href="#id28" title="Lien vers cette définition"></a></dt>
+<dd><p>Tour du croupier (tire jusqu’à 17+)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id29">
+<span class="sig-name descname"><span class="pre">RESULT_SCREEN</span></span><a class="headerlink" href="#id29" title="Lien vers cette définition"></a></dt>
+<dd><p>Affichage du résultat de la partie</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id30">
+<span class="sig-name descname"><span class="pre">GAME_OVER</span></span><a class="headerlink" href="#id30" title="Lien vers cette définition"></a></dt>
+<dd><p>Fin de partie</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id31">
+<span class="sig-name descname"><span class="pre">WAITING_TO_CONTINUE</span></span><a class="headerlink" href="#id31" title="Lien vers cette définition"></a></dt>
+<dd><p>En attente de continuation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id32">
+<span class="sig-name descname"><span class="pre">MENU</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'menu'</span></em><a class="headerlink" href="#id32" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id33">
+<span class="sig-name descname"><span class="pre">BETTING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'betting'</span></em><a class="headerlink" href="#id33" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id34">
+<span class="sig-name descname"><span class="pre">SETTINGS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'settings'</span></em><a class="headerlink" href="#id34" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id35">
+<span class="sig-name descname"><span class="pre">STATS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'stats'</span></em><a class="headerlink" href="#id35" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id36">
+<span class="sig-name descname"><span class="pre">CLICKER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'clicker'</span></em><a class="headerlink" href="#id36" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id37">
+<span class="sig-name descname"><span class="pre">INITIAL_DEAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'initial_deal'</span></em><a class="headerlink" href="#id37" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id38">
+<span class="sig-name descname"><span class="pre">PLAYER_TURN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'player_turn'</span></em><a class="headerlink" href="#id38" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id39">
+<span class="sig-name descname"><span class="pre">DEALER_REVEAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dealer_reveal'</span></em><a class="headerlink" href="#id39" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id40">
+<span class="sig-name descname"><span class="pre">DEALER_TURN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dealer_turn'</span></em><a class="headerlink" href="#id40" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id41">
+<span class="sig-name descname"><span class="pre">RESULT_SCREEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'result_screen'</span></em><a class="headerlink" href="#id41" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id42">
+<span class="sig-name descname"><span class="pre">GAME_OVER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'game_over'</span></em><a class="headerlink" href="#id42" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id43">
+<span class="sig-name descname"><span class="pre">WAITING_TO_CONTINUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'waiting'</span></em><a class="headerlink" href="#id43" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<section id="cycle-de-vie-d-une-partie">
+<h3>Cycle de vie d’une partie<a class="headerlink" href="#cycle-de-vie-d-une-partie" title="Lien vers cette rubrique"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>MENU</strong> : Écran principal avec choix Jouer/Paramètres/Stats/Clicker</p></li>
+<li><p><strong>BETTING</strong> : Sélection des places et placement des mises</p></li>
+<li><p><strong>INITIAL_DEAL</strong> : Distribution des 2 cartes initiales</p></li>
+<li><p><strong>PLAYER_TURN</strong> : Le joueur choisit ses actions (Hit, Stand, Double, Split)</p></li>
+<li><p><strong>DEALER_REVEAL</strong> : Révélation de la carte cachée du croupier</p></li>
+<li><p><strong>DEALER_TURN</strong> : Le croupier joue selon la règle fixe (tire jusqu’à 17+)</p></li>
+<li><p><strong>RESULT_SCREEN</strong> : Affichage des résultats et mise à jour des soldes</p></li>
+</ol>
+</section>
+</section>
+<section id="resultats-possibles">
+<h2>Résultats possibles<a class="headerlink" href="#resultats-possibles" title="Lien vers cette rubrique"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="id44">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.game.</span></span><span class="sig-name descname"><span class="pre">GameResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/game.html#GameResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id44" title="Lien vers cette définition"></a></dt>
+<dd><p>Énumération des résultats possibles d’une main de Blackjack.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id45">
+<span class="sig-name descname"><span class="pre">PLAYER_WIN</span></span><a class="headerlink" href="#id45" title="Lien vers cette définition"></a></dt>
+<dd><p>Victoire du joueur</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id46">
+<span class="sig-name descname"><span class="pre">DEALER_WIN</span></span><a class="headerlink" href="#id46" title="Lien vers cette définition"></a></dt>
+<dd><p>Victoire du croupier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id47">
+<span class="sig-name descname"><span class="pre">PUSH</span></span><a class="headerlink" href="#id47" title="Lien vers cette définition"></a></dt>
+<dd><p>Égalité (pas de gain ni de perte)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id48">
+<span class="sig-name descname"><span class="pre">PLAYER_WIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'player_win'</span></em><a class="headerlink" href="#id48" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id49">
+<span class="sig-name descname"><span class="pre">DEALER_WIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dealer_win'</span></em><a class="headerlink" href="#id49" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id50">
+<span class="sig-name descname"><span class="pre">PUSH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'push'</span></em><a class="headerlink" href="#id50" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="actions-du-joueur">
+<h2>Actions du joueur<a class="headerlink" href="#actions-du-joueur" title="Lien vers cette rubrique"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="id51">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.game.</span></span><span class="sig-name descname"><span class="pre">PlayerAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/game.html#PlayerAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id51" title="Lien vers cette définition"></a></dt>
+<dd><p>Énumération des actions possibles du joueur.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id52">
+<span class="sig-name descname"><span class="pre">HIT</span></span><a class="headerlink" href="#id52" title="Lien vers cette définition"></a></dt>
+<dd><p>Tirer une carte supplémentaire</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id53">
+<span class="sig-name descname"><span class="pre">STAND</span></span><a class="headerlink" href="#id53" title="Lien vers cette définition"></a></dt>
+<dd><p>S’arrêter et garder sa main actuelle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id54">
+<span class="sig-name descname"><span class="pre">DOUBLE</span></span><a class="headerlink" href="#id54" title="Lien vers cette définition"></a></dt>
+<dd><p>Doubler la mise et tirer exactement 1 carte</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id55">
+<span class="sig-name descname"><span class="pre">SPLIT</span></span><a class="headerlink" href="#id55" title="Lien vers cette définition"></a></dt>
+<dd><p>Diviser une paire en deux mains séparées</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id56">
+<span class="sig-name descname"><span class="pre">HIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'hit'</span></em><a class="headerlink" href="#id56" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id57">
+<span class="sig-name descname"><span class="pre">STAND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'stand'</span></em><a class="headerlink" href="#id57" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id58">
+<span class="sig-name descname"><span class="pre">DOUBLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'double'</span></em><a class="headerlink" href="#id58" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id59">
+<span class="sig-name descname"><span class="pre">SPLIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'split'</span></em><a class="headerlink" href="#id59" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<section id="actions-disponibles">
+<h3>Actions disponibles<a class="headerlink" href="#actions-disponibles" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p><strong>HIT</strong> : Tirer une carte supplémentaire</p></li>
+<li><p><strong>STAND</strong> : Conserver sa main et passer au croupier</p></li>
+<li><p><strong>DOUBLE</strong> : Doubler la mise et tirer exactement 1 carte</p></li>
+<li><p><strong>SPLIT</strong> : Diviser une paire en deux mains séparées</p></li>
+</ul>
+</section>
+</section>
+<section id="classe-game">
+<h2>Classe Game<a class="headerlink" href="#classe-game" title="Lien vers cette rubrique"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="id60">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.game.</span></span><span class="sig-name descname"><span class="pre">Game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_decks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/game.html#Game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id60" title="Lien vers cette définition"></a></dt>
+<dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Gère une partie complète de Blackjack.</p>
+<p>Cette classe orchestre tout le déroulement d’une partie de Blackjack,
+incluant la distribution des cartes, les actions des joueurs, les mises,
+le mode multi-places et les fonctionnalités avancées comme le split,
+le double down, l’assurance et l’abandon.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id61">
+<span class="sig-name descname"><span class="pre">deck</span></span><a class="headerlink" href="#id61" title="Lien vers cette définition"></a></dt>
+<dd><p>Le sabot de cartes utilisé pour la partie</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="core.html#core.deck.Deck" title="core.deck.Deck">Deck</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id62">
+<span class="sig-name descname"><span class="pre">hands</span></span><a class="headerlink" href="#id62" title="Lien vers cette définition"></a></dt>
+<dd><p>Liste des mains du joueur (plusieurs si split)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="core.html#core.hand.Hand" title="core.hand.Hand">Hand</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id63">
+<span class="sig-name descname"><span class="pre">hand_bets</span></span><a class="headerlink" href="#id63" title="Lien vers cette définition"></a></dt>
+<dd><p>Mises pour chaque main</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id64">
+<span class="sig-name descname"><span class="pre">hand_results</span></span><a class="headerlink" href="#id64" title="Lien vers cette définition"></a></dt>
+<dd><p>Résultats pour chaque main</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#id44" title="core.game.GameResult">GameResult</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id65">
+<span class="sig-name descname"><span class="pre">current_hand_index</span></span><a class="headerlink" href="#id65" title="Lien vers cette définition"></a></dt>
+<dd><p>Index de la main actuellement jouée</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id66">
+<span class="sig-name descname"><span class="pre">dealer_hand</span></span><a class="headerlink" href="#id66" title="Lien vers cette définition"></a></dt>
+<dd><p>Main du croupier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="core.html#core.hand.Hand" title="core.hand.Hand">Hand</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id67">
+<span class="sig-name descname"><span class="pre">state</span></span><a class="headerlink" href="#id67" title="Lien vers cette définition"></a></dt>
+<dd><p>État actuel du jeu</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#id19" title="core.game.GameState">GameState</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id68">
+<span class="sig-name descname"><span class="pre">result</span></span><a class="headerlink" href="#id68" title="Lien vers cette définition"></a></dt>
+<dd><p>Résultat global de la partie</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#id44" title="core.game.GameResult">GameResult</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id69">
+<span class="sig-name descname"><span class="pre">frame_counter</span></span><a class="headerlink" href="#id69" title="Lien vers cette définition"></a></dt>
+<dd><p>Compteur pour les animations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id70">
+<span class="sig-name descname"><span class="pre">animation_delay</span></span><a class="headerlink" href="#id70" title="Lien vers cette définition"></a></dt>
+<dd><p>Délai entre les actions en secondes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id71">
+<span class="sig-name descname"><span class="pre">player_bet</span></span><a class="headerlink" href="#id71" title="Lien vers cette définition"></a></dt>
+<dd><p>Mise initiale du joueur</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id72">
+<span class="sig-name descname"><span class="pre">seat_index</span></span><a class="headerlink" href="#id72" title="Lien vers cette définition"></a></dt>
+<dd><p>Place choisie par le joueur (0-4)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id73">
+<span class="sig-name descname"><span class="pre">insurance_bet</span></span><a class="headerlink" href="#id73" title="Lien vers cette définition"></a></dt>
+<dd><p>Montant de l’assurance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id74">
+<span class="sig-name descname"><span class="pre">has_insurance</span></span><a class="headerlink" href="#id74" title="Lien vers cette définition"></a></dt>
+<dd><p>Indique si le joueur a pris l’assurance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id75">
+<span class="sig-name descname"><span class="pre">seat_bets</span></span><a class="headerlink" href="#id75" title="Lien vers cette définition"></a></dt>
+<dd><p>Dictionnaire {seat_index: bet_amount}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id76">
+<span class="sig-name descname"><span class="pre">seat_hands</span></span><a class="headerlink" href="#id76" title="Lien vers cette définition"></a></dt>
+<dd><p>Dictionnaire {seat_index: Hand}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id77">
+<span class="sig-name descname"><span class="pre">seat_results</span></span><a class="headerlink" href="#id77" title="Lien vers cette définition"></a></dt>
+<dd><p>Dictionnaire {seat_index: GameResult}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id78">
+<span class="sig-name descname"><span class="pre">active_seats</span></span><a class="headerlink" href="#id78" title="Lien vers cette définition"></a></dt>
+<dd><p>Liste des indices de places avec mises</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id79">
+<span class="sig-name descname"><span class="pre">has_surrendered</span></span><a class="headerlink" href="#id79" title="Lien vers cette définition"></a></dt>
+<dd><p>Indique si le joueur a abandonné</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Exemples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">game</span> <span class="o">=</span> <span class="n">Game</span><span class="p">(</span><span class="n">num_decks</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">BETTING</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">game</span><span class="o">.</span><span class="n">player_bet</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">game</span><span class="o">.</span><span class="n">deal_initial_cards</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">game</span><span class="o">.</span><span class="n">state</span>
+<span class="go">&lt;GameState.PLAYER_TURN: &#39;player_turn&#39;&gt;</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="id80">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_decks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/game.html#Game.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id80" title="Lien vers cette définition"></a></dt>
+<dd><p>Initialise une nouvelle partie de Blackjack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>num_decks</strong> (<em>int</em><em>, </em><em>optional</em>) – Nombre de jeux de 52 cartes dans le sabot.
+Par défaut 1. Les casinos utilisent généralement 6 à 8 jeux.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id81">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id81" title="Lien vers cette définition"></a></dt>
+<dd><p>Réinitialise l’état du jeu pour une nouvelle partie.</p>
+<p>Vide toutes les mains, réinitialise les mises et les résultats,
+mais conserve le sabot et la configuration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id82">
+<span class="sig-name descname"><span class="pre">can_hit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.can_hit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id82" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne True si le joueur peut tirer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id83">
+<span class="sig-name descname"><span class="pre">can_stand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.can_stand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id83" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne True si le joueur peut s’arrêter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id84">
+<span class="sig-name descname"><span class="pre">can_double</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.can_double"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id84" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne True si le joueur peut doubler (seulement avec 2 cartes initiales).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id85">
+<span class="sig-name descname"><span class="pre">can_split</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.can_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id85" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne True si le joueur peut splitter (2 cartes de même valeur, pas encore de split).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id86">
+<span class="sig-name descname"><span class="pre">get_status_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.get_status_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id86" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne un message décrivant l’état actuel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id87">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id87" title="Lien vers cette définition"></a></dt>
+<dd><p>Met à jour l’état du jeu (gestion des délais d’animation).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id88">
+<span class="sig-name descname"><span class="pre">get_current_hand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="core.html#core.hand.Hand" title="core.hand.Hand"><span class="pre">Hand</span></a></span></span><a class="reference internal" href="../_modules/core/game.html#Game.get_current_hand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id88" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne la main actuellement jouée.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id89">
+<span class="sig-name descname"><span class="pre">is_playing_split_hands</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.is_playing_split_hands"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id89" title="Lien vers cette définition"></a></dt>
+<dd><p>Vérifie si on joue des mains splittées.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id90">
+<span class="sig-name descname"><span class="pre">can_take_insurance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.can_take_insurance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id90" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne True si le joueur peut prendre l’assurance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id91">
+<span class="sig-name descname"><span class="pre">can_surrender</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.can_surrender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id91" title="Lien vers cette définition"></a></dt>
+<dd><p>Retourne True si le joueur peut abandonner (seulement au début du tour).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id92">
+<span class="sig-name descname"><span class="pre">switch_to_next_hand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.switch_to_next_hand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id92" title="Lien vers cette définition"></a></dt>
+<dd><p>Passe à la main suivante après stand/bust.
+Retourne True s’il reste des mains à jouer, False sinon.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id93">
+<span class="sig-name descname"><span class="pre">player_hit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.player_hit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id93" title="Lien vers cette définition"></a></dt>
+<dd><p>Le joueur tire une carte.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id94">
+<span class="sig-name descname"><span class="pre">player_stand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.player_stand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id94" title="Lien vers cette définition"></a></dt>
+<dd><p>Le joueur s’arrête et passe à la main suivante ou au croupier.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id95">
+<span class="sig-name descname"><span class="pre">player_double</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.player_double"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id95" title="Lien vers cette définition"></a></dt>
+<dd><p>Le joueur double sa mise et tire 1 carte.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id96">
+<span class="sig-name descname"><span class="pre">player_split</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.player_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id96" title="Lien vers cette définition"></a></dt>
+<dd><p>Le joueur divise sa main (si possible).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id97">
+<span class="sig-name descname"><span class="pre">take_insurance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.take_insurance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id97" title="Lien vers cette définition"></a></dt>
+<dd><p>Le joueur prend l’assurance (max 50% de la mise).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id98">
+<span class="sig-name descname"><span class="pre">decline_insurance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.decline_insurance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id98" title="Lien vers cette définition"></a></dt>
+<dd><p>Le joueur refuse l’assurance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id99">
+<span class="sig-name descname"><span class="pre">player_surrender</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.player_surrender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id99" title="Lien vers cette définition"></a></dt>
+<dd><p>Le joueur abandonne et récupère 50% de sa mise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id100">
+<span class="sig-name descname"><span class="pre">dealer_play</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.dealer_play"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id100" title="Lien vers cette définition"></a></dt>
+<dd><p>Le croupier joue selon la règle fixe : tire si &lt; 17, s’arrête sinon.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id101">
+<span class="sig-name descname"><span class="pre">deal_initial_cards</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.deal_initial_cards"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id101" title="Lien vers cette définition"></a></dt>
+<dd><p>Distribue les 2 cartes initiales au joueur et au croupier.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id102">
+<span class="sig-name descname"><span class="pre">deal_initial_cards_multiseat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/core/game.html#Game.deal_initial_cards_multiseat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id102" title="Lien vers cette définition"></a></dt>
+<dd><p>Distribue les 2 cartes initiales à toutes les places actives et au croupier.</p>
+</dd></dl>
+
+</dd></dl>
+
+<section id="methodes-principales">
+<h3>Méthodes principales<a class="headerlink" href="#methodes-principales" title="Lien vers cette rubrique"></a></h3>
+<section id="verification-des-actions">
+<h4>Vérification des actions<a class="headerlink" href="#verification-des-actions" title="Lien vers cette rubrique"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">can_hit()</span></code> : Vérifie si le joueur peut tirer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">can_stand()</span></code> : Vérifie si le joueur peut s’arrêter</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">can_double()</span></code> : Vérifie si le joueur peut doubler</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">can_split()</span></code> : Vérifie si le joueur peut splitter</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">can_take_insurance()</span></code> : Vérifie si l’assurance est disponible</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">can_surrender()</span></code> : Vérifie si le joueur peut abandonner</p></li>
+</ul>
+</section>
+<section id="id103">
+<h4>Actions du joueur<a class="headerlink" href="#id103" title="Lien vers cette rubrique"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">player_hit()</span></code> : Exécute l’action Hit</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">player_stand()</span></code> : Exécute l’action Stand</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">player_double()</span></code> : Exécute l’action Double</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">player_split()</span></code> : Exécute l’action Split</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">take_insurance()</span></code> : Prend l’assurance</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">player_surrender()</span></code> : Abandonne la main</p></li>
+</ul>
+</section>
+<section id="gestion-du-jeu">
+<h4>Gestion du jeu<a class="headerlink" href="#gestion-du-jeu" title="Lien vers cette rubrique"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">deal_initial_cards()</span></code> : Distribue les cartes initiales</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dealer_play()</span></code> : Fait jouer le croupier</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset()</span></code> : Réinitialise pour une nouvelle partie</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="exemples-d-utilisation">
+<h2>Exemples d’utilisation<a class="headerlink" href="#exemples-d-utilisation" title="Lien vers cette rubrique"></a></h2>
+<section id="initialiser-une-partie">
+<h3>Initialiser une partie<a class="headerlink" href="#initialiser-une-partie" title="Lien vers cette rubrique"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.game</span><span class="w"> </span><span class="kn">import</span> <span class="n">Game</span><span class="p">,</span> <span class="n">GameState</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">core.player</span><span class="w"> </span><span class="kn">import</span> <span class="n">Player</span>
+
+<span class="c1"># Créer une partie avec 6 jeux</span>
+<span class="n">game</span> <span class="o">=</span> <span class="n">Game</span><span class="p">(</span><span class="n">num_decks</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="p">(</span><span class="n">balance</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># Placer une mise</span>
+<span class="n">game</span><span class="o">.</span><span class="n">player_bet</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">BETTING</span>
+</pre></div>
+</div>
+</section>
+<section id="jouer-une-main">
+<h3>Jouer une main<a class="headerlink" href="#jouer-une-main" title="Lien vers cette rubrique"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Distribuer les cartes</span>
+<span class="n">game</span><span class="o">.</span><span class="n">deal_initial_cards</span><span class="p">()</span>
+<span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">GameState</span><span class="o">.</span><span class="n">PLAYER_TURN</span>
+
+<span class="c1"># Le joueur tire une carte</span>
+<span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">can_hit</span><span class="p">():</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">player_hit</span><span class="p">()</span>
+
+<span class="c1"># Le joueur s&#39;arrête</span>
+<span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">can_stand</span><span class="p">():</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">player_stand</span><span class="p">()</span>
+
+<span class="c1"># Le croupier joue</span>
+<span class="n">game</span><span class="o">.</span><span class="n">dealer_play</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="utiliser-le-split">
+<h3>Utiliser le split<a class="headerlink" href="#utiliser-le-split" title="Lien vers cette rubrique"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Si le joueur a une paire</span>
+<span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">can_split</span><span class="p">():</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">player_split</span><span class="p">()</span>
+
+<span class="c1"># Jouer la première main</span>
+<span class="n">game</span><span class="o">.</span><span class="n">player_hit</span><span class="p">()</span>
+<span class="n">game</span><span class="o">.</span><span class="n">player_stand</span><span class="p">()</span>
+
+<span class="c1"># Jouer la deuxième main (automatique)</span>
+</pre></div>
+</div>
+</section>
+<section id="mode-multi-places">
+<h3>Mode multi-places<a class="headerlink" href="#mode-multi-places" title="Lien vers cette rubrique"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Placer des mises sur plusieurs places</span>
+<span class="n">game</span><span class="o">.</span><span class="n">seat_bets</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># Place 1 : 100$</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>   <span class="c1"># Place 3 : 50$</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="mi">200</span>   <span class="c1"># Place 5 : 200$</span>
+<span class="p">}</span>
+
+<span class="c1"># Distribuer pour toutes les places</span>
+<span class="n">game</span><span class="o">.</span><span class="n">deal_initial_cards_multiseat</span><span class="p">()</span>
+
+<span class="c1"># Le jeu gère automatiquement chaque place</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="regles-du-blackjack">
+<h2>Règles du Blackjack<a class="headerlink" href="#regles-du-blackjack" title="Lien vers cette rubrique"></a></h2>
+<section id="objectif">
+<h3>Objectif<a class="headerlink" href="#objectif" title="Lien vers cette rubrique"></a></h3>
+<p>Obtenir une main dont la valeur est plus proche de 21 que celle du croupier,
+sans dépasser 21 (bust).</p>
+</section>
+<section id="valeurs-des-cartes">
+<h3>Valeurs des cartes<a class="headerlink" href="#valeurs-des-cartes" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p>As : 1 ou 11 (ajustement automatique)</p></li>
+<li><p>Figures (J, Q, K) : 10</p></li>
+<li><p>Autres cartes : valeur nominale</p></li>
+</ul>
+</section>
+<section id="blackjack-naturel">
+<h3>Blackjack naturel<a class="headerlink" href="#blackjack-naturel" title="Lien vers cette rubrique"></a></h3>
+<p>Un Blackjack est une main de 2 cartes valant 21 (As + Figure/10).
+Il bat toute autre main de 21 points et paie 3:2.</p>
+</section>
+<section id="regles-du-croupier">
+<h3>Règles du croupier<a class="headerlink" href="#regles-du-croupier" title="Lien vers cette rubrique"></a></h3>
+<p>Le croupier doit :</p>
+<ul class="simple">
+<li><p>Tirer jusqu’à atteindre au moins 17</p></li>
+<li><p>S’arrêter dès qu’il atteint 17 ou plus</p></li>
+<li><p>Ne peut pas doubler ni splitter</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pied de page">
+        <a href="core.html" class="btn btn-neutral float-left" title="Module Core" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+        <a href="../usage.html" class="btn btn-neutral float-right" title="Guide d’utilisation" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Droits d'auteur 2025, Équipe Blackjack.</p>
+  </div>
+
+  Compilé avec <a href="https://www.sphinx-doc.org/">Sphinx</a> en utilisant un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">thème</a>
+    fourni par <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

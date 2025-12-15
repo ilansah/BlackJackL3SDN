@@ -14,7 +14,6 @@ nombreuses fonctionnalités avancées.
    installation
    modules/core
    modules/game
-   modules/utilities
    usage
 
 Fonctionnalités principales

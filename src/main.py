@@ -63,6 +63,9 @@ def get_table_colors():
 # assets 
 ASSETS_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "cards")
 CHIPS_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "chips")
+DEALER_IMAGE = os.path.join(os.path.dirname(__file__), "..", "assets", "dealer.png")
+DEALER_HAPPY_IMAGE = os.path.join(os.path.dirname(__file__), "..", "assets", "dealer_happy.jpg")
+DEALER_SAD_IMAGE = os.path.join(os.path.dirname(__file__), "..", "assets", "dealer_sad.jpg")
 
 CHIP_FILES = [
     (5, "chip_5_w85h85.png"),
@@ -72,6 +75,9 @@ CHIP_FILES = [
 ]
 
 _image_cache: dict[str, pygame.Surface] = {}
+dealer_image_surface = None
+dealer_happy_surface = None
+dealer_sad_surface = None
 # Musique
 MUSIC_FILE = os.path.join(os.path.dirname(__file__), "..", "Indochine - Jai demandé à la lune (Clip officiel).mp3")
 music_enabled = True
@@ -106,9 +112,12 @@ def init_pygame():
     
     # Charger et jouer la musique
     config = get_config_manager()
-    global music_enabled, music_volume
+    global music_enabled, music_volume, dealer_image_surface, dealer_happy_surface, dealer_sad_surface
     music_enabled = config.get('features.music_enabled', True)
     music_volume = config.get('features.music_volume', 0.5)
+    dealer_image_surface = None
+    dealer_happy_surface = None
+    dealer_sad_surface = None
     
     if os.path.exists(MUSIC_FILE) and music_enabled:
         try:
@@ -117,6 +126,22 @@ def init_pygame():
             pygame.mixer.music.play(-1)  # -1 = loop infiniment
         except Exception as e:
             print(f"Erreur lors du chargement de la musique: {e}")
+    
+    # Charger les images du croupier
+    def load_dealer_image(path, height=350):
+        if os.path.exists(path):
+            try:
+                img = pygame.image.load(path).convert_alpha()
+                h_ratio = height / img.get_height()
+                new_w = int(img.get_width() * h_ratio)
+                return pygame.transform.scale(img, (new_w, height))
+            except Exception as e:
+                print(f"Erreur lors du chargement de {path}: {e}")
+        return None
+    
+    dealer_image_surface = load_dealer_image(DEALER_IMAGE)
+    dealer_happy_surface = load_dealer_image(DEALER_HAPPY_IMAGE)
+    dealer_sad_surface = load_dealer_image(DEALER_SAD_IMAGE)
     
     return screen, clock
 
@@ -360,6 +385,59 @@ def draw_game_screen(screen: pygame.Surface, game: Game, player: Player, dealer_
         else:
             draw_card(screen, card, current_dx, DEALER_Y)
         current_dx += spacing
+    
+    # Image du croupier à droite des cartes
+    # Déterminer quelle image afficher selon le résultat
+    dealer_img_to_show = dealer_image_surface
+    if game.state == GameState.RESULT_SCREEN:
+        # Vérifier si le croupier a gagné ou perdu
+        dealer_won = False
+        dealer_lost = False
+        has_push = False
+        
+        if game.active_seats:
+            # Mode multi-places
+            for seat_idx in game.active_seats:
+                res = game.seat_results.get(seat_idx)
+                if res == GameResult.DEALER_WIN:
+                    dealer_won = True
+                elif res == GameResult.PLAYER_WIN:
+                    dealer_lost = True
+                elif res == GameResult.PUSH:
+                    has_push = True
+        else:
+            # Mode single
+            for res in game.hand_results:
+                if res == GameResult.DEALER_WIN:
+                    dealer_won = True
+                elif res == GameResult.PLAYER_WIN:
+                    dealer_lost = True
+                elif res == GameResult.PUSH:
+                    has_push = True
+        
+        # Choisir l'image appropriée
+        # Si égalité, rester neutre
+        if has_push and not dealer_won and not dealer_lost:
+            dealer_img_to_show = dealer_image_surface
+        elif dealer_won and not dealer_lost and dealer_happy_surface:
+            dealer_img_to_show = dealer_happy_surface
+        elif dealer_lost and not dealer_won and dealer_sad_surface:
+            dealer_img_to_show = dealer_sad_surface
+    
+    if dealer_img_to_show:
+        # Positionner le croupier derrière la table (sous l'arc marron)
+        # L'arc commence environ à HEIGHT//2 - 120, on positionne le buste juste en dessous
+        table_arc_y = HEIGHT // 2 - 120 + 60  # Arc de cercle marron
+        dealer_img_x = current_dx - 50  # Plus à gauche
+        dealer_img_y = table_arc_y - dealer_img_to_show.get_height() - 30  # Plus haut
+        screen.blit(dealer_img_to_show, (dealer_img_x, dealer_img_y))
+        
+        # Redessiner l'arc de cercle marron par-dessus pour l'effet de profondeur
+        colors = get_table_colors()
+        table_rect = pygame.Rect(-200, HEIGHT // 2 - 120, WIDTH + 400, HEIGHT + 200)
+        pygame.draw.ellipse(screen, COLOR_WOOD_RAIL, table_rect)
+        felt_rect = table_rect.inflate(-60, -60)
+        pygame.draw.ellipse(screen, colors['felt'], felt_rect)
 
     # Mode multi-places
     if game.active_seats:
@@ -504,6 +582,21 @@ def draw_game_screen(screen: pygame.Surface, game: Game, player: Player, dealer_
 
 def draw_bet_screen(screen: pygame.Surface, game: Game, player: Player, chips, seats, start_button_rect):
     render_table_bg(screen)
+    
+    # Afficher le croupier au centre pendant la phase de mise
+    if dealer_image_surface:
+        table_arc_y = HEIGHT // 2 - 120 + 60
+        dealer_img_x = WIDTH // 2 - dealer_image_surface.get_width() // 2
+        dealer_img_y = table_arc_y - dealer_image_surface.get_height() - 30
+        screen.blit(dealer_image_surface, (dealer_img_x, dealer_img_y))
+        
+        # Redessiner l'arc de cercle marron par-dessus pour l'effet de profondeur
+        colors = get_table_colors()
+        table_rect = pygame.Rect(-200, HEIGHT // 2 - 120, WIDTH + 400, HEIGHT + 200)
+        pygame.draw.ellipse(screen, COLOR_WOOD_RAIL, table_rect)
+        felt_rect = table_rect.inflate(-60, -60)
+        pygame.draw.ellipse(screen, colors['felt'], felt_rect)
+    
     draw_shadow_text(screen, "CHOISISSEZ VOTRE PLACE & MISE", get_font("serif", 40, True), COLOR_GOLD, WIDTH//2, 50, center=True)
 
     mouse_pos = pygame.mouse.get_pos()

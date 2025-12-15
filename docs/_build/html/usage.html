@@ -1,0 +1,359 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="fr" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guide d’utilisation &mdash; Documentation Blackjack L3 SDN 1.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=7a28dfa3"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=e6b791cb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Recherche" href="search.html" />
+    <link rel="prev" title="Module Game" href="modules/game.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Blackjack L3 SDN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Rechercher docs" aria-label="Rechercher docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Sommaire:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/core.html">Module Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/game.html">Module Game</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Guide d’utilisation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lancement-du-jeu">Lancement du jeu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#menu-principal">Menu principal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#jouer-une-partie">Jouer une partie</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#placement-des-mises">Placement des mises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#distribution-initiale">Distribution initiale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#actions-disponibles">Actions disponibles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#assurance">Assurance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#resultats">Résultats</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#parametres">Paramètres</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#visuels">Visuels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#audio">Audio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jeu">Jeu</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#statistiques">Statistiques</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mini-jeu-clicker">Mini-jeu Clicker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#raccourcis-clavier">Raccourcis clavier</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#menu-et-navigation">Menu et navigation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#actions-en-jeu">Actions en jeu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Paramètres</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#conseils-strategiques">Conseils stratégiques</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#strategie-de-base">Stratégie de base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gestion-de-la-bankroll">Gestion de la bankroll</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Assurance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#depannage">Dépannage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#le-jeu-ne-demarre-pas">Le jeu ne démarre pas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#les-images-ne-s-affichent-pas">Les images ne s’affichent pas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#le-son-ne-fonctionne-pas">Le son ne fonctionne pas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#problemes-de-sauvegarde">Problèmes de sauvegarde</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Blackjack L3 SDN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Guide d’utilisation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/usage.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="guide-d-utilisation">
+<h1>Guide d’utilisation<a class="headerlink" href="#guide-d-utilisation" title="Lien vers cette rubrique"></a></h1>
+<p>Ce guide explique comment utiliser le jeu de Blackjack.</p>
+<section id="lancement-du-jeu">
+<h2>Lancement du jeu<a class="headerlink" href="#lancement-du-jeu" title="Lien vers cette rubrique"></a></h2>
+<p>Pour lancer le jeu, exécutez :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>src/main.py
+</pre></div>
+</div>
+</section>
+<section id="menu-principal">
+<h2>Menu principal<a class="headerlink" href="#menu-principal" title="Lien vers cette rubrique"></a></h2>
+<p>Le menu principal offre 4 options :</p>
+<ul class="simple">
+<li><p><strong>JOUER</strong> : Commencer une nouvelle partie</p></li>
+<li><p><strong>PARAMÈTRES</strong> : Modifier les réglages du jeu</p></li>
+<li><p><strong>STATISTIQUES</strong> : Consulter vos statistiques</p></li>
+<li><p><strong>CLICKER</strong> : Mini-jeu pour gagner de l’argent</p></li>
+</ul>
+</section>
+<section id="jouer-une-partie">
+<h2>Jouer une partie<a class="headerlink" href="#jouer-une-partie" title="Lien vers cette rubrique"></a></h2>
+<section id="placement-des-mises">
+<h3>Placement des mises<a class="headerlink" href="#placement-des-mises" title="Lien vers cette rubrique"></a></h3>
+<ol class="arabic simple">
+<li><p>Sélectionnez une place en cliquant sur un des 5 sièges disponibles</p></li>
+<li><p>Cliquez sur les jetons pour placer votre mise (5$, 10$, 50$, 100$)</p></li>
+<li><p>Vous pouvez miser sur plusieurs places simultanément</p></li>
+<li><p>Clic droit sur une place pour retirer la mise</p></li>
+<li><p>Cliquez sur <strong>COMMENCER</strong> quand vous êtes prêt</p></li>
+</ol>
+</section>
+<section id="distribution-initiale">
+<h3>Distribution initiale<a class="headerlink" href="#distribution-initiale" title="Lien vers cette rubrique"></a></h3>
+<p>Le jeu distribue automatiquement :</p>
+<ul class="simple">
+<li><p>2 cartes pour chaque place avec mise</p></li>
+<li><p>2 cartes pour le croupier (une cachée)</p></li>
+</ul>
+</section>
+<section id="actions-disponibles">
+<h3>Actions disponibles<a class="headerlink" href="#actions-disponibles" title="Lien vers cette rubrique"></a></h3>
+<p>Pendant votre tour, vous pouvez :</p>
+<ul class="simple">
+<li><p><strong>H</strong> (Hit) : Tirer une carte supplémentaire</p></li>
+<li><p><strong>S</strong> (Stand) : Conserver votre main</p></li>
+<li><p><strong>D</strong> (Double) : Doubler la mise et tirer 1 carte (uniquement avec 2 cartes)</p></li>
+<li><p><strong>P</strong> (Split) : Diviser une paire en 2 mains (uniquement avec 2 cartes identiques)</p></li>
+<li><p><strong>R</strong> (Surrender) : Abandonner et récupérer 50% de la mise</p></li>
+</ul>
+</section>
+<section id="assurance">
+<h3>Assurance<a class="headerlink" href="#assurance" title="Lien vers cette rubrique"></a></h3>
+<p>Si le croupier a un As visible :</p>
+<ul class="simple">
+<li><p>Vous pouvez prendre une assurance (50% de la mise)</p></li>
+<li><p>Si le croupier a un Blackjack, l’assurance paie 2:1</p></li>
+<li><p>Sinon, vous perdez l’assurance</p></li>
+</ul>
+</section>
+<section id="resultats">
+<h3>Résultats<a class="headerlink" href="#resultats" title="Lien vers cette rubrique"></a></h3>
+<p>À la fin de la partie :</p>
+<ul class="simple">
+<li><p><strong>Victoire</strong> : Vous gagnez 1:1 (ou 3:2 pour un Blackjack)</p></li>
+<li><p><strong>Défaite</strong> : Vous perdez votre mise</p></li>
+<li><p><strong>Égalité</strong> : Vous récupérez votre mise</p></li>
+</ul>
+<p>Appuyez sur <strong>ESPACE</strong> pour revenir aux mises.</p>
+</section>
+</section>
+<section id="parametres">
+<h2>Paramètres<a class="headerlink" href="#parametres" title="Lien vers cette rubrique"></a></h2>
+<p>Personnalisez votre expérience :</p>
+<section id="visuels">
+<h3>Visuels<a class="headerlink" href="#visuels" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p><strong>Thème de table</strong> : Green, Blue, Red, Black</p></li>
+<li><p><strong>Animations</strong> : Activer/Désactiver</p></li>
+<li><p><strong>Indices</strong> : Afficher/Masquer les suggestions</p></li>
+</ul>
+</section>
+<section id="audio">
+<h3>Audio<a class="headerlink" href="#audio" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p><strong>Musique</strong> : ON/OFF</p></li>
+<li><p><strong>Volume</strong> : 0% à 100%</p></li>
+</ul>
+</section>
+<section id="jeu">
+<h3>Jeu<a class="headerlink" href="#jeu" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p><strong>Vitesse des animations</strong> : 0.1x à 3.0x</p></li>
+<li><p><strong>Nombre de jeux</strong> : 1 à 8 jeux dans le sabot</p></li>
+</ul>
+</section>
+</section>
+<section id="statistiques">
+<h2>Statistiques<a class="headerlink" href="#statistiques" title="Lien vers cette rubrique"></a></h2>
+<p>Consultez vos performances :</p>
+<ul class="simple">
+<li><p><strong>Mains jouées</strong> : Nombre total de mains</p></li>
+<li><p><strong>Victoires</strong> : Nombre de victoires</p></li>
+<li><p><strong>Bénéfice net</strong> : Profit ou perte global</p></li>
+<li><p><strong>Blackjacks</strong> : Nombre de Blackjacks naturels obtenus</p></li>
+<li><p><strong>Taux de victoire</strong> : Pourcentage de victoires</p></li>
+</ul>
+</section>
+<section id="mini-jeu-clicker">
+<h2>Mini-jeu Clicker<a class="headerlink" href="#mini-jeu-clicker" title="Lien vers cette rubrique"></a></h2>
+<p>Le Clicker permet de gagner de l’argent en cliquant :</p>
+<ol class="arabic simple">
+<li><p>Accédez au Clicker depuis le menu principal</p></li>
+<li><p>Cliquez sur le bouton <strong>+$1</strong></p></li>
+<li><p>Gagnez 1$ par clic</p></li>
+<li><p>Votre solde est sauvegardé automatiquement</p></li>
+<li><p>Appuyez sur <strong>ESC</strong> pour revenir au menu</p></li>
+</ol>
+</section>
+<section id="raccourcis-clavier">
+<h2>Raccourcis clavier<a class="headerlink" href="#raccourcis-clavier" title="Lien vers cette rubrique"></a></h2>
+<section id="menu-et-navigation">
+<h3>Menu et navigation<a class="headerlink" href="#menu-et-navigation" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p><strong>ESC</strong> : Retour au menu principal / Quitter</p></li>
+<li><p><strong>ESPACE</strong> : Nouvelle partie (après résultats)</p></li>
+</ul>
+</section>
+<section id="actions-en-jeu">
+<h3>Actions en jeu<a class="headerlink" href="#actions-en-jeu" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p><strong>H</strong> : Hit (tirer)</p></li>
+<li><p><strong>S</strong> : Stand (rester)</p></li>
+<li><p><strong>D</strong> : Double (doubler)</p></li>
+<li><p><strong>P</strong> : Split (diviser)</p></li>
+<li><p><strong>R</strong> : Surrender (abandonner)</p></li>
+</ul>
+</section>
+<section id="id1">
+<h3>Paramètres<a class="headerlink" href="#id1" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p><strong>M</strong> : Toggle musique</p></li>
+<li><p><strong>Clic sur sliders</strong> : Ajuster les valeurs</p></li>
+<li><p><strong>Clic sur boutons</strong> : Cycler les options</p></li>
+</ul>
+</section>
+</section>
+<section id="conseils-strategiques">
+<h2>Conseils stratégiques<a class="headerlink" href="#conseils-strategiques" title="Lien vers cette rubrique"></a></h2>
+<section id="strategie-de-base">
+<h3>Stratégie de base<a class="headerlink" href="#strategie-de-base" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p><strong>Toujours splitter les As et les 8</strong></p></li>
+<li><p><strong>Ne jamais splitter les 10 et les 5</strong></p></li>
+<li><p><strong>Doubler sur 11 si le croupier a 10 ou moins</strong></p></li>
+<li><p><strong>Tirer jusqu’à 17+ si le croupier montre 7 ou plus</strong></p></li>
+<li><p><strong>Rester sur 17+ si le croupier montre 6 ou moins</strong></p></li>
+</ul>
+</section>
+<section id="gestion-de-la-bankroll">
+<h3>Gestion de la bankroll<a class="headerlink" href="#gestion-de-la-bankroll" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p>Ne misez pas plus de 5% de votre solde par main</p></li>
+<li><p>Fixez-vous des limites de gains et de pertes</p></li>
+<li><p>Utilisez le Clicker pour regagner de l’argent si nécessaire</p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>Assurance<a class="headerlink" href="#id2" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p>Statistiquement désavantageuse</p></li>
+<li><p>Seulement recommandée si vous comptez les cartes</p></li>
+<li><p>Évitez de la prendre en temps normal</p></li>
+</ul>
+</section>
+</section>
+<section id="depannage">
+<h2>Dépannage<a class="headerlink" href="#depannage" title="Lien vers cette rubrique"></a></h2>
+<section id="le-jeu-ne-demarre-pas">
+<h3>Le jeu ne démarre pas<a class="headerlink" href="#le-jeu-ne-demarre-pas" title="Lien vers cette rubrique"></a></h3>
+<p>Vérifiez que pygame est installé :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pygame
+</pre></div>
+</div>
+</section>
+<section id="les-images-ne-s-affichent-pas">
+<h3>Les images ne s’affichent pas<a class="headerlink" href="#les-images-ne-s-affichent-pas" title="Lien vers cette rubrique"></a></h3>
+<p>Assurez-vous que le dossier <code class="docutils literal notranslate"><span class="pre">assets/</span></code> contient :</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">assets/cards/</span></code> avec les images des cartes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">assets/chips/</span></code> avec les images des jetons</p></li>
+</ul>
+</section>
+<section id="le-son-ne-fonctionne-pas">
+<h3>Le son ne fonctionne pas<a class="headerlink" href="#le-son-ne-fonctionne-pas" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p>Vérifiez que la musique est activée dans les paramètres</p></li>
+<li><p>Assurez-vous que le fichier audio existe</p></li>
+<li><p>Réglez le volume dans les paramètres</p></li>
+</ul>
+</section>
+<section id="problemes-de-sauvegarde">
+<h3>Problèmes de sauvegarde<a class="headerlink" href="#problemes-de-sauvegarde" title="Lien vers cette rubrique"></a></h3>
+<p>Si les données ne se sauvegardent pas :</p>
+<ul class="simple">
+<li><p>Vérifiez les permissions du dossier</p></li>
+<li><p>Le fichier <code class="docutils literal notranslate"><span class="pre">player_stats.json</span></code> doit être accessible en écriture</p></li>
+<li><p>Le fichier <code class="docutils literal notranslate"><span class="pre">config/settings.json</span></code> doit exister</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pied de page">
+        <a href="modules/game.html" class="btn btn-neutral float-left" title="Module Game" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Droits d'auteur 2025, Équipe Blackjack.</p>
+  </div>
+
+  Compilé avec <a href="https://www.sphinx-doc.org/">Sphinx</a> en utilisant un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">thème</a>
+    fourni par <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

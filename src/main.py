@@ -11,7 +11,7 @@ from core.player import Player
 from config_manager import get_config_manager
 
 #  config graphique 
-WIDTH, HEIGHT = 1280, 720
+WIDTH, HEIGHT = 1600, 900
 FPS = 60
 CARD_W, CARD_H = 100, 145
 
@@ -564,7 +564,11 @@ def draw_bet_screen(screen: pygame.Surface, game: Game, player: Player, chips, s
             screen.blit(glow, (chip["rect"].centerx - 47, chip["rect"].centery - 47))
         screen.blit(chip["image"], chip["rect"])
 
-    draw_shadow_text(screen, f"SOLDE: ${player.balance}", get_font("sans", 18, True), COLOR_GOLD, 60, HEIGHT - 30)
+    # Afficher le solde en haut à gauche pour qu'il soit toujours visible
+    solde_panel = pygame.Rect(20, 20, 200, 40)
+    pygame.draw.rect(screen, (20, 25, 30), solde_panel, border_radius=10)
+    pygame.draw.rect(screen, COLOR_WOOD_RAIL, solde_panel, 2, border_radius=10)
+    draw_shadow_text(screen, f"SOLDE: ${player.balance}", get_font("sans", 18, True), COLOR_GOLD, solde_panel.centerx, solde_panel.centery, center=True)
 
 
 def draw_settings_screen(screen: pygame.Surface, game: Game):
@@ -601,7 +605,7 @@ def draw_settings_screen(screen: pygame.Surface, game: Game):
     controls.append(('slider', 'features.music_volume', volume_rect, 0.0, 1.0))
     
     # 3. Réinitialiser les statistiques
-    reset_rect = pygame.Rect(x_center, y_start + y_spacing * 2, control_width, control_height)
+    reset_rect = pygame.Rect(x_center, y_start + y_spacing * 2, 280, control_height)
     reset_hover = reset_rect.collidepoint(mouse_pos)
     draw_vip_button(screen, reset_rect, "Réinitialiser Stats", reset_hover)
     controls.append(('button', 'reset_stats', reset_rect))
@@ -678,9 +682,13 @@ def handle_input(game: Game, player: Player, chips, play_rect, sett_rect, stat_r
                     if chip["rect"].collidepoint(pos):
                         # Ajouter/retirer des jetons à la place sélectionnée
                         if event.button == 1:
-                            if game.current_seat_for_betting not in game.seat_bets:
-                                game.seat_bets[game.current_seat_for_betting] = 0
-                            game.seat_bets[game.current_seat_for_betting] += chip["value"]
+                            # Calculer la mise totale actuelle
+                            current_total_bet = sum(game.seat_bets.values())
+                            # Vérifier si le joueur a assez d'argent pour ajouter ce jeton
+                            if current_total_bet + chip["value"] <= player.balance:
+                                if game.current_seat_for_betting not in game.seat_bets:
+                                    game.seat_bets[game.current_seat_for_betting] = 0
+                                game.seat_bets[game.current_seat_for_betting] += chip["value"]
                         elif event.button == 3:
                             if game.current_seat_for_betting in game.seat_bets:
                                 game.seat_bets[game.current_seat_for_betting] = max(0, game.seat_bets[game.current_seat_for_betting] - chip["value"])

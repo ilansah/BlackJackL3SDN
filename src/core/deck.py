@@ -55,14 +55,14 @@ class Deck:
     def draw(self, n: int = 1) -> list[Card]:
         """Tire n cartes du dessus du sabot.
         
+        Le sabot est automatiquement réinitialisé et mélangé quand il est vide,
+        créant ainsi un paquet infini.
+        
         Args:
             n (int, optional): Nombre de cartes à tirer. Par défaut 1.
             
         Returns:
             List[Card]: Liste des cartes tirées
-            
-        Raises:
-            RuntimeError: Si le sabot ne contient pas assez de cartes
             
         Examples:
             >>> deck = Deck()
@@ -74,8 +74,10 @@ class Deck:
         """
         drawn = []
         for _ in range(n):
+            # Si le paquet est vide, on le réinitialise automatiquement
             if not self.cards:
-                raise RuntimeError("le paquet est vide")
+                print("🔄 Le paquet est vide, réinitialisation automatique...")
+                self.reset()
             drawn.append(self.cards.pop())
         return drawn
 
